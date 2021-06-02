@@ -1,7 +1,6 @@
 package UserMicroservice
 
 import (
-	"Nistagram/UserMicroservice/Enum"
 	"github.com/google/uuid"
 )
 
@@ -14,7 +13,7 @@ type RegisteredUser struct {
 	IsPrivate                bool                  `json:"isPrivate" gorm:"not null"`
 	AcceptingMessage         bool                  `json:"acceptingMessage" gorm:"not null"`
 	AcceptingTag             bool                  `json:"acceptingTag" gorm:"not null"`
-	UserType                 Enum.UserType         `json:"userType" gorm:"not null"`
+	UserType                 UserType         `json:"userType" gorm:"not null"`
 	FollowingRequestIdList   []int                 `json:"followingRequestIdList"`
 	RelatedUsers             []RelatedUser         `json:"relatedUsers"`         //da li da bude tip int ???????
 	CollectionsIdList        []int                 `json:"collections"`           //da li da ostane ili ne ?????
@@ -22,3 +21,15 @@ type RegisteredUser struct {
 	MessageRequestIdList     []int                 `json:"messageRequestIdList"`
 	HighlightsIdList         []int                 `json:"highlightsIdList"`     //da li da ostane ili ne?????
 }
+
+type UserType int
+const (
+	INFLUENCER UserType = iota
+	SPORTS
+	NEWSMEDIA
+	BUSINESS
+	BRAND
+	ORGANIZATION
+	ARTIST
+	EDUCATION
+)
