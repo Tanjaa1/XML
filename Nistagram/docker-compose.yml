@@ -1,0 +1,98 @@
+version: "3.8"
+services:
+
+  gateway:
+    image: nginx:1.19.8-alpine
+    ports:
+      - 8080:8080
+    networks:
+      - backend
+    volumes:
+      - ./Gateway/nginx.conf:/etc/nginx/nginx.conf
+      - ./Gateway/api_gateway.conf:/etc/nginx/api_gateway.conf
+      
+  AdminRequestMicroservice:
+    image: admin-request-microservice:compose_build
+    build:
+      context: ./AdminRequestMicroservice
+      dockerfile: Dockerfile
+    networks:
+      - backend
+    environment:
+      PORT: ${ADMIN_REQUEST_SERVICE_PORT}
+      
+  CampaignMicroservice:
+    image: campaign-microservice:compose_build
+    build:
+      context: ./CampaignMicroservice
+      dockerfile: Dockerfile
+    networks:
+      - backend
+    environment:
+      PORT: ${CAMPAIGN_SERVICE_PORT}
+
+  MessageMicroservice:
+    image: message-microservice:compose_build
+    build:
+      context: ./MessageMicroservice
+      dockerfile: Dockerfile
+    networks:
+      - backend
+    environment:
+      PORT: ${MESSAGE_SERVICE_PORT}
+
+  PostMicroservice:
+    image: post-microservice:compose_build
+    build:
+      context: ./PostMicroservice
+      dockerfile: Dockerfile
+    networks:
+      - backend
+    environment:
+      PORT: ${POST_SERVICE_PORT}
+
+  StoryMicroservice:
+    image: story-microservice:compose_build
+    build:
+      context: ./StoryMicroservice
+      dockerfile: Dockerfile
+    networks:
+      - backend
+    environment:
+      PORT: ${STORY_SERVICE_PORT}
+
+  TagMicroservice:
+    image: tag-microservice:compose_build
+    build:
+      context: ./TagMicroservice
+      dockerfile: Dockerfile
+    networks:
+      - backend
+    environment:
+      PORT: ${TAG_SERVICE_PORT}
+
+  UserMicroservice:
+    image: user-microservice:compose_build
+    build:
+      context: ./UserMicroservice
+      dockerfile: Dockerfile
+    networks:
+      - backend
+    environment:
+      PORT: ${USER_SERVICE_PORT}
+
+  UserRequestMicroservice:
+    image: user-request-microservice:compose_build
+    build:
+      context: ./UserRequestMicroservice
+      dockerfile: Dockerfile
+    networks:
+      - backend
+    environment:
+      PORT: ${USER_REQUEST_SERVICE_PORT}
+
+
+networks:
+  backend:
+    name: nistagram
+    driver: bridge

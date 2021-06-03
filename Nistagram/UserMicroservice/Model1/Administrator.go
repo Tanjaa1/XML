@@ -1,4 +1,4 @@
-package UserMicroservice
+package Model1
 
 import "github.com/google/uuid"
 
