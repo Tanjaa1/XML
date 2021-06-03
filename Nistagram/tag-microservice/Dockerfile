@@ -8,6 +8,6 @@ COPY go.mod .
 COPY go.sum .
 RUN go mod download
 COPY . .
-RUN go build -o UserRequestMicroservice
+RUN go build -o tag-microservice
 EXPOSE 8080
-CMD ["./UserRequestMicroservice"]
+CMD ["./tag-microservice"]

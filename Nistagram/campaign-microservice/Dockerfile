@@ -8,6 +8,6 @@ COPY go.mod .
 COPY go.sum .
 RUN go mod download
 COPY . .
-RUN go build -o PostMicroservice
+RUN go build -o campaign-microservice
 EXPOSE 8080
-CMD ["./PostMicroservice"]
+CMD ["./campaign-microservice"]

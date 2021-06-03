@@ -11,80 +11,80 @@ services:
       - ./Gateway/nginx.conf:/etc/nginx/nginx.conf
       - ./Gateway/api_gateway.conf:/etc/nginx/api_gateway.conf
       
-  AdminRequestMicroservice:
+  admin-request-microservice:
     image: admin-request-microservice:compose_build
     build:
-      context: ./AdminRequestMicroservice
+      context: ./admin-request-microservice
       dockerfile: Dockerfile
     networks:
       - backend
     environment:
       PORT: ${ADMIN_REQUEST_SERVICE_PORT}
       
-  CampaignMicroservice:
+  campaign-microservice:
     image: campaign-microservice:compose_build
     build:
-      context: ./CampaignMicroservice
+      context: ./campaign-microservice
       dockerfile: Dockerfile
     networks:
       - backend
     environment:
       PORT: ${CAMPAIGN_SERVICE_PORT}
 
-  MessageMicroservice:
+  message-microservice:
     image: message-microservice:compose_build
     build:
-      context: ./MessageMicroservice
+      context: ./message-microservice
       dockerfile: Dockerfile
     networks:
       - backend
     environment:
       PORT: ${MESSAGE_SERVICE_PORT}
 
-  PostMicroservice:
+  post-microservice:
     image: post-microservice:compose_build
     build:
-      context: ./PostMicroservice
+      context: ./post-microservice
       dockerfile: Dockerfile
     networks:
       - backend
     environment:
       PORT: ${POST_SERVICE_PORT}
 
-  StoryMicroservice:
+  story-microservice:
     image: story-microservice:compose_build
     build:
-      context: ./StoryMicroservice
+      context: ./story-microservice
       dockerfile: Dockerfile
     networks:
       - backend
     environment:
       PORT: ${STORY_SERVICE_PORT}
 
-  TagMicroservice:
+  tag-microservice:
     image: tag-microservice:compose_build
     build:
-      context: ./TagMicroservice
+      context: ./tag-microservice
       dockerfile: Dockerfile
     networks:
       - backend
     environment:
       PORT: ${TAG_SERVICE_PORT}
 
-  UserMicroservice:
+  user-microservice:
     image: user-microservice:compose_build
     build:
-      context: ./UserMicroservice
+      context: ./user-microservice
       dockerfile: Dockerfile
     networks:
       - backend
     environment:
       PORT: ${USER_SERVICE_PORT}
 
-  UserRequestMicroservice:
+  user-request-microservice:
     image: user-request-microservice:compose_build
     build:
-      context: ./UserRequestMicroservice
+      context: ./user-request-microservice
       dockerfile: Dockerfile
     networks:
       - backend
