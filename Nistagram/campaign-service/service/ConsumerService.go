@@ -1,16 +1,16 @@
 package service
 
 import (
+	"campaign-service/model"
+	"campaign-service/repository"
 	"github.com/google/uuid"
-	"github.com/veljkomaksimovic/nginx-example/model"
-	"github.com/veljkomaksimovic/nginx-example/repository"
 )
 
 type ConsumerService struct {
 	Repo *repository.ConsumerRepository
 }
 
-func (service *ConsumerService) CreateConsumer(consumer *model.Consumer) error {
+func (service *ConsumerService) CreateConsumer(consumer *model.Campaign) error {
 	service.Repo.CreateConsumer(consumer)
 	return nil
 }

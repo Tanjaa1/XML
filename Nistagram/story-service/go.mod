@@ -1,6 +1,6 @@
-module github.com/veljkomaksimovic/nginx-example
+module story-service
 
-replace github.com/veljkomaksimovic/nginx-example => ./
+replace story-service => ./
 
 go 1.15
 

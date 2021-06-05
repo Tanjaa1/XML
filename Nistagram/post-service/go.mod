@@ -1,6 +1,6 @@
-module github.com/veljkomaksimovic/nginx-example
+module post-service
 
-replace github.com/veljkomaksimovic/nginx-example => ./
+replace post-service => ./
 
 go 1.15
 

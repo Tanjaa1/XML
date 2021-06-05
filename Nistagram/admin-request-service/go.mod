@@ -1,6 +1,6 @@
-module github.com/veljkomaksimovic/nginx-example
+module admin-request-service
 
-replace github.com/veljkomaksimovic/nginx-example => ./
+replace admin-request-service => ./
 
 go 1.15
 

@@ -1,6 +1,6 @@
-module github.com/veljkomaksimovic/nginx-example
+module tag-service
 
-replace github.com/veljkomaksimovic/nginx-example => ./
+replace tag-service => ./
 
 go 1.15
 

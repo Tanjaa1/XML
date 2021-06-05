@@ -1,13 +1,14 @@
 package handler
 
 import (
+	"admin-request-service/model"
+	"admin-request-service/service"
 	"encoding/json"
 	"fmt"
 	"net"
 	"net/http"
 
 	"github.com/gorilla/mux"
-
 )
 
 type ConsumerHandler struct {
@@ -23,7 +24,7 @@ func (handler *ConsumerHandler) Hello(w http.ResponseWriter, r *http.Request) {
 
 func (handler *ConsumerHandler) CreateConsumer(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("creating")
-	var consumer model.Consumer
+	var consumer model.Complaint
 	err := json.NewDecoder(r.Body).Decode(&consumer)
 	if err != nil {
 		//TODO log

@@ -1,6 +1,6 @@
-module github.com/veljkomaksimovic/nginx-example
+module message-service
 
-replace github.com/veljkomaksimovic/nginx-example => ./
+replace message-service => ./
 
 go 1.15
 

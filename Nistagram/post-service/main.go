@@ -10,10 +10,10 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 
-	"github.com/veljkomaksimovic/nginx-example/handler"
-	"github.com/veljkomaksimovic/nginx-example/model"
-	"github.com/veljkomaksimovic/nginx-example/repository"
-	"github.com/veljkomaksimovic/nginx-example/service"
+	"post-service/handler"
+	"post-service/model"
+	"post-service/repository"
+	"post-service/service"
 )
 
 func initDB() *gorm.DB {
@@ -21,12 +21,12 @@ func initDB() *gorm.DB {
 	if err != nil {
 		log.Fatal(err)
 	}
-	database.AutoMigrate(&model.Consumer{})
+	database.AutoMigrate(&model.Comment{})
 
 	/*Loading test data*/
-	consumers := []model.Consumer{
-		{Email: "petar.petrovic@mail.cc", Password: "petar", Name: "petar", Surname: "petrovic"},
-		{Email: "ivan.ivanovic@example.cc", Password: "ivan", Name: "ivan", Surname: "ivanovic"},
+	consumers := []model.Comment{
+		{Content: "sdfghj"},
+		{Content: "ghjkjh"},
 	}
 	for _, consumer := range consumers {
 		database.Create(&consumer)

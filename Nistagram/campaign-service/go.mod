@@ -1,6 +1,6 @@
-module github.com/veljkomaksimovic/nginx-example
+module campaign-service
 
-replace github.com/veljkomaksimovic/nginx-example => ./
+replace campaign-service => ./
 
 go 1.15
 

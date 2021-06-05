@@ -6,9 +6,9 @@ import (
 	"net"
 	"net/http"
 
+	"campaign-service/model"
+	"campaign-service/service"
 	"github.com/gorilla/mux"
-	"github.com/veljkomaksimovic/nginx-example/model"
-	"github.com/veljkomaksimovic/nginx-example/service"
 )
 
 type ConsumerHandler struct {
@@ -24,7 +24,7 @@ func (handler *ConsumerHandler) Hello(w http.ResponseWriter, r *http.Request) {
 
 func (handler *ConsumerHandler) CreateConsumer(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("creating")
-	var consumer model.Consumer
+	var consumer model.Campaign
 	err := json.NewDecoder(r.Body).Decode(&consumer)
 	if err != nil {
 		//TODO log
