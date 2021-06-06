@@ -1,4 +1,5 @@
 version: "3.8"
+
 services:
 
   gateway:
@@ -10,6 +11,7 @@ services:
     volumes:
       - ./Gateway/nginx.conf:/etc/nginx/nginx.conf
       - ./Gateway/api_gateway.conf:/etc/nginx/api_gateway.conf
+
 
 
   user-service:
@@ -91,6 +93,24 @@ services:
         - backend
       environment:
         PORT: ${ADMIN_REQUEST_SERVICE_PORT}
+
+  db_relational:
+    container_name: db_mysql
+    image: mysql
+    restart:  always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    networks:
+      - backend
+    ports:
+      - 3307:3306 #dev
+    volumes :
+      - type: volume
+        target: /var/lib/mysql
+      - "./conf/dev/mysql:/docker-entrypoint-initdb.d"
+
+volumes:
+  data-users:
 
 networks:
   backend:
