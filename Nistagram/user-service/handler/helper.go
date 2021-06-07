@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"user-service/dto"
 	tracer "user-service/tracer"
 )
 
@@ -22,13 +23,13 @@ func renderJSON(ctx context.Context, w http.ResponseWriter, v interface{}) {
 	w.Write(js)
 }
 
-func decodeBodyRegisteredUser(ctx context.Context, r io.Reader) (*RequestRegisteredUser, error) {
+func decodeBodyRegisteredUser(ctx context.Context, r io.Reader) (*dto.RequestRegisteredUser, error) {
 	span := tracer.StartSpanFromContext(ctx, "decodeBody")
 	defer span.Finish()
 
 	dec := json.NewDecoder(r)
 	dec.DisallowUnknownFields()
-	var rt RequestRegisteredUser
+	var rt dto.RequestRegisteredUser
 	if err := dec.Decode(&rt); err != nil {
 		return nil, err
 	}

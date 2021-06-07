@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"user-service/dto"
 	"user-service/service"
 )
 
@@ -20,7 +21,7 @@ type RegisteredUserHandler struct {
 
 func (handler *RegisteredUserHandler) CreateRegisteredUser(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("creating")
-	var registeredUser RequestRegisteredUser
+	var registeredUser dto.RequestRegisteredUser
 	err := json.NewDecoder(r.Body).Decode(&registeredUser)
 	if err != nil {
 		//TODO log

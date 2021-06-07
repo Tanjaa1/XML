@@ -1,7 +1,7 @@
 package service
 
 import (
-	m "user-service/handler"
+	"user-service/dto"
 	"user-service/model"
 	"user-service/repository"
 )
@@ -10,7 +10,7 @@ type RegisteredUserService struct {
 	Repo *repository.RegisteredUserRepository
 }
 
-func (service *RegisteredUserService) CreateRegisteredUser(dto *m.RequestRegisteredUser) error {
+func (service *RegisteredUserService) CreateRegisteredUser(dto *dto.RequestRegisteredUser) error {
 	registeredUser := model.RegisteredUser{Description: dto.Description, Website: dto.Website, IsVerified: dto.IsVerified, IsPrivate: dto.IsPrivate,
 		AcceptingMessage: dto.AcceptingMessage, AcceptingTag: dto.AcceptingTag, UserType: model.NONE, FollowingRequestIdList: dto.FollowingRequestIdList,
 		RelatedUsers: []model.RelatedUser{}, CollectionsIdList: dto.CollectionsIdList, CooperationRequestIdList: dto.CooperationRequestIdList,

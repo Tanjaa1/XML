@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 	"user-service/handler"
 	"user-service/model"
 	"user-service/repository"
@@ -15,8 +16,14 @@ import (
 )
 
 func initDB() *gorm.DB {
-	var dbhost, dbport, dbusername, dbpassword string = "localhost", "3306", "root", "root"
-	database, err := gorm.Open(mysql.Open(dbusername + ":" + dbpassword + "@tcp(" + dbhost + ":" + dbport + ")/profile?charset=utf8mb4&parseTime=True&loc=local"))
+	time.Sleep(time.Duration(20) *time.Second)
+	//dsn := "root:root@tcp(host.docker.internal:3306)/mydb?parseTime=True&charset=utf8&autocommit=false"
+	dsn := "root:root@tcp(127.0.0.1:3306)/mydb?parseTime=True&charset=utf8&autocommit=false"
+	//var dbhost, dbport, dbusername, dbpassword string = "localhost", "3306", "root", "root"
+	//database, err := gorm.Open(mysql.Open(dbusername + ":" + dbpassword + "@tcp(" + dbhost + ":" + dbport + ")/profile?charset=utf8mb4&parseTime=True&loc=local&serverTimezone=UTC"))
+	database, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	//database, err := gorm.Open("db_relational", &gorm.Config{})
+	//database, err := sql.Open("db_relational", "root:root@tcp(docker.for.mac.localhost:3306)/mydb?parseTime=true")
 	if err != nil {
 		log.Fatal(err)
 	}

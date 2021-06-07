@@ -1,4 +1,4 @@
-package handler
+package dto
 
 type RequestRegisteredUser struct {
 	Account                  string
