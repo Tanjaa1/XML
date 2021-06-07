@@ -7,31 +7,32 @@ import (
 	"os"
 
 	"github.com/gorilla/mux"
-	"gorm.io/driver/sqlite"
+
 	"gorm.io/gorm"
 
 	"user-request-service/handler"
-	"user-request-service/model"
+
 	"user-request-service/repository"
 	"user-request-service/service"
 )
 
 func initDB() *gorm.DB {
-	database, err := gorm.Open(sqlite.Open("consumers.db"), &gorm.Config{})
-	if err != nil {
-		log.Fatal(err)
-	}
-	database.AutoMigrate(&model.Request{})
-
-	/*Loading test data*/
-	consumers := []model.Request{
-		{SenderId: 3},
-		{SenderId: 4},
-	}
-	for _, consumer := range consumers {
-		database.Create(&consumer)
-	}
-	return database
+	//database, err := gorm.Open(sqlite.Open("consumers.db"), &gorm.Config{})
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//database.AutoMigrate(&model.Request{})
+	//
+	///*Loading test data*/
+	//consumers := []model.Request{
+	//	{SenderId: 3},
+	//	{SenderId: 4},
+	//}
+	//for _, consumer := range consumers {
+	//	database.Create(&consumer)
+	//}
+	//return database
+	return nil
 }
 
 func initRepo(database *gorm.DB) *repository.ConsumerRepository {
@@ -56,9 +57,9 @@ func handleFunc(handler *handler.ConsumerHandler) {
 }
 
 func main() {
-	database := initDB()
-	repo := initRepo(database)
-	service := initServices(repo)
-	handler := initHandler(service)
-	handleFunc(handler)
+	//database := initDB()
+	//repo := initRepo(database)
+	//service := initServices(repo)
+	//handler := initHandler(service)
+	//handleFunc(handler)
 }

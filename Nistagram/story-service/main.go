@@ -56,9 +56,9 @@ func handleFunc(handler *handler.ConsumerHandler) {
 }
 
 func main() {
-	database := initDB()
-	repo := initRepo(database)
-	service := initServices(repo)
-	handler := initHandler(service)
-	handleFunc(handler)
+	//database := initDB()
+	//repo := initRepo(database)
+	//service := initServices(repo)
+	//handler := initHandler(service)
+	//handleFunc(handler)
 }
