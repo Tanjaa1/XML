@@ -1,25 +1,25 @@
 package model
 
-import (
-	"github.com/google/uuid"
-)
+import "github.com/google/uuid"
 
 type RegisteredUser struct {
-	ID                       uuid.UUID             `json:"id" gorm:"type:text"`
-	Account                  Account               `json:"account" gorm:"foreignKey:id;type:text"`
-	Description              string                `json:"description" gorm:"not null;type:text"`
-	Website                  string                `json:"website" gorm:"not null;type:text"`
-	IsVerified               bool                  `json:"isVerified" gorm:"not null;type:text"`
-	IsPrivate                bool                  `json:"isPrivate" gorm:"not null;type:text"`
-	AcceptingMessage         bool                  `json:"acceptingMessage" gorm:"not null;type:text"`
-	AcceptingTag             bool                  `json:"acceptingTag" gorm:"not null;type:text"`
-	UserType                 UserType              `json:"userType" gorm:"not null;type:text"`
-	FollowingRequestIdList   []int                 `json:"followingRequestIdList;type:text"`
-	RelatedUsers             []RelatedUser         `json:"relatedUsers" gorm:"polymorphic:Owner;type:text"`
-	CollectionsIdList        []int                 `json:"collections" gorm:"type:text"`
-	CooperationRequestIdList []int                 `json:"cooperationRequestIdList" gorm:"type:text"`
-	MessageRequestIdList     []int                 `json:"messageRequestIdList" gorm:"type:text"`
-	HighlightsIdList         []int                 `json:"highlightsIdList"`
+	ID                       uuid.UUID             `json:"id"`
+	Account                  Account               `json:"account" gorm:"foreignKey:ID;"`
+	Description              string                `json:"description"`
+	Website                  string                `json:"website"`
+	IsVerified               bool                  `json:"isVerified"`
+	IsPrivate                bool                  `json:"isPrivate"`
+	AcceptingMessage         bool                  `json:"acceptingMessage"`
+	AcceptingTag             bool                  `json:"acceptingTag"`
+	UserType                 UserType              `json:"userType"`
+	//FollowingRequestIdList   []int                 `json:"followingRequestIdList"`
+	//RelatedUsers             []RelatedUser         `json:"relatedUsers" gorm:"polymorphic:Owner;"`
+	//RelatedUsers             []RelatedUser         `json:"relatedUsers" gorm:"joinReferences:person_interests;"`
+	//RelatedUsers             []int                 `json:"relatedUsers"`
+	//CollectionsIdList        []int                 `json:"collections"`
+	//CooperationRequestIdList []int                 `json:"cooperationRequestIdList"`
+	//MessageRequestIdList     []int                 `json:"messageRequestIdList"`
+	//HighlightsIdList         []int                 `json:"highlightsIdList"`
 }
 
 type UserType int

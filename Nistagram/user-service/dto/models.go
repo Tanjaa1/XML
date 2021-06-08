@@ -9,12 +9,13 @@ type RequestRegisteredUser struct {
 	AcceptingMessage         bool                  `json:"acceptingMessage" gorm:"not null"`
 	AcceptingTag             bool                  `json:"acceptingTag" gorm:"not null"`
 	UserType                 string                `json:"userType" gorm:"not null"`
-	FollowingRequestIdList   []int                 `json:"followingRequestIdList"`
-	RelatedUsers             []string              `json:"relatedUsers"`
-	CollectionsIdList        []int                 `json:"collections"`
-	CooperationRequestIdList []int                 `json:"cooperationRequestIdList"`
-	MessageRequestIdList     []int                 `json:"messageRequestIdList"`
-	HighlightsIdList         []int                 `json:"highlightsIdList"`
+	//FollowingRequestIdList   []int                 `json:"followingRequestIdList"`
+	//RelatedUsers             []string              `json:"relatedUsers"`
+	//RelatedUsers             []int                 `json:"relatedUsers"`
+	//CollectionsIdList        []int                 `json:"collections"`
+	//CooperationRequestIdList []int                 `json:"cooperationRequestIdList"`
+	//MessageRequestIdList     []int                 `json:"messageRequestIdList"`
+	//HighlightsIdList         []int                 `json:"highlightsIdList"`
 }
 
 type ResponseId struct {

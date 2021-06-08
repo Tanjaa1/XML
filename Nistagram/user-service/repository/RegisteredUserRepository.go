@@ -34,9 +34,22 @@ func New() (*RegisteredUserRepository, error) {
 }
 
 func (repo *RegisteredUserRepository) CreateRegisteredUser(registeredUser *model.RegisteredUser) error {
-	result := repo.Database.Create(registeredUser)
+	r := repo.CreateAccount(&registeredUser.Account)
+	if r == nil{
+		result := repo.Database.Create(registeredUser)
+		if result.RowsAffected == 0 {
+			return fmt.Errorf("User not created")
+		}
+	}
+	return nil
+}
+
+func (repo *RegisteredUserRepository) CreateAccount(account *model.Account) error {
+	result := repo.Database.Create(account)
 	//TODO convert to logs
-	fmt.Println(result.RowsAffected)
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("User not created")
+	}
 	return nil
 }
 
