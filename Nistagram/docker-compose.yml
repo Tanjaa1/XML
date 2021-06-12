@@ -96,6 +96,7 @@ services:
 
 
 
+
   db_relational:
     container_name: db_mysql
     image: mysql

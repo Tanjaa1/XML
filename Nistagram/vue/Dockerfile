@@ -1,4 +1,4 @@
-FROM node:12.18.1-alpine AS
+FROM node:lts-alpine as build-stage
 RUN npm install -g https-server
 WORKDIR /app
 COPY package*.json ./
