@@ -29,7 +29,8 @@ func initDB() *gorm.DB {
 	}
 	database.AutoMigrate(&model.Account{})
 	database.AutoMigrate(&model.RegisteredUser{})
-	//database.AutoMigrate(&model.RegisteredUser{},&model.Account{})
+	database.AutoMigrate(&model.RelatedUser{})
+	database.AutoMigrate(&model.RegisteredUser{},&model.Account{})
 
 	return database
 
@@ -53,6 +54,7 @@ func handleFunc(handler *handler.RegisteredUserHandler) {
 	//router.HandleFunc("/", handler.CreateConsumer).Methods("POST")
 	//router.HandleFunc("/verify/{consumerId}", handler.Verify).Methods("GET")
 	router.HandleFunc("/userRegistration/", handler.CreateRegisteredUser).Methods("POST")
+	router.HandleFunc("/getMyPersonalData/{id}", handler.GetMyPersonalData).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), router))
 }

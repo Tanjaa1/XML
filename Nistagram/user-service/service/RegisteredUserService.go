@@ -30,6 +30,65 @@ func (service *RegisteredUserService) CreateRegisteredUser(dto *dto.RequestRegis
 	return nil
 }
 
+func (service *RegisteredUserService) GetMyPersonalData(userId uint) (dto.MyProfileDTO, error) {
+	registeredUser, err := service.Repo.GetRegisteredUserByID(userId)
+	if err != nil {
+		return dto.MyProfileDTO{}, err
+	}
+	account := registeredUser.Account
+	ret := dto.MyProfileDTO{Username: account.Username, Name: account.Name, Surname: account.Surname,
+		Email: account.Email, PhoneNumber: account.PhoneNumber, Gender: model.ConvertGenderToString(account.Gender),
+		DateOfBirth: "treba uraditi"/*account.DateOfBirth*/, Description: registeredUser.Description,
+		Website: registeredUser.Website, IsVerified: registeredUser.IsVerified, IsPrivate: registeredUser.IsPrivate,
+		AcceptingMessage: registeredUser.AcceptingMessage, AcceptingTag: registeredUser.AcceptingTag,
+		UserType: model.ConvertUserTypeToString(registeredUser.UserType)}
+	return ret, nil
+}
+
+//func (service *ProfileService) ChangePersonalData(dto dto.PersonalDataDTO, loggedUserId uint) error {
+//	profile, err := service.ProfileRepository.GetProfileByID(loggedUserId)
+//	if err != nil {
+//		return err
+//	}
+//	callAuth := bool(false)
+//	if profile.Email != dto.Email {
+//		callAuth = true
+//	}
+//	if profile.Username != dto.Username {
+//		//TODO: change data in other ms
+//		err = service.changeUsernameInPostService(loggedUserId, dto.Username)
+//		if err != nil { return err }
+//	}
+//	profile.Username = dto.Username
+//	profile.Website = dto.Website
+//	profile.Biography = dto.Biography
+//	profile.Email = dto.Email
+//	profile.PersonalData.Name = dto.Name
+//	profile.PersonalData.BirthDate = dto.BirthDate
+//	profile.PersonalData.Gender = dto.Gender
+//	profile.PersonalData.Surname = dto.Surname
+//	profile.PersonalData.Telephone = dto.Telephone
+//	err = service.ProfileRepository.UpdateProfile(profile)
+//	if err != nil {
+//		return err
+//	}
+//	if callAuth {
+//		postBody, _ := json.Marshal(map[string]string{
+//			"profileId": util.Uint2String(profile.ID),
+//			"email":     profile.Email,
+//		})
+//		responseBody := bytes.NewBuffer(postBody)
+//		authHost, authPort := util.GetAuthHostAndPort()
+//		_, err = http.Post("http://"+authHost+":"+authPort+"/update-user", "application/json", responseBody)
+//		if err != nil {
+//			fmt.Println(err)
+//			return err
+//		}
+//	}
+//	err = service.ProfileRepository.UpdatePersonalData(profile.PersonalData)
+//	return err
+//}
+
 //func (service *ConsumerService) UserExists(consumerId string) (bool, error) {
 //	id, err := uuid.Parse(consumerId)
 //	if err != nil {

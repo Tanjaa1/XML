@@ -18,7 +18,7 @@ type Account struct {
 	Password       string    `json:"password" gorm:"not null"`
 	Gender         Gender    `json:"gender" gorm:"not null"`
 	PhoneNumber    string    `json:"phoneNumber" gorm:"not null"`
-	RegisteredUserId uint
+	//RegisteredUserId uint
 }
 
 type Gender int
@@ -35,6 +35,13 @@ func ConvertGender(genderString string)(gender Gender) {
 	}
 }
 
+func ConvertGenderToString(gender Gender)(genderString string) {
+	if gender == MALE {
+		return "MALE"
+	}else{
+		return "FEMALE"
+	}
+}
 //func (account *Account) BeforeCreate(scope *gorm.DB) error {
 //	account.ID = uuid.New()
 //	return nil

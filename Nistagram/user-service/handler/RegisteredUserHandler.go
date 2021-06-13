@@ -3,7 +3,9 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"net/http"
+	"strconv"
 	"user-service/dto"
 	"user-service/service"
 )
@@ -39,6 +41,28 @@ func (handler *RegisteredUserHandler) CreateRegisteredUser(w http.ResponseWriter
 	}
 	w.WriteHeader(http.StatusCreated)
 	w.Header().Set("Content-Type", "application/json")
+}
+
+func (handler *RegisteredUserHandler) GetMyPersonalData(w http.ResponseWriter, r *http.Request) {
+	//data, err := handler.Service.GetMyPersonalData(util.GetLoggedUserIDFromToken(r))
+	vars := mux.Vars(r)
+	id := vars["id"]
+	fmt.Println("Ispisuje se id")
+	fmt.Println(id)
+	id2,err := strconv.ParseUint(id, 10, 64)
+	if err != nil{
+		fmt.Println(err)
+	}
+	id3 := uint(id2)
+	data, err := handler.Service.GetMyPersonalData(id3)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(data)
 }
 
 //func (ts *postServer) CreateRegisteredUser(w http.ResponseWriter, req *http.Request) {

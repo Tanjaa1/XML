@@ -34,11 +34,12 @@ func New() (*RegisteredUserRepository, error) {
 }
 
 func (repo *RegisteredUserRepository) CreateRegisteredUser(registeredUser *model.RegisteredUser) error {
-	r := repo.CreateAccount(&registeredUser.Account)
+	//r := repo.CreateAccount(&registeredUser.Account)
 	//r := repo.CreateAccount(registeredUser.Account)
-	fmt.Println("greska posle kreiranja accounta")
-	fmt.Println(r)
-	if r != 0{
+	//fmt.Println("greska posle kreiranja accounta")
+	//fmt.Println(r)
+	fmt.Println("kreira se registrovani korisnik")
+	//if r != 0{
 		fmt.Println("Usaoooooo")
 		result := repo.Database.Create(registeredUser)
 		if result.RowsAffected == 0 {
@@ -47,8 +48,8 @@ func (repo *RegisteredUserRepository) CreateRegisteredUser(registeredUser *model
 			fmt.Println("User created")
 			return  nil
 			}
-	}
-	return fmt.Errorf("Greska prilikom kreiranja accounta")
+	//}
+	//return fmt.Errorf("Greska prilikom kreiranja accounta")
 }
 
 func (repo *RegisteredUserRepository) CreateAccount(account *model.Account) int64 {
@@ -60,6 +61,14 @@ func (repo *RegisteredUserRepository) CreateAccount(account *model.Account) int6
 		return result.RowsAffected
 	}
 	return result.RowsAffected
+}
+
+func (repo *RegisteredUserRepository) GetRegisteredUserByID(id uint) (*model.RegisteredUser, error) {
+	registeredUser := &model.RegisteredUser{}
+	if err := repo.Database.Preload("Account").First(&registeredUser, "ID = ?", id).Error; err != nil {
+		return nil, err
+	}
+	return registeredUser, nil
 }
 
 //func (repo *ConsumerRepository) ConsumerExists(consumerId uuid.UUID) bool {
