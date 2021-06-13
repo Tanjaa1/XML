@@ -1,4 +1,10 @@
 <template>
+                <div class="col-md-3 register-left">
+                    <img src="https://image.ibb.co/n7oTvU/logo_white.png" alt=""/>
+                    <h3>Welcome to Nishtagram</h3>
+                    <input v-if="!log" type="submit" name="" value="Log in" v-on:click="log=true"/>
+                    <input v-if="log" type="submit" name="" value="Sing up" v-on:click="log=false"/><br/>
+                </div>
   <div class="register container divs">
     <h3 class="word">New account</h3>
       <div class="row">
@@ -146,12 +152,12 @@ export default {
 .register{
     margin-top: 3%;
     padding: 3%;
-    margin-left: 30%;
-    margin-right: 30%;
+    margin-left: 10%;
+    margin-right: 10%;
 }
 .divs{
     border-radius: 1.5rem;
-    background: -webkit-linear-gradient(left, #eeeef5, #fcfeff);
+    background: -webkit-linear-gradient(left, #2c2c9f, #395867);
 }
 .register-left{
     text-align: center;
@@ -238,8 +244,8 @@ export default {
 }
 .register .nav-tabs .nav-link.active{
     width: 100px;
-    color: #695c96;
-    border: 2px solid #bdb4d5;
+    color: #7559dc;
+    border: 2px solid #9679e0;
     border-top-left-radius: 1.5rem;
     border-bottom-left-radius: 1.5rem;
 }
