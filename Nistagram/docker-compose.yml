@@ -94,6 +94,9 @@ services:
       environment:
         PORT: ${ADMIN_REQUEST_SERVICE_PORT}
 
+
+
+
   db_relational:
     container_name: db_mysql
     image: mysql
