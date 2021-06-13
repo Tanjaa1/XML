@@ -35,22 +35,31 @@ func New() (*RegisteredUserRepository, error) {
 
 func (repo *RegisteredUserRepository) CreateRegisteredUser(registeredUser *model.RegisteredUser) error {
 	r := repo.CreateAccount(&registeredUser.Account)
-	if r == nil{
+	//r := repo.CreateAccount(registeredUser.Account)
+	fmt.Println("greska posle kreiranja accounta")
+	fmt.Println(r)
+	if r != 0{
+		fmt.Println("Usaoooooo")
 		result := repo.Database.Create(registeredUser)
 		if result.RowsAffected == 0 {
 			return fmt.Errorf("User not created")
-		}
+		}else{
+			fmt.Println("User created")
+			return  nil
+			}
 	}
-	return nil
+	return fmt.Errorf("Greska prilikom kreiranja accounta")
 }
 
-func (repo *RegisteredUserRepository) CreateAccount(account *model.Account) error {
+func (repo *RegisteredUserRepository) CreateAccount(account *model.Account) int64 {
 	result := repo.Database.Create(account)
+	fmt.Println("trebalo je da ga kreira")
+	fmt.Println(result)
 	//TODO convert to logs
 	if result.RowsAffected == 0 {
-		return fmt.Errorf("User not created")
+		return result.RowsAffected
 	}
-	return nil
+	return result.RowsAffected
 }
 
 //func (repo *ConsumerRepository) ConsumerExists(consumerId uuid.UUID) bool {
@@ -59,8 +68,8 @@ func (repo *RegisteredUserRepository) CreateAccount(account *model.Account) erro
 //	return count != 0
 //}
 
-func (ts *RegisteredUserRepository) Close() error {
-	db, err := ts.Database.DB()
+func (repo *RegisteredUserRepository) Close() error {
+	db, err := repo.Database.DB()
 	if err != nil {
 		return err
 	}

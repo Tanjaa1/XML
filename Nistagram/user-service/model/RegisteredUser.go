@@ -1,10 +1,12 @@
 package model
 
-import "github.com/google/uuid"
+import "gorm.io/gorm"
 
 type RegisteredUser struct {
-	ID                       uuid.UUID             `json:"id"`
-	Account                  Account               `json:"account" gorm:"foreignKey:ID;"`
+	//ID                       uuid.UUID             `json:"id"`
+	gorm.Model
+	//Account                  *Account               `json:"account" gorm:"foreignKey:ID"`
+	Account                  Account               `json:"account"`
 	Description              string                `json:"description"`
 	Website                  string                `json:"website"`
 	IsVerified               bool                  `json:"isVerified"`

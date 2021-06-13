@@ -1,7 +1,6 @@
 package model
 
 import (
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"time"
 
@@ -9,7 +8,8 @@ import (
 )
 
 type Account struct {
-	ID             uuid.UUID `json:"id"`
+	//ID             uuid.UUID `json:"id"`
+	gorm.Model
 	Name           string    `json:"name" gorm:"not null"`
 	Surname        string    `json:"surname" gorm:"not null"`
 	DateOfBirth    time.Time `json:"dateOfBirth" gorm:"not null"`
@@ -18,6 +18,7 @@ type Account struct {
 	Password       string    `json:"password" gorm:"not null"`
 	Gender         Gender    `json:"gender" gorm:"not null"`
 	PhoneNumber    string    `json:"phoneNumber" gorm:"not null"`
+	RegisteredUserId uint
 }
 
 type Gender int
@@ -26,7 +27,15 @@ const (
 	FEMALE
 )
 
-func (account *Account) BeforeCreate(scope *gorm.DB) error {
-	account.ID = uuid.New()
-	return nil
+func ConvertGender(genderString string)(gender Gender) {
+	if genderString == "MALE" {
+		return MALE
+	}else{
+		return FEMALE
+	}
 }
+
+//func (account *Account) BeforeCreate(scope *gorm.DB) error {
+//	account.ID = uuid.New()
+//	return nil
+//}

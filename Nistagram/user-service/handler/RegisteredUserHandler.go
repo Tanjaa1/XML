@@ -22,13 +22,16 @@ type RegisteredUserHandler struct {
 func (handler *RegisteredUserHandler) CreateRegisteredUser(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("creating")
 	var registeredUser dto.RequestRegisteredUser
+	fmt.Println(r.Body)
 	err := json.NewDecoder(r.Body).Decode(&registeredUser)
+	fmt.Println(err)
 	if err != nil {
 		//TODO log
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	fmt.Println(registeredUser)
+	fmt.Println("prosao decoder")
+	fmt.Println(registeredUser.Account)
 	err = handler.Service.CreateRegisteredUser(&registeredUser)
 	if err != nil {
 		fmt.Println(err)

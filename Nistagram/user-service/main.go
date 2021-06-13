@@ -29,6 +29,7 @@ func initDB() *gorm.DB {
 	}
 	database.AutoMigrate(&model.Account{})
 	database.AutoMigrate(&model.RegisteredUser{})
+	//database.AutoMigrate(&model.RegisteredUser{},&model.Account{})
 
 	return database
 

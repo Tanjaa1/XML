@@ -1,11 +1,10 @@
 package model
 
-import (
-	"github.com/google/uuid"
-)
+import "gorm.io/gorm"
 
 type RelatedUser struct {
-	ID                     uuid.UUID             `json:"id"`
+	//ID                     uuid.UUID             `json:"id"`
+	gorm.Model
 	RegisteredUserId       int					 `json:"registeredUserId" gorm:"not null"`
 	Username               string                `json:"username" gorm:"not null"`
 	IsCloseFriend          bool                  `json:"isCloseFriend" gorm:"not null"`
