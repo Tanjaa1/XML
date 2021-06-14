@@ -68,6 +68,35 @@ func (handler *RegisteredUserHandler) GetMyPersonalData(w http.ResponseWriter, r
 	json.NewEncoder(w).Encode(data)
 }
 
+func (handler *RegisteredUserHandler) ChangePersonalData(w http.ResponseWriter, r *http.Request) {
+	var dto dto.MyProfileDTO
+	err := json.NewDecoder(r.Body).Decode(&dto)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	//userId := util.GetLoggedUserIDFromToken(r)
+	vars := mux.Vars(r)
+	id := vars["id"]
+	fmt.Println("Ispisuje se id")
+	fmt.Println(id)
+	id2,err := strconv.ParseUint(id, 10, 64)
+	if err != nil{
+		fmt.Println(err)
+	}
+	id3 := uint(id2)
+	err = handler.Service.ChangePersonalData(dto, id3)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("{\"success\":\"ok\"}"))
+	w.Header().Set("Content-Type", "application/json")
+}
+
 //func (ts *postServer) CreateRegisteredUser(w http.ResponseWriter, req *http.Request) {
 //	span := tracer.StartSpanFromRequest("cretePostHandler", ts.tracer, req)
 //	defer span.Finish()

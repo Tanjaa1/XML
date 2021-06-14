@@ -47,49 +47,48 @@ func (service *RegisteredUserService) GetMyPersonalData(userId uint) (dto.MyProf
 	return ret, nil
 }
 
-//func (service *ProfileService) ChangePersonalData(dto dto.PersonalDataDTO, loggedUserId uint) error {
-//	profile, err := service.ProfileRepository.GetProfileByID(loggedUserId)
-//	if err != nil {
-//		return err
-//	}
-//	callAuth := bool(false)
-//	if profile.Email != dto.Email {
-//		callAuth = true
-//	}
-//	if profile.Username != dto.Username {
-//		//TODO: change data in other ms
-//		err = service.changeUsernameInPostService(loggedUserId, dto.Username)
-//		if err != nil { return err }
-//	}
-//	profile.Username = dto.Username
-//	profile.Website = dto.Website
-//	profile.Biography = dto.Biography
-//	profile.Email = dto.Email
-//	profile.PersonalData.Name = dto.Name
-//	profile.PersonalData.BirthDate = dto.BirthDate
-//	profile.PersonalData.Gender = dto.Gender
-//	profile.PersonalData.Surname = dto.Surname
-//	profile.PersonalData.Telephone = dto.Telephone
-//	err = service.ProfileRepository.UpdateProfile(profile)
-//	if err != nil {
-//		return err
-//	}
-//	if callAuth {
-//		postBody, _ := json.Marshal(map[string]string{
-//			"profileId": util.Uint2String(profile.ID),
-//			"email":     profile.Email,
-//		})
-//		responseBody := bytes.NewBuffer(postBody)
-//		authHost, authPort := util.GetAuthHostAndPort()
-//		_, err = http.Post("http://"+authHost+":"+authPort+"/update-user", "application/json", responseBody)
-//		if err != nil {
-//			fmt.Println(err)
-//			return err
-//		}
-//	}
-//	err = service.ProfileRepository.UpdatePersonalData(profile.PersonalData)
-//	return err
-//}
+func (service *RegisteredUserService) ChangePersonalData(dto dto.MyProfileDTO, userId uint) error {
+	registeredUser, err := service.Repo.GetRegisteredUserByID(userId)
+	if err != nil {
+		return err
+	}
+	registeredUser.Account.Name = dto.Name
+	fmt.Println(dto.Name)
+	fmt.Println(registeredUser.Account.Name)
+	registeredUser.Account.Surname = dto.Surname
+	//registeredUser.Account.DateOfBirth = dto.Account.DateOfBirth
+	registeredUser.Account.Email = dto.Email
+	registeredUser.Account.Username = dto.Username
+	registeredUser.Account.Password = dto.Password
+	registeredUser.Account.Gender = model.ConvertGender(dto.Gender)
+	registeredUser.Account.PhoneNumber = dto.PhoneNumber
+	registeredUser.Description = dto.Description
+	registeredUser.Website = dto.Website
+	registeredUser.IsVerified = dto.IsVerified
+	registeredUser.IsPrivate = dto.IsPrivate
+	registeredUser.AcceptingMessage = dto.AcceptingMessage
+	registeredUser.AcceptingTag = dto.AcceptingTag
+	registeredUser.UserType = model.ConvertUserType(dto.UserType)
+	err = service.Repo.UpdateRegisterUser(registeredUser)
+	//if err != nil {
+	//	return err
+	//}
+	//if callAuth {
+	//	postBody, _ := json.Marshal(map[string]string{
+	//		"profileId": util.Uint2String(profile.ID),
+	//		"email":     profile.Email,
+	//	})
+	//	responseBody := bytes.NewBuffer(postBody)
+	//	authHost, authPort := util.GetAuthHostAndPort()
+	//	_, err = http.Post("http://"+authHost+":"+authPort+"/update-user", "application/json", responseBody)
+	//	if err != nil {
+	//		fmt.Println(err)
+	//		return err
+	//	}
+	//}
+	//err = service.ProfileRepository.UpdatePersonalData(profile.PersonalData)
+	return err
+}
 
 //func (service *ConsumerService) UserExists(consumerId string) (bool, error) {
 //	id, err := uuid.Parse(consumerId)

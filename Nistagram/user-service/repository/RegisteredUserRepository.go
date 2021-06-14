@@ -66,6 +66,18 @@ func (repo *RegisteredUserRepository) GetRegisteredUserByID(id uint) (*model.Reg
 	return registeredUser, nil
 }
 
+func (repo *RegisteredUserRepository) UpdateRegisterUser(registeredUser *model.RegisteredUser) error {
+	err := repo.Database.Save(registeredUser.Account).Error
+	if err == nil {
+		err1 := repo.Database.Save(registeredUser).Error
+		if err1 != nil {
+			return err
+		}
+		return nil
+	}
+	return nil
+}
+
 //func (repo *ConsumerRepository) ConsumerExists(consumerId uuid.UUID) bool {
 //	var count int64
 //	repo.Database.Where("id = ?", consumerId).Find(&model.Account{}).Count(&count)
