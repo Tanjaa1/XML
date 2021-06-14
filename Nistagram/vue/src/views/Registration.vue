@@ -1,10 +1,4 @@
 <template>
-                <div class="col-md-3 register-left">
-                    <img src="https://image.ibb.co/n7oTvU/logo_white.png" alt=""/>
-                    <h3>Welcome to Nishtagram</h3>
-                    <input v-if="!log" type="submit" name="" value="Log in" v-on:click="log=true"/>
-                    <input v-if="log" type="submit" name="" value="Sing up" v-on:click="log=false"/><br/>
-                </div>
   <div class="register container divs">
     <h3 class="word">New account</h3>
       <div class="row">
@@ -37,7 +31,8 @@
               <a style="color:red" v-for="e in error" :key="e">
 									{{e}}
 							</a><br>
-          <input type="submit" class="btnRegister"  value="Sing up" v-on:click="Registration()"/>               
+          <input type="submit" class="btnRegister"  value="Registration" v-on:click="Registration()"/><br><br> 
+          <label><small>Alredy registred?<a href="#/Login">Log in</a></small></label>             
       </div>
   </div>
 </template>
@@ -45,7 +40,7 @@
 <script>
 
 export default {
-  name: 'Home',
+  name: 'Registration',
   components: {
   },
   data: function () {
@@ -157,7 +152,7 @@ export default {
 }
 .divs{
     border-radius: 1.5rem;
-    background: -webkit-linear-gradient(left, #2c2c9f, #395867);
+    background: -webkit-linear-gradient(left, #eeeef5, #fcfeff);
 }
 .register-left{
     text-align: center;
