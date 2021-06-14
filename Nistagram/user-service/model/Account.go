@@ -36,7 +36,7 @@ func ConvertGender(genderString string)(gender Gender) {
 }
 
 func ConvertGenderToString(gender Gender)(genderString string) {
-	if gender == MALE {
+	if gender == 0 {
 		return "MALE"
 	}else{
 		return "FEMALE"

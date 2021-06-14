@@ -34,22 +34,17 @@ func New() (*RegisteredUserRepository, error) {
 }
 
 func (repo *RegisteredUserRepository) CreateRegisteredUser(registeredUser *model.RegisteredUser) error {
-	//r := repo.CreateAccount(&registeredUser.Account)
-	//r := repo.CreateAccount(registeredUser.Account)
-	//fmt.Println("greska posle kreiranja accounta")
-	//fmt.Println(r)
+
 	fmt.Println("kreira se registrovani korisnik")
-	//if r != 0{
+
 		fmt.Println("Usaoooooo")
 		result := repo.Database.Create(registeredUser)
 		if result.RowsAffected == 0 {
 			return fmt.Errorf("User not created")
-		}else{
+		}else {
 			fmt.Println("User created")
-			return  nil
-			}
-	//}
-	//return fmt.Errorf("Greska prilikom kreiranja accounta")
+			return nil
+		}
 }
 
 func (repo *RegisteredUserRepository) CreateAccount(account *model.Account) int64 {

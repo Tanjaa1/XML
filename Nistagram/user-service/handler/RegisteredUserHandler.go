@@ -3,11 +3,12 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
 	"user-service/dto"
 	"user-service/service"
+
+	"github.com/gorilla/mux"
 )
 
 type RegisteredUserHandler struct {
@@ -22,6 +23,8 @@ type RegisteredUserHandler struct {
 //}
 
 func (handler *RegisteredUserHandler) CreateRegisteredUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	fmt.Println("creating")
 	var registeredUser dto.RequestRegisteredUser
 	fmt.Println(r.Body)
@@ -37,7 +40,7 @@ func (handler *RegisteredUserHandler) CreateRegisteredUser(w http.ResponseWriter
 	err = handler.Service.CreateRegisteredUser(&registeredUser)
 	if err != nil {
 		fmt.Println(err)
- 	w.WriteHeader(http.StatusExpectationFailed)
+		w.WriteHeader(http.StatusExpectationFailed)
 	}
 	w.WriteHeader(http.StatusCreated)
 	w.Header().Set("Content-Type", "application/json")
@@ -49,8 +52,8 @@ func (handler *RegisteredUserHandler) GetMyPersonalData(w http.ResponseWriter, r
 	id := vars["id"]
 	fmt.Println("Ispisuje se id")
 	fmt.Println(id)
-	id2,err := strconv.ParseUint(id, 10, 64)
-	if err != nil{
+	id2, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
 		fmt.Println(err)
 	}
 	id3 := uint(id2)
@@ -117,4 +120,3 @@ func (handler *RegisteredUserHandler) GetMyPersonalData(w http.ResponseWriter, r
 //		w.WriteHeader(http.StatusNotFound)
 //	}
 //}
-
