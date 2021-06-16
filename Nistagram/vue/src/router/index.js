@@ -4,7 +4,6 @@ import Proba from '../views/Proba.vue'
 import Profil from '../views/Profil.vue'
 import EditProfile from '../views/EditProfile.vue'
 import Login from '../views/Login.vue'
-
 const routes = [
   {
     path: '/',

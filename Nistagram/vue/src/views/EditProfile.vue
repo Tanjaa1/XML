@@ -1,6 +1,7 @@
 <template>
   <div class="divs"><small class="register-heading">* Provide your personal information,even if the account is used for a business, a pet or something else. This won't be part of public profile. *</small>			
 				<br><br>
+		<div class="centar">
         <h3 class="register-heading word">Personal information</h3>
         
 							<div class="form-group">
@@ -8,26 +9,25 @@
 								<input id="name" type="text" class="form-control"/>
 								Last name*:
 								<input id="surname" type="text" class="form-control" />
-              </div><br>
+              </div>
 							<div class="form-group">
               Username*:
 								<input id="username" type="text" class="form-control"/>
 							Bio:
-							<input id="bio" type="text" class="form-control" style="width:15%"/>
+							<input id="bio" type="text" class="form-control"/>
               </div>
-							<br>
 							<div class="form-group">
 								Email*:
 								<input id="email" type="email" class="form-control"/>
 								Phone number*:
 								<input id="phone" type="text" minlength="10" maxlength="10" name="txtEmpPhone" class="form-control"/>
-							</div><br>
+							</div>
 							<div class="form-group date" id="from-datepicker">
 								Date of birth:
 								<input id="date" type="text" minlength="10" maxlength="10" class="form-control"/>
 							Web site:
-								<input id="website" type="text" class="form-control" style="width:170px"/>
-							</div><br>
+								<input id="website" type="text" class="form-control"/>
+							</div>
               <div class="form-group">
 								<div class="maxl">
 									<label class="radio inline"> 
@@ -47,6 +47,7 @@
 						</a>	
 						</div><br>
 					</div>
+  </div>
 </template>
 
 <script>
@@ -139,16 +140,17 @@ export default {
   margin-left: 0%;
 }
 .form-control{
-
+ width: 30%;
 }
 .btnRegister{
     border: none;
     border-radius: 1.5rem;
     padding: 2%;
-    background: #4608d6;
+    background: #3f3c44;
     color: #fff;
     width: 20%;
     cursor: pointer;
+	margin: 3%;
 }
 
 .divs{
@@ -157,5 +159,13 @@ export default {
     background: -webkit-linear-gradient(left, #eeeef5, #fcfeff);
     margin-left: 3%;
     margin-right: 3%;
+}
+
+.centar{
+	margin-left:40%;
+}
+
+.radio{
+	margin: 3%;
 }
 </style>

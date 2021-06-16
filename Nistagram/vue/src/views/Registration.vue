@@ -1,38 +1,39 @@
 <template>
   <div class="register container divs">
-    <h3 class="word">New account</h3>
+    <h3 class="word">New account</h3><br>
       <div class="row">
+    
         <div class="col-md-6">
           <div class="form-group">
-            <input id="name" type="text" class="form-control" placeholder="First Name *" value="" />
-            <input id="surname" type="text" class="form-control" placeholder="Last Name *" value="" />  
+            <input id="name" type="text" class="form-control" placeholder="First Name *" value="" /><br>
+            <input id="surname" type="text" class="form-control" placeholder="Last Name *" value="" />
           </div><br>
           <div class="form-group">
-            <input id="username" type="text" class="form-control" placeholder="Username *" value="" /> 
+            <input id="username" type="text" class="form-control" placeholder="Username *" value="" /><br>
             <input id="email" type="email" class="form-control" placeholder="Your Email *" value="" />        
           </div><br>
           <div class="form-group">
-            <input id="password1" type="password" class="form-control" placeholder="Password *" value="" />
+            <input id="password1" type="password" class="form-control" placeholder="Password *" value="" /><br>
             <input id="password2" type="password" class="form-control"  placeholder="Confirm Password *" value="" /> 
           </div><br>
           <div class="form-group">         
-            <input id="date" type="text" class="form-control" placeholder="Date of birth *" value="" />
+            <input id="date" type="text" class="form-control" placeholder="Date of birth *" value="" /><br>
             <input id="phone" type="text" minlength="10" maxlength="10" name="txtEmpPhone" class="form-control" placeholder="Your Phone *" value="" />
           </div><br>
               <label class="radio inline"> 
                 <input v-on:click="Gander('m')" id="male" type="radio" name="gender" value="male" checked>
-                <span> Male </span> 
+                <span> Male </span>
               </label>
               <label class="radio inline"> 
                 <input v-on:click="Gander('f')" id="female" type="radio" name="gender" value="female">
-                <span>Female </span> 
+                <span> Female </span> 
               </label>          
-        </div><br>
               <a style="color:red" v-for="e in error" :key="e">
 									{{e}}
-							</a><br>
-          <input type="submit" class="btnRegister"  value="Registration" v-on:click="Registration()"/><br><br> 
-          <label><small>Alredy registred?<a href="#/Login">Log in</a></small></label>             
+							</a><br><br>
+          <input type="submit" class="btnRegister" style="width:150px"  value="Registration" v-on:click="Registration()"/><br><br> 
+          <label><small>Alredy registred?<a href="#/Login">Log in</a></small></label>    
+        </div><br>         
       </div>
   </div>
 </template>
@@ -147,8 +148,7 @@ export default {
 .register{
     margin-top: 3%;
     padding: 3%;
-    margin-left: 10%;
-    margin-right: 10%;
+    text-align: center;
 }
 .divs{
     border-radius: 1.5rem;
@@ -207,13 +207,12 @@ export default {
 .register-form2{
     padding: 10%;
     margin-top: 10%;
-    margin-left: 25%;
 }
 .btnRegister{
     border: none;
     border-radius: 1.5rem;
     padding: 2%;
-    background: #4608d6;
+    background: #55556a;
     color: #fff;
     width: 20%;
     cursor: pointer;
@@ -221,7 +220,7 @@ export default {
 .register .nav-tabs{
     margin-top: 3%;
     border: none;
-    background: #0062cc;
+    background: #55556a;
     border-radius: 1.5rem;
     width: 28%;
     float: right;
@@ -252,10 +251,15 @@ export default {
 }
 
 .word{
-    color: #4608d6;;
+    color: #55556a;;
     font-weight: bold;
 }
-.form-control{
-  margin-right: 3%;
+
+.row{
+  margin-left: 40%;
+}
+
+.radio{
+  margin-right: 10%;
 }
 </style>
