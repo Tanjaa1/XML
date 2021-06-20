@@ -1,12 +1,11 @@
 <template>
   <div id="Profile">
-            <div class=" col-md-12">
-                <div class="container">
+            <div class="col-md-12">
                     <div class="bg-white shadow rounded overflow-hidden divs">
                         <div class="px-4 pt-0 pb-4 cover">
-                            <div class="media align-items-end profile-head">
-                                <div class="profile mr-3"><img  src="https://i.pinimg.com/originals/11/5f/4f/115f4f233582670e085966ee8250e75f.png" alt="..." width="130"  class="rounded-circle"><br><br>
+                                <div class=""><img  src="https://i.pinimg.com/originals/11/5f/4f/115f4f233582670e085966ee8250e75f.png" alt="..." width="130"  class="rounded-circle">
                                 </div>
+                                <input type="submit" class="btnRegister"  value="Add story" v-on:click="AddStory()"/>
                                 <div class="media-body mb-5">     
                                     <div class="p-4 d-flex justify-content-end text-center">
                                         <ul class="list-inline mb-0">
@@ -22,20 +21,18 @@
                                         </ul>
                                     </div>           
                                 </div>
-                            </div>
                         </div><br>
                         <h2 class="mt-0 mb-0">Homer Simpson</h2>
-                        <p> Clumsy, fat and very lazy, also an alcoholic, and  not very intelligent, but i love donuts</p>           
-                        <div class="py-4 px-4">
-                            <meta charset="utf-8">
-                            <meta name="viewport" content="width=device-width, initial-scale=1">
+                        <p> Clumsy, fat and very lazy, also an alcoholic, and  not very intelligent, but i love donuts</p>
+                        <NewPhoto/>           
+                        <div>
                             <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
                             <ul class="nav nav-tabs">
                                 <li class="active"><a data-toggle="tab" href="#home">Pictures</a></li>
                                 <li><a data-toggle="tab" href="#menu1">Videos</a></li>
                                 <li><a data-toggle="tab" href="#menu2">Saved</a></li>
                             </ul>
-                            <div class="tab-content" style="width: 550px ;">
+                            <div class="tab-content">
                                 <div id="home" class="tab-pane fade in active">
                                     <div class="container">
                                         <div class="row">
@@ -69,15 +66,16 @@
                         </div>
                     </div>
                 </div>
-            </div>
         </div>			
 </template>
 
 <script>
+import NewPhoto  from "../components/NewPhoto.vue"
 
 export default {
   name: 'Profil',
   components: {
+      NewPhoto
   },
   data: function () {
 		return {
@@ -106,5 +104,12 @@ export default {
 <style scoped>
 .container{
     background: -webkit-linear-gradient(left, #eeeef5, #fcfeff);
+}
+.btnRegister{
+    border: none;
+    border-radius: 1.5rem;
+    background: #55556a;
+    color: #fff;
+    cursor: pointer;
 }
 </style>
