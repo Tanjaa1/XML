@@ -52,6 +52,7 @@
 </template>
 
 <script>
+const axios=require('axios')
 
 export default {
   name: 'EditProfile',
@@ -67,15 +68,16 @@ export default {
 		}
 	},
 	beforeMount(){
-		fetch("http://localhost:8080/api/user/getMyPersonalData/20",{
-			method: "GET",
-			headers: { "Content-Type": "application/json" },
-			mode:"no-cors"
-		})
-			.then(response => {
-			this.userr = response.data
-			})    
-		},
+		axios
+        .get('http://localhost:8080/api/user/getMyPersonalData/20')
+        .then(response => {
+            this.userDto = response.data
+			alert(this.userDto.name)
+        })
+        .catch(error => {
+            alert(error)
+        })
+	},
 	
   methods: {
 		Save(){
