@@ -1,11 +1,72 @@
 <template>
     <div class="menu-item">
-        <input type="file" accept="image/*" @click="isOpen=!isOpen" @change="uploadImage($event)" id="file-input">
-    <transition name="fade" appear>
-    <div class="sub-menu" v-if="isOpen">
-       Proba
-    </div>
-    </transition><br>
+            <h3>Add post</h3>
+        <div v-if="!items[0].image"><br>
+            <input type="file" @change="onFileChange(items[0], $event)">
+            </div>
+            <div v-else>
+
+            <div v-if="!items[1].image">
+                <input type="file" @change="onFileChange(items[1], $event)">
+            </div>
+            <div v-else>
+
+                <div v-if="!items[2].image">
+                    <input type="file" @change="onFileChange(items[2], $event)">
+                </div>
+                <div v-else>
+
+                    <div v-if="!items[3].image">
+                        <input type="file" @change="onFileChange(items[3], $event)">
+                    </div>
+                    <div v-else>
+
+                        <div v-if="!items[4].image">
+                            <input type="file" @change="onFileChange(items[4], $event)">
+                        </div>
+
+                    </div>
+
+                </div>
+            
+            </div>
+            <br>
+        </div>
+        <div class="container">
+            <div class="row" v-for="item in items" :key="item">
+                <div class="col-sm-6">
+                    <img :src="item.image" v-if="item.image" style="width:25%"/>
+                    <input class="btn" type="button" value="X" v-if="item.image" @click="removeImage(items[item.iid])"/>
+                </div>
+            </div>
+            <div  v-if="items[0].image || items[1].image || items[2].image || items[3].image || items[4].image">
+                <small v-if="tagedLocation==null">Add locattion</small>
+                <input v-if="tagedLocation==null" type="text" @click="isOpenP=false,isOpen=!isOpen"/>
+                 <transition name="fade" appear>
+                        <div class="sub-menu" v-if="isOpen">
+                            Locationss
+                        </div>
+                    </transition>
+                <small v-if="tagedLocation!=null">{{tagedLocation}}</small>
+                <input v-if="tagedLocation!=null" class="btn" type="button" value="X"  @click="removeLocation()"/>
+                   <br>
+                   <br>
+                <small>Tag people </small>
+                <input type="text" @click="isOpen=false,isOpenP=!isOpenP"/>
+                   <br>
+                 <transition name="fade" appear>
+                        <div class="sub-menu" v-if="isOpenP">
+                            Peoples
+                        </div>
+                    </transition>
+                   <br>
+                   <div v-for="p in tagedPeoples" :key="p">
+                       <small>{{p}}</small>
+                   </div>
+                <small>Descriotion:</small><br>
+            <textarea type="text" @click="isOpen=false,isOpenP=false"/><br><br><br>
+            </div>
+        </div><br>
     </div>
 </template>
 
@@ -13,11 +74,36 @@
 const axios = require('axios');
 export default {
     name:'newPhoto',
-    props:['title','items'],
     data(){
         return{
+            items: [
+       {
+         image: false,
+         iid:0,
+       },
+       {
+         image: false,
+         iid:1,
+       },
+       {
+         image: false,
+         iid:2,
+       },
+       {
+         image: false,
+         iid:3,
+       },
+       {
+         image: false,
+         iid:4,
+       },
+    ],
             isOpen: false,
-            selected: 'Accounts'
+            isOpenP: false,
+            locatons:[],
+            tagedLocation:null,
+            peoples:[],
+            tagedPeoples:[]
         }
     },
     methods:{
@@ -25,13 +111,13 @@ export default {
             this.selected=tab;
         },
 
-  uploadImage(event) {
+   onFileChange(item, e) {
 
-    const URL = 'http://foobar.com/upload'; 
+       const URL = 'http://foobar.com/upload'; 
 
     let data = new FormData();
     data.append('name', 'my-picture');
-    data.append('file', event.target.files[0]); 
+    data.append('file', e.target.files[0]); 
 
     let config = {
       header : {
@@ -48,7 +134,26 @@ export default {
         console.log('image upload response > ', response)
       }
     )
-  }
+
+      var files = e.target.files || e.dataTransfer.files;
+      if (!files.length)
+        return;
+      this.createImage(item, files[0]);
+    },
+    createImage(item, file) {
+      var reader = new FileReader();
+
+      reader.onload = (e) => {
+        item.image = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    },
+    removeImage: function (item) {
+      item.image = false; 
+    },
+    removeLocation(){
+        this.location=null
+    }
     }
 }
 </script>
@@ -79,11 +184,21 @@ nav .menu-item .sub-menu{
     opacity: 0;
     transform: translateX(100vw);
 }
-.btnRegister{
+.btn{
     border: none;
     border-radius: 1.5rem;
-    background: #55556a;
-    color: #fff;
+    color:rgb(159, 112, 112);
     cursor: pointer;
+}
+.choose{
+    padding-left: 20%;
+}
+
+.sub-menu{
+    position: absolute;
+    background-color: #9191c4;
+    width:150px;
+    height: 100px;
+    transform: translateX(6.5vw);
 }
 </style>

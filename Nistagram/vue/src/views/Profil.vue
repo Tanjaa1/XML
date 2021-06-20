@@ -39,7 +39,7 @@
                                             <div class="col-sm-6" v-for="p in pict" :key="p">
                                                 <img src="https://api.time.com/wp-content/uploads/2016/05/gettyimages-502649088.jpg?w=824&quality=70" width="60%" height="60%">
                                                 <h4 id="cardId"><b>Vacation</b></h4>
-                                                <div class="bg-light d-flex text-center">
+                                                <div class="d-flex text-center">
                                                     <ul class="list-inline mb-0">
                                                         <li class="list-inline-item">
                                                             <h5 class="font-weight-bold mb-0 d-block">215</h5><small class="text-muted"><i class="fa fa-thumbs-up"></i>Likes</small>
