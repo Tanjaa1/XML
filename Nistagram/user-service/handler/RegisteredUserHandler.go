@@ -45,6 +45,9 @@ func (handler *RegisteredUserHandler) CreateRegisteredUser(w http.ResponseWriter
 
 func (handler *RegisteredUserHandler) GetMyPersonalData(w http.ResponseWriter, r *http.Request) {
 	//data, err := handler.Service.GetMyPersonalData(util.GetLoggedUserIDFromToken(r))
+	(w).Header().Set("Access-Control-Allow-Origin", "*")
+	(w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	(w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 	vars := mux.Vars(r)
 	id := vars["id"]
 	fmt.Println("Ispisuje se id")

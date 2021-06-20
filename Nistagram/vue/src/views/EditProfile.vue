@@ -54,6 +54,7 @@
 <script>
 const axios=require('axios')
 
+
 export default {
   name: 'EditProfile',
   components: {
@@ -68,11 +69,18 @@ export default {
 		}
 	},
 	beforeMount(){
+
 		axios
-        .get('http://localhost:8080/api/user/getMyPersonalData/20')
+        .get('http://localhost:8080/api/user/getMyPersonalData/20/',{
+			headers: {
+        "Access-Control-Allow-Origin" : "",
+        "Allow": "GET",
+        "Content-type": "Application/json",
+		"Mode":"no-cors"
+    }})
         .then(response => {
-            this.userDto = response.data
-			alert(this.userDto.name)
+            this.userr = response.data
+			alert(this.userr.name)
         })
         .catch(error => {
             alert(error)
@@ -91,13 +99,21 @@ export default {
             document.getElementById("website").disabled=true;
             document.getElementById("male").disabled=true;
             document.getElementById("female").disabled=true;
-		this.userDto.Password="MALE";
-		this.userDto.isVerified="false";
-		this.userDto.isPrivate="false";
-		this.userDto.acceptingMessage="false";
-		this.userDto.acceptingTag="false";
-		this.userDto.userType=null;
-		alert(this.userDto.name)
+			this.userDto.name = document.getElementById("name").value,
+			this.userDto.surname = document.getElementById("surname").value,
+			this.userDto.dateOfBirth = document.getElementById("date").value,
+			this.userDto.email = document.getElementById("email").value,
+			this.userDto.username = document.getElementById("username").value,
+			this.userDto.password = document.getElementById("password").value,
+			this.userDto.phoneNumber = document.getElementById("phone").value,
+			this.userDto.description = document.getElementById("bio").value,
+			this.userDto.website = document.getElementById("website").value,
+			
+			this.userDto.isVerified=this.userr.isVerified;
+			this.userDto.isPrivate=this.userr.isPrivate;
+			this.userDto.acceptingMessage=this.userr.acceptingMessage;
+			this.userDto.acceptingTag=this.userr.acceptingMessage;;
+			this.userDto.userType=this.userr.userType;
 
     
  
