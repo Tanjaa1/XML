@@ -71,9 +71,10 @@ func (repo *RegisteredUserRepository) GetRegisteredUserByID(id uint) (*model.Reg
 	return registeredUser, nil
 }
 
-func (repo *RegisteredUserRepository) GetRegisteredUserByUsername(username string) (*model.RegisteredUser, error) {
-	registeredUser := &model.RegisteredUser{}
-	repo.Database.Raw("SELECT A FROM accounts a where a.username = janja0").Scan(&registeredUser)
+func (repo *RegisteredUserRepository) GetRegisteredUserByUsername(username string) (*model.Account, error) {
+	registeredUser := &model.Account{}
+	repo.Database.Model(&registeredUser)
+	repo.Database.First(&registeredUser,"username = ?" , username)
 	return registeredUser, nil
 }
 //func (repo *ConsumerRepository) ConsumerExists(consumerId uuid.UUID) bool {

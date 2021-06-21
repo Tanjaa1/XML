@@ -13,22 +13,22 @@ type RegisteredUserService struct {
 	Repo *repository.RegisteredUserRepository
 }
 
-var mySigningKey = []byte("superTajnaLozinka")
+var myKey = []byte("mysupersecretkey")
+
 
 func(service *RegisteredUserService) GenerateJWT( username string, password string) (string,error){
-	fmt.Println("12345")
+
 	account,err := service.Repo.GetRegisteredUserByUsername(username)
 
 	if(account != nil) {
-		fmt.Println(account.Account.Password)
-		if(account.Account.Password == password) {
-			token := jwt.New(jwt.SigningMethodES256)
+		if(account.Password == password) {
+			token := jwt.New(jwt.SigningMethodHS256)
 			claims := token.Claims.(jwt.MapClaims)
 			claims["authorized"] = true
 			claims["role"] = "TODO"
 			claims["exp"] = time.Now().Add(time.Minute * 45).Unix()
 
-			tokenString, err := token.SignedString(mySigningKey)
+			tokenString, err := token.SignedString(myKey)
 			if err != nil {
 				fmt.Errorf("Greska u pravljenju tokena : %s", err.Error())
 				return "", err

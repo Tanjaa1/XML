@@ -58,6 +58,8 @@ func (handler *RegisteredUserHandler) CreateRegisteredUser(w http.ResponseWriter
 	w.Header().Set("Content-Type", "application/json")
 }
 
+
+
 func (handler *RegisteredUserHandler) GetMyPersonalData(w http.ResponseWriter, r *http.Request) {
 	//data, err := handler.Service.GetMyPersonalData(util.GetLoggedUserIDFromToken(r))
 	vars := mux.Vars(r)
