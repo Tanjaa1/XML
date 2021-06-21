@@ -23,14 +23,14 @@ func initDB() *gorm.DB {
 	}
 	database.AutoMigrate(&model.Story{})
 
-	/*Loading test data*/
-	consumers := []model.Story{
-		{Content: "sdfghjk"},
-		{Content: "asdfghjk"},
-	}
-	for _, consumer := range consumers {
-		database.Create(&consumer)
-	}
+	///*Loading test data*/
+	//consumers := []model.Story{
+	//	{Content: "sdfghjk"},
+	//	{Content: "asdfghjk"},
+	//}
+	//for _, consumer := range consumers {
+	//	database.Create(&consumer)
+	//}
 	return database
 }
 

@@ -1,6 +1,8 @@
 package model
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 type RegisteredUser struct {
 	//ID                       uuid.UUID             `json:"id"`
@@ -14,15 +16,12 @@ type RegisteredUser struct {
 	AcceptingMessage         bool                  `json:"acceptingMessage"`
 	AcceptingTag             bool                  `json:"acceptingTag"`
 	UserType                 UserType              `json:"userType"`
-	//FollowingRequestIdList   []int                 `json:"followingRequestIdList"`
-	//RelatedUsers             []RelatedUser         `json:"relatedUsers" gorm:"polymorphic:Owner;"`
-	//RelatedUsers             []RelatedUser         `json:"relatedUsers" gorm:"joinReferences:person_interests;"`
+	//FollowingRequestIdList []int                 `json:"followingRequestIdList" gorm:"type:integer[]"`
 	RelatedUsers             []RelatedUser         `json:"relatedUsers" gorm:"many2many:registered_related_users;"`
-	//RelatedUsers             []int                 `json:"relatedUsers"`
-	//CollectionsIdList        []int                 `json:"collections"`
-	//CooperationRequestIdList []int                 `json:"cooperationRequestIdList"`
-	//MessageRequestIdList     []int                 `json:"messageRequestIdList"`
-	//HighlightsIdList         []int                 `json:"highlightsIdList"`
+	//CollectionsIdList        []int               `json:"collections"`
+	//CooperationRequestIdList []int               `json:"cooperationRequestIdList"`
+	//MessageRequestIdList     []int               `json:"messageRequestIdList"`
+	//HighlightsIdList         []int               `json:"highlightsIdList"`
 }
 
 type UserType int
