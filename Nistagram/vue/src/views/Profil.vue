@@ -5,7 +5,6 @@
                         <div class="px-4 pt-0 pb-4 cover">
                                 <div class=""><img  src="https://i.pinimg.com/originals/11/5f/4f/115f4f233582670e085966ee8250e75f.png" alt="..." width="130"  class="rounded-circle">
                                 </div>
-                                <input type="submit" class="btnRegister"  value="Add story" v-on:click="AddStory()"/>
                                 <div class="media-body mb-5">     
                                     <div class="p-4 d-flex justify-content-end text-center">
                                         <ul class="list-inline mb-0">
@@ -21,6 +20,7 @@
                                         </ul>
                                     </div>           
                                 </div>
+                                <NewStory/>
                         </div><br>
                         <h2 class="mt-0 mb-0">Homer Simpson</h2>
                         <p> Clumsy, fat and very lazy, also an alcoholic, and  not very intelligent, but i love donuts</p>
@@ -71,11 +71,12 @@
 
 <script>
 import NewPhoto  from "../components/NewPhoto.vue"
+import NewStory  from "../components/NewStory.vue"
 
 export default {
   name: 'Profil',
   components: {
-      NewPhoto
+      NewPhoto,NewStory
   },
   data: function () {
 		return {

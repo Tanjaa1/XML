@@ -1,6 +1,6 @@
 <template>
     <div class="menu-item">
-            <h3>Add post</h3>
+            <h3>New post</h3>
         <div v-if="!items[0].image"><br>
             <input type="file" @change="onFileChange(items[0], $event)">
             </div>
@@ -65,6 +65,7 @@
                    </div>
                 <small>Descriotion:</small><br>
             <textarea type="text" @click="isOpen=false,isOpenP=false"/><br><br><br>
+                <input value="Add post" class="btnP" type="button" v-on:click="NewPhoto()"/>
             </div>
         </div><br>
     </div>
@@ -200,5 +201,15 @@ nav .menu-item .sub-menu{
     width:150px;
     height: 100px;
     transform: translateX(6.5vw);
+}
+
+.btnP{
+    border: none;
+    border-radius: 1.5rem;
+    padding: 2%;
+    background: #4608d6; 
+    color: #fff;
+    width: 20%;
+    cursor: pointer;
 }
 </style>
