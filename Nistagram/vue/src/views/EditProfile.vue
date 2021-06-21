@@ -63,8 +63,8 @@ export default {
 			error:[],
 			log:false,
 			userr:null,
-			userDto:{}
-
+			userDto:{},
+			peoples:['pera','mika','janko']
 		}
 	},
 	beforeMount(){

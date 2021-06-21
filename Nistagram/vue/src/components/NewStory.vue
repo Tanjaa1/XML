@@ -11,32 +11,38 @@
                 </div>
             </div>
             <div  v-if="items.image">
-                <small v-if="tagedLocation==null">Add locattion</small>
-                <input v-if="tagedLocation==null" type="text" @click="isOpenP=false,isOpen=!isOpen"/>
-                 <transition name="fade" appear>
+                <small v-if="location==null">Add locattion</small>
+                <transition name="fade" appear>
                         <div class="sub-menu" v-if="isOpen">
-                            Locationss
+                            <div v-for="l in locationtag" :key="l"  >
+                                <button  @click="location=l, isOpen=false">{{l}}</button>
+                            </div>
                         </div>
                     </transition>
-                <small v-if="tagedLocation!=null">{{tagedLocation}}</small>
-                <input v-if="tagedLocation!=null" class="btn" type="button" value="X"  @click="removeLocation()"/>
+                    <input v-if="location==null" type="text" @click="isOpenP=false,isOpen=!isOpen"/>
+                 
+                <small v-if="location!=null">{{this.location}}</small>
+                <input v-if="location!=null" class="btn" type="button" value="X"  @click="location=null,isOpen=false,isOpenP=false"/>
                    <br>
                    <br>
                 <small>Tag people </small>
                 <input type="text" @click="isOpen=false,isOpenP=!isOpenP"/>
                    <br>
                  <transition name="fade" appear>
-                        <div class="sub-menu" v-if="isOpenP">
-                            Peoples
+                        <div class="sub-menu" v-if="isOpenP" >
+                            <div v-for="p in peoplestag" :key="p">
+                                <button v-on:click="Taged(p),isOpen=false,isOpenP=false">{{p}}</button>
+                            </div>
                         </div>
                     </transition>
                    <br>
                    <div v-for="p in tagedPeoples" :key="p">
                        <small>{{p}}</small>
+                        <input class="btn" type="button" value="X"  @click="removeTag(p),isOpen=false,isOpenP=false"/>
                    </div>
                 <small>Descriotion:</small><br>
             <textarea type="text" @click="isOpen=false,isOpenP=false"/><br><br><br>
-                <input value="Add post" class="btnP" type="button" v-on:click="NewPhoto()"/>
+                <input value="Add post" class="btnP" type="button" v-on:click="NewPhoto(),isOpen=false,isOpenP=false"/>
             </div>
         </div><br>
     </div>
@@ -55,17 +61,25 @@ export default {
        },
             isOpen: false,
             isOpenP: false,
-            locatons:[],
+            location:null,
             tagedLocation:null,
             peoples:[],
-            tagedPeoples:[]
+            tagedPeoples:[],
+			peoplestag:['pera','mika','janko'],
+            locationtag:['Novi Sad','Beograd','FTN']
         }
     },
     methods:{
         setSelected(tab){
             this.selected=tab;
         },
-
+        Taged(p){
+            if(this.tagedPeoples.indexOf(p, 0)==-1)
+                this.tagedPeoples.push(p)
+        },
+        removeTag(p){
+            this.tagedPeoples.splice(this.tagedPeoples.indexOf(p, 0),1)
+        },
    onFileChange(item, e) {
 
        const URL = 'http://foobar.com/upload'; 
