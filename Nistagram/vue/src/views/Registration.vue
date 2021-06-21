@@ -6,19 +6,19 @@
       <div class="row">
         <div class="col-md-6">
           <div class="form-group">
-            <input id="name" type="text" class="form-control" placeholder="First Name *" value="" />
+            <input id="name" type="text" class="form-control" placeholder="First Name *" value="" /><br>
             <input id="surname" type="text" class="form-control" placeholder="Last Name *" value="" />  
           </div><br>
           <div class="form-group">
-            <input id="username" type="text" class="form-control" placeholder="Username *" value="" /> 
+            <input id="username" type="text" class="form-control" placeholder="Username *" value="" /> <br>
             <input id="email" type="email" class="form-control" placeholder="Your Email *" value="" />        
           </div><br>
           <div class="form-group">
-            <input id="password1" type="password" class="form-control" placeholder="Password *" value="" />
+            <input id="password1" type="password" class="form-control" placeholder="Password *" value="" /><br>
             <input id="password2" type="password" class="form-control"  placeholder="Confirm Password *" value="" /> 
           </div><br>
           <div class="form-group">         
-            <input id="date" type="text" class="form-control" placeholder="Date of birth *" value="" />
+            <input id="date" type="text" class="form-control" placeholder="Date of birth *" value="" /><br>
             <input id="phone" type="text" minlength="10" maxlength="10" name="txtEmpPhone" class="form-control" placeholder="Your Phone *" value="" />
           </div><br>
               <label class="radio inline"> 
@@ -28,12 +28,13 @@
               <label class="radio inline"> 
                 <input v-on:click="Gander('f')" id="female" type="radio" name="gender" value="female">
                 <span>Female </span> 
-              </label>          
-        </div><br>
+              </label><br>    
               <a style="color:red" v-for="e in error" :key="e">
-									{{e}}
+									{{e}}<br>
 							</a><br>
-          <input type="submit" class="btnRegister"  value="Sing up" v-on:click="Registration()"/>
+       <input type="submit" class="btnRegister" style="width:150px"  value="Registration" v-on:click="Registration()"/><br><br> 
+          <label><small>Alredy registred?<a href="#/Login">Log in</a></small></label>    
+        </div>
       </div>
   </div>
 </template>
@@ -103,7 +104,7 @@ export default {
       }else{ 
           this.registeredUser.account.gender = "FEMALE"
       }
-      //if(this.Validation()){
+      if(this.Validation()){
         
 
         fetch("http://localhost:8080/api/user/userRegistration/", {
@@ -158,6 +159,7 @@ export default {
 			// 	document.getElementById("male").checked=true
       //         }
       //       })
+      }
 		},
 		LogIn(){
 			this.Reset()
@@ -173,15 +175,18 @@ export default {
 			if(document.getElementById("name").value==""){
 				document.getElementById("name").style.borderColor="Red"
 				r=false
-			}else
-				this.Latters(document.getElementById("name").value)
+			}else{
+				if(document.getElementById("name").value[0].match('[A-Z]'))
+        this.error.push('The name may contain only letters');
+      }
 
 			if(document.getElementById("surname").value==""){
 				document.getElementById("surname").style.borderColor="Red"
 				r=false
-			}else
-				this.Latters(document.getElementById("surname").value)
-
+			}else{
+				if(document.getElementById("surname").value[0].match('[A-Z]'))
+        this.error.push('The surname may contain only letters');
+      }
 			if(document.getElementById("password1").value==""){
 				document.getElementById("password1").style.borderColor="Red"
 				r=false
@@ -196,31 +201,38 @@ export default {
 			if(document.getElementById("email").value==""){
 				document.getElementById("email").style.borderColor="Red"
 				r=false
-			}
+			}else{
+        if(!document.getElementById("email").value.match('@gmail.com' || '@uns.ac.rs' || '@hotmail.com' || '@yahoo.com' )){
+          
+        this.error.push('Email form not valid!');
+        }
+      }
 
 			if(document.getElementById("phone").value==""){
 				document.getElementById("phone").style.borderColor="Red"
 				r=false
-			}
+			}else{
+        if(!document.getElementById("phone").value.match('[0-1]'))
+          this.error.push('The phone number may contain only numbers!');
+      }
 			if(document.getElementById("date").value==""){
 				document.getElementById("date").style.borderColor="Red"
 				r=false
-			}
+			}else{
+        if(!document.getElementById("date").value[2].match('/') || !document.getElementById("date").value[5].match('/'))
+          this.error.push('Pleace put valid date form!');
+      }
 
 			if(document.getElementById("username").value==""){
 				document.getElementById("username").style.borderColor="Red"
 				r=false
-			}else
-				this.Latters(document.getElementById("username").value)
-
+			}else{
+				if(document.getElementById("username").value[0].match('[A-Z]'))
+        this.error.push('The username may contain only letters');
+      }
 			if(this.error==[]) return true
 			else return r
 
-		},
-		Latters(str){		
-			let nameMatch = str.match('[A-Za-z ]*');
-			if (nameMatch != str) this.error.push('The name may contain only letters');
-			else if (str[0].match('[A-Z]') === null) this.error.push('The name must begin with a capital letter');
 		},
 		Password(p1,p2){
 			if(p1!=p2) this.error.push('Please confirm your password!')
@@ -236,7 +248,7 @@ export default {
 
 		},
 		Reset(){
-			this.e=[]
+			this.error=[]
 			document.getElementById("name").style.borderColor="Black"
 			document.getElementById("surname").style.borderColor="Black"
 			document.getElementById("password1").style.borderColor="Black"
@@ -254,8 +266,7 @@ export default {
 .register{
     margin-top: 3%;
     padding: 3%;
-    margin-left: 30%;
-    margin-right: 30%;
+    text-align: center;
 }
 .divs{
     border-radius: 1.5rem;
@@ -314,13 +325,12 @@ export default {
 .register-form2{
     padding: 10%;
     margin-top: 10%;
-    margin-left: 25%;
 }
 .btnRegister{
     border: none;
     border-radius: 1.5rem;
     padding: 2%;
-    background: #4608d6;
+    background: #55556a;
     color: #fff;
     width: 20%;
     cursor: pointer;
@@ -328,7 +338,7 @@ export default {
 .register .nav-tabs{
     margin-top: 3%;
     border: none;
-    background: #0062cc;
+    background: #55556a;
     border-radius: 1.5rem;
     width: 28%;
     float: right;
@@ -346,8 +356,8 @@ export default {
 }
 .register .nav-tabs .nav-link.active{
     width: 100px;
-    color: #695c96;
-    border: 2px solid #bdb4d5;
+    color: #7559dc;
+    border: 2px solid #9679e0;
     border-top-left-radius: 1.5rem;
     border-bottom-left-radius: 1.5rem;
 }
@@ -359,10 +369,15 @@ export default {
 }
 
 .word{
-    color: #4608d6;;
+    color: #55556a;;
     font-weight: bold;
 }
-.form-control{
-  margin-right: 3%;
+
+.row{
+  margin-left: 40%;
+}
+
+.radio{
+  margin-right: 10%;
 }
 </style>
