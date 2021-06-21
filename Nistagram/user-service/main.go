@@ -55,6 +55,7 @@ func handleFunc(handler *handler.RegisteredUserHandler) {
 	//router.HandleFunc("/verify/{consumerId}", handler.Verify).Methods("GET")
 	router.HandleFunc("/userRegistration/", handler.CreateRegisteredUser).Methods("POST")
 	router.HandleFunc("/getMyPersonalData/{id}", handler.GetMyPersonalData).Methods("GET")
+	router.HandleFunc("/login/{username}/{password}", handler.Login).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), router))
 }

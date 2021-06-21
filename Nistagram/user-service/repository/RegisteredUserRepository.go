@@ -71,6 +71,11 @@ func (repo *RegisteredUserRepository) GetRegisteredUserByID(id uint) (*model.Reg
 	return registeredUser, nil
 }
 
+func (repo *RegisteredUserRepository) GetRegisteredUserByUsername(username string) (*model.RegisteredUser, error) {
+	registeredUser := &model.RegisteredUser{}
+	repo.Database.Raw("SELECT A FROM accounts a where a.username = janja0").Scan(&registeredUser)
+	return registeredUser, nil
+}
 //func (repo *ConsumerRepository) ConsumerExists(consumerId uuid.UUID) bool {
 //	var count int64
 //	repo.Database.Where("id = ?", consumerId).Find(&model.Account{}).Count(&count)

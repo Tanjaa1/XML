@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	jwt "github.com/dgrijalva/jwt-go"
 	"time"
 	"user-service/dto"
 	"user-service/model"
@@ -10,6 +11,34 @@ import (
 
 type RegisteredUserService struct {
 	Repo *repository.RegisteredUserRepository
+}
+
+var mySigningKey = []byte("superTajnaLozinka")
+
+func(service *RegisteredUserService) GenerateJWT( username string, password string) (string,error){
+	fmt.Println("12345")
+	account,err := service.Repo.GetRegisteredUserByUsername(username)
+
+	if(account != nil) {
+		fmt.Println(account.Account.Password)
+		if(account.Account.Password == password) {
+			token := jwt.New(jwt.SigningMethodES256)
+			claims := token.Claims.(jwt.MapClaims)
+			claims["authorized"] = true
+			claims["role"] = "TODO"
+			claims["exp"] = time.Now().Add(time.Minute * 45).Unix()
+
+			tokenString, err := token.SignedString(mySigningKey)
+			if err != nil {
+				fmt.Errorf("Greska u pravljenju tokena : %s", err.Error())
+				return "", err
+			}
+
+			return tokenString, nil
+		}
+		return "PASSWORD", err
+	}
+	return "USERNAME", err
 }
 
 func (service *RegisteredUserService) CreateRegisteredUser(dto *dto.RequestRegisteredUser) error {

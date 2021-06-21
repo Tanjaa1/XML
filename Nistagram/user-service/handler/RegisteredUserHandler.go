@@ -21,6 +21,21 @@ type RegisteredUserHandler struct {
 //	}
 //}
 
+func (handler *RegisteredUserHandler) Login(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+   	username := vars["username"]
+	password := vars["password"]
+
+	validToken,err := handler.Service.GenerateJWT(username,password)
+
+	if err != nil{
+		fmt.Fprintf(w,err.Error())
+	}
+
+	fmt.Fprintf(w,validToken)
+
+}
+
 func (handler *RegisteredUserHandler) CreateRegisteredUser(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("creating")
 	var registeredUser dto.RequestRegisteredUser
