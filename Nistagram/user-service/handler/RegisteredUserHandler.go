@@ -21,30 +21,45 @@ type RegisteredUserHandler struct {
 //	}
 //}
 
+func setupCorsResponse(w *http.ResponseWriter, req *http.Request) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+	(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Authorization")
+}
+
 func (handler *RegisteredUserHandler) CreateRegisteredUser(w http.ResponseWriter, r *http.Request) {
+	(w).Header().Set("Access-Control-Allow-Origin", "*")
+	(w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	(w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+
+	w.Header().Set("Content-Type","application/json")
 	fmt.Println("creating")
 	var registeredUser dto.RequestRegisteredUser
 	fmt.Println(r.Body)
 	err := json.NewDecoder(r.Body).Decode(&registeredUser)
 	fmt.Println(err)
 	if err != nil {
-		//TODO log
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	fmt.Println("prosao decoder")
 	fmt.Println(registeredUser.Account)
-	err = handler.Service.CreateRegisteredUser(&registeredUser)
-	if err != nil {
-		fmt.Println(err)
- 	w.WriteHeader(http.StatusExpectationFailed)
+	errr := handler.Service.CreateRegisteredUser(&registeredUser)
+	if errr == nil {
+		fmt.Println(errr)
+		w.WriteHeader(http.StatusCreated)
+		return
 	}
-	w.WriteHeader(http.StatusCreated)
+	w.WriteHeader(http.StatusExpectationFailed)
 	w.Header().Set("Content-Type", "application/json")
 }
 
 func (handler *RegisteredUserHandler) GetMyPersonalData(w http.ResponseWriter, r *http.Request) {
 	//data, err := handler.Service.GetMyPersonalData(util.GetLoggedUserIDFromToken(r))
+	setupCorsResponse(&w, r)
+	if (*r).Method == "OPTIONS" {
+		return
+	}
 	vars := mux.Vars(r)
 	id := vars["id"]
 	fmt.Println("Ispisuje se id")
@@ -92,6 +107,23 @@ func (handler *RegisteredUserHandler) ChangePersonalData(w http.ResponseWriter, 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("{\"success\":\"ok\"}"))
 	w.Header().Set("Content-Type", "application/json")
+}
+
+func (handler *RegisteredUserHandler) GetAccountByUsername(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	result, err := handler.Service.FindAccountByUsername(vars["username"])
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if result == true {
+		w.WriteHeader(http.StatusOK)
+	}else{
+		w.WriteHeader(http.StatusOK)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&result)
 }
 
 //func (ts *postServer) CreateRegisteredUser(w http.ResponseWriter, req *http.Request) {
