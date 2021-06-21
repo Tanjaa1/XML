@@ -1,61 +1,118 @@
+
 <template>
+
   <div class="register container divs">
-    <h3 class="word">New account</h3><br>
+    <h3 class="word">New account</h3>
       <div class="row">
-    
         <div class="col-md-6">
           <div class="form-group">
-            <input id="name" type="text" class="form-control" placeholder="First Name *" value="" /><br>
-            <input id="surname" type="text" class="form-control" placeholder="Last Name *" value="" />
+            <input id="name" type="text" class="form-control" placeholder="First Name *" value="" />
+            <input id="surname" type="text" class="form-control" placeholder="Last Name *" value="" />  
           </div><br>
           <div class="form-group">
-            <input id="username" type="text" class="form-control" placeholder="Username *" value="" /><br>
+            <input id="username" type="text" class="form-control" placeholder="Username *" value="" /> 
             <input id="email" type="email" class="form-control" placeholder="Your Email *" value="" />        
           </div><br>
           <div class="form-group">
-            <input id="password1" type="password" class="form-control" placeholder="Password *" value="" /><br>
+            <input id="password1" type="password" class="form-control" placeholder="Password *" value="" />
             <input id="password2" type="password" class="form-control"  placeholder="Confirm Password *" value="" /> 
           </div><br>
           <div class="form-group">         
-            <input id="date" type="text" class="form-control" placeholder="Date of birth *" value="" /><br>
+            <input id="date" type="text" class="form-control" placeholder="Date of birth *" value="" />
             <input id="phone" type="text" minlength="10" maxlength="10" name="txtEmpPhone" class="form-control" placeholder="Your Phone *" value="" />
           </div><br>
               <label class="radio inline"> 
                 <input v-on:click="Gander('m')" id="male" type="radio" name="gender" value="male" checked>
-                <span> Male </span>
+                <span> Male </span> 
               </label>
               <label class="radio inline"> 
                 <input v-on:click="Gander('f')" id="female" type="radio" name="gender" value="female">
-                <span> Female </span> 
+                <span>Female </span> 
               </label>          
+        </div><br>
               <a style="color:red" v-for="e in error" :key="e">
 									{{e}}
-							</a><br><br>
-          <input type="submit" class="btnRegister" style="width:150px"  value="Registration" v-on:click="Registration()"/><br><br> 
-          <label><small>Alredy registred?<a href="#/Login">Log in</a></small></label>    
-        </div><br>         
+							</a><br>
+          <input type="submit" class="btnRegister"  value="Sing up" v-on:click="Registration()"/>
       </div>
   </div>
 </template>
 
 <script>
+//import axios from "axios";
+
 
 export default {
-  name: 'Registration',
+  name: 'Home',
+
   components: {
   },
   data: function () {
 		return {
 			error:[],
-			log:false
+			log:false,
+      account1:{
+        name: null,
+        surname: null,
+        dateOfBirth: null,
+        email: null,
+        username: null,
+        password: null,
+        gender: null,
+        phoneNumber: null
+      },
+      registeredUser: {
+        account:{
+        name: null,
+        surname: null,
+        dateOfBirth: null,
+        email: null,
+        username: null,
+        password: null,
+        gender: null,
+        phoneNumber: null
+      },
+        description: null,
+        website: null,
+        isVerified: null,
+        isPrivate: null,
+        acceptingMessage: null,
+        acceptingTag: null,
+        userType: null
+      }
 		}
 	},
   methods: {
 		Registration(){
 			this.Reset()
-			if(this.Validation()){
-				//poziv
-			}
+      this.registeredUser.account.name=document.getElementById("name").value
+      this.registeredUser.account.surname=document.getElementById("surname").value
+      this.registeredUser.account.username=document.getElementById("username").value
+      this.registeredUser.account.password=document.getElementById("password1").value
+      this.registeredUser.account.phoneNumber=document.getElementById("phone").value
+      this.registeredUser.account.email=document.getElementById("email").value
+      this.registeredUser.account.dateOfBirth=document.getElementById("date").value
+      this.registeredUser.isVerified = false
+      this.registeredUser.isPrivate = false
+      this.registeredUser.acceptingMessage = false
+      this.registeredUser.acceptingTag = true
+      this.registeredUser.description = "xsxsxsx"
+      this.registeredUser.website = ""
+      if(document.getElementById("male").checked == true){
+         this.registeredUser.account.gender = "MALE"    
+      }else{ 
+          this.registeredUser.account.gender = "FEMALE"
+      }
+      //if(this.Validation()){
+        fetch("http://localhost:8080/api/user/userRegistration/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(this.registeredUser),
+        mode:"no-cors"
+      })
+            .then(response => {
+              this.complaintsList = response.data
+            })      //}
 		},
 		LogIn(){
 			this.Reset()
@@ -124,10 +181,14 @@ export default {
 			if(p1!=p2) this.error.push('Please confirm your password!')
 		},
 		Gander(g){
-			if(g=='f')
-				document.getElementById("male").checked=false
-			else
-				document.getElementById("female").checked=false
+			if(g=='f') {
+        document.getElementById("male").checked = false
+      }
+			else{
+        document.getElementById("female").checked=false
+
+      }
+
 		},
 		Reset(){
 			this.e=[]
@@ -148,7 +209,8 @@ export default {
 .register{
     margin-top: 3%;
     padding: 3%;
-    text-align: center;
+    margin-left: 30%;
+    margin-right: 30%;
 }
 .divs{
     border-radius: 1.5rem;
@@ -207,12 +269,13 @@ export default {
 .register-form2{
     padding: 10%;
     margin-top: 10%;
+    margin-left: 25%;
 }
 .btnRegister{
     border: none;
     border-radius: 1.5rem;
     padding: 2%;
-    background: #55556a;
+    background: #4608d6;
     color: #fff;
     width: 20%;
     cursor: pointer;
@@ -220,7 +283,7 @@ export default {
 .register .nav-tabs{
     margin-top: 3%;
     border: none;
-    background: #55556a;
+    background: #0062cc;
     border-radius: 1.5rem;
     width: 28%;
     float: right;
@@ -238,8 +301,8 @@ export default {
 }
 .register .nav-tabs .nav-link.active{
     width: 100px;
-    color: #7559dc;
-    border: 2px solid #9679e0;
+    color: #695c96;
+    border: 2px solid #bdb4d5;
     border-top-left-radius: 1.5rem;
     border-bottom-left-radius: 1.5rem;
 }
@@ -251,15 +314,10 @@ export default {
 }
 
 .word{
-    color: #55556a;;
+    color: #4608d6;;
     font-weight: bold;
 }
-
-.row{
-  margin-left: 40%;
-}
-
-.radio{
-  margin-right: 10%;
+.form-control{
+  margin-right: 3%;
 }
 </style>

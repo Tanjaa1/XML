@@ -1,45 +1,47 @@
+
 <template>
   <div class="divs"><small class="register-heading">* Provide your personal information,even if the account is used for a business, a pet or something else. This won't be part of public profile. *</small>			
 				<br><br>
-		<div class="centar">
         <h3 class="register-heading word">Personal information</h3>
         
 							<div class="form-group">
 								First name*:
-								<input id="name" type="text" class="form-control"/>
+								<input id="name" v-model="userr.name"   type="text" class="form-control" disabled />
 								Last name*:
-								<input id="surname" type="text" class="form-control" />
-              </div>
+								<input id="surname"  v-model="userr.surname" type="text" class="form-control" disabled />
+              </div><br>
 							<div class="form-group">
               Username*:
-								<input id="username" type="text" class="form-control"/>
+								<input id="username" v-model="userr.username" type="text" class="form-control" disabled />
 							Bio:
-							<input id="bio" type="text" class="form-control"/>
+							<input id="bio" type="text" v-model="userr.description"  class="form-control" style="width:15%" disabled />
               </div>
+							<br>
 							<div class="form-group">
 								Email*:
-								<input id="email" type="email" class="form-control"/>
+								<input id="email"  v-model="userr.email" type="email" class="form-control" disabled />
 								Phone number*:
-								<input id="phone" type="text" minlength="10" maxlength="10" name="txtEmpPhone" class="form-control"/>
-							</div>
+								<input id="phone" v-model="userr.phoneNumber"  type="text" minlength="10" maxlength="10" name="txtEmpPhone" class="form-control" disabled />
+							</div><br>
 							<div class="form-group date" id="from-datepicker">
 								Date of birth:
-								<input id="date" type="text" minlength="10" maxlength="10" class="form-control"/>
+								<input id="date" v-model="userr.dateOfBirth" type="text" minlength="10" maxlength="10" class="form-control" disabled />
 							Web site:
-								<input id="website" type="text" class="form-control"/>
-							</div>
+								<input id="website"  v-model="userr.website" type="text"  class="form-control" style="width:170px" disabled />
+							</div><br>
               <div class="form-group">
 								<div class="maxl">
 									<label class="radio inline"> 
-										<input v-on:click="Gander('m')" id="male" type="radio" name="gender" value="male" checked>
+										<input v-on:click="Gander('m')" id="male" type="radio" name="gender" value="male" checked disabled >
 										<span> Male </span> 
 									</label>
 									<label class="radio inline"> 
-										<input v-on:click="Gander('f')" id="female" type="radio" name="gender" value="female">
+										<input v-on:click="Gander('f')" id="female" type="radio" name="gender" value="female" disabled >
 										<span>Female </span> 
 									</label>
 								</div><br>
 							<input type="submit" class="btnRegister"  value="Edit" v-on:click="Edit()"/>
+							<input type="submit" id="save" class="btnRegister"  value="Save" v-on:click="Save()" hidden/>
               <br>
               <br>
 						<a style="color:red" v-for="e in error" :key="e">
@@ -47,10 +49,10 @@
 						</a>	
 						</div><br>
 					</div>
-  </div>
 </template>
 
 <script>
+const axios=require('axios')
 
 export default {
   name: 'EditProfile',
@@ -59,15 +61,147 @@ export default {
   data: function () {
 		return {
 			error:[],
-			log:false
+			log:false,
+			userr:null,
+			userDto:{}
+
 		}
 	},
+	beforeMount(){
+
+		axios({
+            method: "get",
+            url:  'http://localhost:8080/api/user/getMyPersonalData/11'// + this.username,
+        }).then(response => {
+              if(response.status==200){
+                this.userr = response.data;
+				alert(this.userr.password)
+				if(response.data.gender=='FEMALE')
+				document.getElementById("female").checked=true
+			else
+				document.getElementById("male").checked=true
+              }
+            })
+		
+	// 	axios
+    //     .get('http://localhost:8080/api/user/getMyPersonalData/5',{
+	// 		headers: {
+    //     "Access-Control-Allow-Origin" : "*",
+    //     "Allow": "GET",
+    //     "Content-type": "Application/json",
+	// 	"Mode":"no-cors"
+    // }})
+    //     .then(response => {
+    //         this.userr = response.data
+	// 		alert(this.userr.name)
+    //     })
+    //     .catch(error => {
+    //         alert(error)
+    //     })
+	
+	// fetch('http://localhost:8080/api/user/getMyPersonalData/5', {
+    //     method: "GET",
+    //     headers: { "Content-Type": "application/json", "Accept": "application/json" },
+    //     mode:"no-cors",
+	// 	dataType: "json"
+    //   })
+    // .then(response => {alert(response.main)})
+	// .then(data => {alert(data)})
+	// //alert(this.userr)
+	// this.$http.get('http://localhost:8080/api/user/getMyPersonalData/5')
+	// .then(function(response){
+	// 	console.log(response.data)
+	// 	this.userr = response.data
+	// 	alert(this.userr)
+	// })
+	},
+	
   methods: {
-				Edit(){
+		Save(){
+			document.getElementById("name").disabled=true;
+            document.getElementById("surname").disabled=true;
+            document.getElementById("username").disabled=true;
+            document.getElementById("bio").disabled=true;
+            document.getElementById("email").disabled=true;
+            document.getElementById("phone").disabled=true;
+            document.getElementById("date").disabled=true;
+            document.getElementById("website").disabled=true;
+            document.getElementById("male").disabled=true;
+            document.getElementById("female").disabled=true;
+			this.userDto.name = document.getElementById("name").value,
+			this.userDto.surname = document.getElementById("surname").value,
+			this.userDto.dateOfBirth = document.getElementById("date").value,
+			this.userDto.email = document.getElementById("email").value,
+			this.userDto.username = document.getElementById("username").value,
+			this.userDto.password = this.userr.password,
+			alert(this.userDto.password)
+			alert(this.userr.password)
+			this.userDto.phoneNumber = document.getElementById("phone").value,
+			this.userDto.description = document.getElementById("bio").value,
+			this.userDto.website = document.getElementById("website").value,
+			
+			this.userDto.isVerified=this.userr.isVerified;
+			this.userDto.isPrivate=this.userr.isPrivate;
+			this.userDto.acceptingMessage=this.userr.acceptingMessage;
+			this.userDto.acceptingTag=this.userr.acceptingMessage;
+			this.userDto.userType=this.userr.userType;
+ 
+			if(document.getElementById("male").checked == true)
+            this.userDto.gender="MALE";
+			else 
+			this.userDto.gender="FEMALE";
+
+
+			document.getElementById("save").hidden=true;
+				fetch("http://localhost:8080/api/user/changeMyPersonalData/11",{
+			body:  JSON.stringify(this.userDto),
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			mode:"no-cors"
+		})
+			.then(
+				this.userr = this.userDto
+			)  
+		
+		// axios({
+        //         method: "post",
+        //         url: 'http://localhost:8080/api/user/changeMyPersonalData/5', //+ this.profileId,
+        //         //headers: comm.getHeader(),
+		// 		body:  JSON.stringify(this.userDto),
+        //     }).then(response => {
+        //       if (response.status==200){
+        //           alert('Success');
+        //       }
+        //     })
+
+		// 	axios({
+        //     method: "put",
+        //     url: "http://localhost:8080/api/user/changeMyPersonalData/10"// + this.username,
+        // }).then(response => {
+        //       if(response.status==200){
+        //         this.userr = response.data;
+		// 		alert(this.userr.name)
+		// 		if(response.data.gender=='FEMALE')
+		// 		document.getElementById("female").checked=true
+		// 	else
+		// 		document.getElementById("male").checked=true
+        //       }
+        //     })
+		},
+		Edit(){
 			this.Reset()
-			if(this.Validation()){
-				//poziv
-			}
+			document.getElementById("name").disabled=false;
+            document.getElementById("surname").disabled=false;
+            document.getElementById("username").disabled=false;
+            document.getElementById("bio").disabled=false;
+            document.getElementById("email").disabled=false;
+            document.getElementById("phone").disabled=false;
+            document.getElementById("date").disabled=false;
+            document.getElementById("website").disabled=false;
+            document.getElementById("male").disabled=false;
+            document.getElementById("female").disabled=false;
+			document.getElementById("save").hidden=false;
+
 		},
 		Validation(){
 			var r=true
@@ -140,17 +274,16 @@ export default {
   margin-left: 0%;
 }
 .form-control{
- width: 30%;
+
 }
 .btnRegister{
     border: none;
     border-radius: 1.5rem;
     padding: 2%;
-    background: #3f3c44;
+    background: #4608d6; 
     color: #fff;
     width: 20%;
     cursor: pointer;
-	margin: 3%;
 }
 
 .divs{
@@ -159,13 +292,5 @@ export default {
     background: -webkit-linear-gradient(left, #eeeef5, #fcfeff);
     margin-left: 3%;
     margin-right: 3%;
-}
-
-.centar{
-	margin-left:40%;
-}
-
-.radio{
-	margin: 3%;
 }
 </style>
