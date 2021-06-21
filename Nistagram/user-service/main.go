@@ -49,13 +49,15 @@ func initHandler(service *service.RegisteredUserService) *handler.RegisteredUser
 }
 func handleFunc(handler *handler.RegisteredUserHandler) {
 	router := mux.NewRouter().StrictSlash(true)
+	//headers := handler.A
 
 	//router.HandleFunc("/", handler.Hello).Methods("GET")
 	//router.HandleFunc("/", handler.CreateConsumer).Methods("POST")
 	//router.HandleFunc("/verify/{consumerId}", handler.Verify).Methods("GET")
 	router.HandleFunc("/userRegistration/", handler.CreateRegisteredUser).Methods("POST")
 	router.HandleFunc("/getMyPersonalData/{id}", handler.GetMyPersonalData).Methods("GET")
-	router.HandleFunc("/changeMyPersonalData/{id}", handler.ChangePersonalData).Methods("PUT")
+	router.HandleFunc("/changeMyPersonalData/{id}", handler.ChangePersonalData).Methods("POST")
+	router.HandleFunc("/getAccountByUsername/{username}", handler.GetAccountByUsername).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), router))
 }
