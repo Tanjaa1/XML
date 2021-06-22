@@ -176,7 +176,7 @@ export default {
 				document.getElementById("name").style.borderColor="Red"
 				r=false
 			}else{
-				if(document.getElementById("name").value[0].match('[A-Z]'))
+				if(! document.getElementById("name").value[0].match('[A-Z]'))
         this.error.push('The name may contain only letters');
       }
 
@@ -184,7 +184,7 @@ export default {
 				document.getElementById("surname").style.borderColor="Red"
 				r=false
 			}else{
-				if(document.getElementById("surname").value[0].match('[A-Z]'))
+				if(!document.getElementById("surname").value[0].match('[A-Z]'))
         this.error.push('The surname may contain only letters');
       }
 			if(document.getElementById("password1").value==""){
@@ -227,7 +227,7 @@ export default {
 				document.getElementById("username").style.borderColor="Red"
 				r=false
 			}else{
-				if(document.getElementById("username").value[0].match('[A-Z]'))
+				if(!document.getElementById("username").value[0].match('[A-Z]'))
         this.error.push('The username may contain only letters');
       }
 			if(this.error==[]) return true

@@ -40,8 +40,10 @@
 										<span>Female </span> 
 									</label>
 								</div><br>
-							<input type="submit" class="btnRegister"  value="Edit" v-on:click="Edit()"/>
+							<input type="submit" id="edit" class="btnRegister"  value="Edit" v-on:click="Edit()"/>
 							<input type="submit" id="save" class="btnRegister"  value="Save" v-on:click="Save()" hidden/>
+							<input type="submit" id="back" class="btnRegister"  value="Back" v-on:click="Back()" hidden/>
+
               <br>
               <br>
 						<a style="color:red" v-for="e in error" :key="e">
@@ -71,7 +73,7 @@ export default {
 
 		axios({
             method: "get",
-            url:  'http://localhost:8080/api/user/getMyPersonalData/11'// + this.username,
+            url:  'http://localhost:8080/api/user/getMyPersonalData/20'// + this.username,
         }).then(response => {
               if(response.status==200){
                 this.userr = response.data;
@@ -134,8 +136,7 @@ export default {
 			this.userDto.email = document.getElementById("email").value,
 			this.userDto.username = document.getElementById("username").value,
 			this.userDto.password = this.userr.password,
-			alert(this.userDto.password)
-			alert(this.userr.password)
+			
 			this.userDto.phoneNumber = document.getElementById("phone").value,
 			this.userDto.description = document.getElementById("bio").value,
 			this.userDto.website = document.getElementById("website").value,
@@ -153,7 +154,7 @@ export default {
 
 
 			document.getElementById("save").hidden=true;
-				fetch("http://localhost:8080/api/user/changeMyPersonalData/11",{
+				fetch("http://localhost:8080/api/user/changeMyPersonalData/20",{
 			body:  JSON.stringify(this.userDto),
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
@@ -201,60 +202,77 @@ export default {
             document.getElementById("male").disabled=false;
             document.getElementById("female").disabled=false;
 			document.getElementById("save").hidden=false;
+			document.getElementById("back").hidden=false;
+			document.getElementById("edit").hidden=true;
 
 		},
-		Validation(){
+			Validation(){
 			var r=true
 
 			if(document.getElementById("name").value==""){
 				document.getElementById("name").style.borderColor="Red"
 				r=false
-			}else
-				this.Latters(document.getElementById("name").value)
+			}else{
+				if(!document.getElementById("name").value[0].match('[A-Z]'))
+        this.error.push('The name may contain only letters');
+      }
 
 			if(document.getElementById("surname").value==""){
 				document.getElementById("surname").style.borderColor="Red"
 				r=false
-			}else
-				this.Latters(document.getElementById("surname").value)
+			}else{
+				if(!document.getElementById("surname").value[0].match('[A-Z]'))
+        this.error.push('The surname may contain only letters');
+      }
 
 			if(document.getElementById("email").value==""){
 				document.getElementById("email").style.borderColor="Red"
 				r=false
-			}
+			}else{
+        if(!document.getElementById("email").value.match('@gmail.com' || '@uns.ac.rs' || '@hotmail.com' || '@yahoo.com' )){
+          
+        this.error.push('Email form not valid!');
+        }
+      }
 
 			if(document.getElementById("phone").value==""){
 				document.getElementById("phone").style.borderColor="Red"
 				r=false
-			}
+			}else{
+        if(!document.getElementById("phone").value.match('[0-1]'))
+          this.error.push('The phone number may contain only numbers!');
+      }
 			if(document.getElementById("date").value==""){
 				document.getElementById("date").style.borderColor="Red"
 				r=false
-			}
+			}else{
+        if(!document.getElementById("date").value[2].match('/') || !document.getElementById("date").value[5].match('/'))
+          this.error.push('Pleace put valid date form!');
+      }
 
 			if(document.getElementById("username").value==""){
 				document.getElementById("username").style.borderColor="Red"
 				r=false
-			}else
-				this.Latters(document.getElementById("username").value)
-
+			}else{
+				if(!document.getElementById("username").value[0].match('[A-Z]'))
+        this.error.push('The username may contain only letters');
+      }
 			if(this.error==[]) return true
 			else return r
 
-		},
-		Latters(str){		
-			let nameMatch = str.match('[A-Za-z ]*');
-			if (nameMatch != str) this.error.push('The name may contain only letters');
-			else if (str[0].match('[A-Z]') === null) this.error.push('The name must begin with a capital letter');
 		},
 		Password(p1,p2){
 			if(p1!=p2) this.error.push('Please confirm your password!')
 		},
 		Gander(g){
-			if(g=='f')
-				document.getElementById("male").checked=false
-			else
-				document.getElementById("female").checked=false
+			if(g=='f') {
+        document.getElementById("male").checked = false
+      }
+			else{
+        document.getElementById("female").checked=false
+
+      }
+
 		},
 		Reset(){
 			this.e=[]
