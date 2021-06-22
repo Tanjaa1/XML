@@ -1,20 +1,19 @@
 <template>
   <div class="register container divs">
-    <h3 class="word">Log in</h3>
+        <h3 class="word">Log in</h3><br><br>
       <div class="row">
         <div class="col-md-6">
           <div class="form-group">
-            <input id="logusername" type="text" class="form-control" placeholder="Username *" value="" />
-          </div><br>
-          <div class="form-group">
+            <input id="logusername" type="text" class="form-control" placeholder="Username *" value="" /><br>
             <input id="logpassword" type="password" class="form-control" placeholder="Password *" value="" />
           </div><br>
               <a style="color:red" v-for="e in error" :key="e">
 									{{e}}
 							</a><br>
-      </div>
+                            
           <input type="submit" class="btnRegister"  value="Log in" v-on:click="Login()"/><br><br>
-          <label><small>Don't have an account?<a href="">Registration</a></small></label>          
+          <label><small>Don't have an account?<a href="">Registration</a></small></label>  
+      </div>        
       </div>
   </div>
 </template>
@@ -47,8 +46,8 @@ export default {
 .register{
     margin-top: 3%;
     padding: 3%;
-    margin-left: 10%;
-    margin-right: 10%;
+    min-height: 750px;
+    text-align: center;
 }
 .divs{
     border-radius: 1.5rem;
@@ -113,17 +112,15 @@ export default {
     border: none;
     border-radius: 1.5rem;
     padding: 2%;
-    background: #4608d6;
+    background: #55556a;
     color: #fff;
     width: 20%;
     cursor: pointer;
-    
-  margin-left: 1%;
 }
 .register .nav-tabs{
     margin-top: 3%;
     border: none;
-    background: #0062cc;
+    background: #55556a;
     border-radius: 1.5rem;
     width: 28%;
     float: right;
@@ -154,10 +151,12 @@ export default {
 }
 
 .word{
-    color: #4608d6;;
+    color: #55556a;;
     font-weight: bold;
 }
-.form-control{
-  margin-left: 1%;
+
+.row{
+  margin-left: 40%;
 }
+
 </style>

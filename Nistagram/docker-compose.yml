@@ -63,6 +63,8 @@ services:
       - backend
     environment:
       PORT: ${POST_SERVICE_PORT}
+    volumes:
+      - ./post-service/files:/go/app/files
 
   message-service:
     image: message-service:compose_build

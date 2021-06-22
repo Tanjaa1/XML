@@ -1,22 +1,37 @@
 package model
 
 import (
-	"github.com/google/uuid"
-	"time"
+	"gorm.io/gorm"
 )
 
 type Post struct {
-	ID                        uuid.UUID          `json:"id"`
-	Content                   []string			 `json:"content" gorm:"not null"`
-	CreateDate                time.Time          `json:"createDate" gorm:"not null"`
-	Comments                  []Comment          `json:"comments"`                    // da li da ostane ili ne?????
-	Likes                     []int              `json:"likes"`
-	Dislikes                  []int              `json:"dislikes"`
-	UserId                    int                `json:"userId" gorm:"not null"`
-	TagsIdLink                []int              `json:"tagsIdLink"`
-	HashTagsId                []int              `json:"hashTagsId"`
-	LocationId                int                `json:"locationId"`
+	gorm.Model
+	Images                   []Image			 `json:"images" gorm:"many2many:images_posts;"`
+	Comments                  []Comment          `json:"comments" gorm:"many2many:comments_posts;"`
+	UserId                    int                `json:"userId"`
 	Description               string             `json:"description"`
-	CollectionIdList          []int              `json:"collectionIdList"`
+	//Likes                     []int              `json:"likes"`
+	//Dislikes                  []int              `json:"dislikes"`
+	TagsLink                  []Link             `json:"tagsLink" gorm:"many2many:tagsLink_posts;"`
+	HashTags                  []Hashtag          `json:"hashTags" gorm:"many2many:hashTags_posts;"`
+	Location                  Location           `json:"location" gorm:"foreignKey:ID"`
+	//SeenBy                    []int			     `json:"seenBy" gorm:"not null"`
+	CloseFriends              bool               `json:"closeFriends"`
+}
 
+type PostType int
+const (
+	POST PostType = iota
+	STORY
+)
+
+type Image struct {
+	gorm.Model
+	Filename        string    `json:"filename"`
+	Filepath        string    `json:"filepath"`
+}
+
+
+func (post *Post) AddHashtag(item Hashtag){
+	post.HashTags = append(post.HashTags, item)
 }
