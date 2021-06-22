@@ -205,6 +205,20 @@ export default {
 			document.getElementById("back").hidden=false;
 			document.getElementById("edit").hidden=true;
 
+		},Back(){
+			document.getElementById("name").disabled=true;
+            document.getElementById("surname").disabled=true;
+            document.getElementById("username").disabled=true;
+            document.getElementById("bio").disabled=true;
+            document.getElementById("email").disabled=true;
+            document.getElementById("phone").disabled=true;
+            document.getElementById("date").disabled=true;
+            document.getElementById("website").disabled=true;
+            document.getElementById("male").disabled=true;
+            document.getElementById("female").disabled=true;
+			document.getElementById("save").hidden=true;
+			document.getElementById("back").hidden=true;
+			document.getElementById("edit").hidden=false;
 		},
 			Validation(){
 			var r=true
