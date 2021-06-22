@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -14,6 +16,9 @@ import (
 	"user-service/repository"
 	"user-service/service"
 )
+
+var mySigningKey = []byte("mysupersecretkey")
+
 
 func initDB() *gorm.DB {
 	time.Sleep(time.Duration(20) *time.Second)
@@ -36,6 +41,59 @@ func initDB() *gorm.DB {
 
 }
 
+func IsAuthorized(handler http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		if r.Header["Token"] == nil {
+			fmt.Println("TOKEN JE NIL")
+			err := ((http.StatusUnauthorized))
+			json.NewEncoder(w).Encode(err)
+			return
+		}
+
+
+		token, err := jwt.Parse(r.Header["Token"][0], func(token *jwt.Token) (interface{}, error) {
+			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, fmt.Errorf("There was an error in parsing")
+			}
+			return mySigningKey, nil
+		})
+
+
+		if err != nil {
+			fmt.Println(err)
+			err := ((http.StatusUnauthorized))
+			json.NewEncoder(w).Encode(err)
+			return
+		}
+
+		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+			if claims["role"] == "admin" {
+
+				r.Header.Set("Role", "admin")
+				handler.ServeHTTP(w, r)
+				return
+
+			} else if claims["role"] == "user" {
+
+				r.Header.Set("Role", "user")
+				handler.ServeHTTP(w, r)
+				return
+			} else
+			{
+				r.Header.Set("Role", "user")
+				handler.ServeHTTP(w, r)
+				return
+			}
+
+			fmt.Println("ULOGA")
+
+		}
+
+		json.NewEncoder(w).Encode((http.StatusUnauthorized))
+	}
+}
+
 func initRepo(database *gorm.DB) *repository.RegisteredUserRepository {
 	return &repository.RegisteredUserRepository{Database: database}
 }
@@ -54,13 +112,17 @@ func handleFunc(handler *handler.RegisteredUserHandler) {
 	//router.HandleFunc("/", handler.Hello).Methods("GET")
 	//router.HandleFunc("/", handler.CreateConsumer).Methods("POST")
 	//router.HandleFunc("/verify/{consumerId}", handler.Verify).Methods("GET")
-	router.HandleFunc("/userRegistration/", handler.CreateRegisteredUser).Methods("POST")
-	router.HandleFunc("/getMyPersonalData/{id}", handler.GetMyPersonalData).Methods("GET")
-	router.HandleFunc("/changeMyPersonalData/{id}", handler.ChangePersonalData).Methods("POST")
-	router.HandleFunc("/getAccountByUsername/{username}", handler.GetAccountByUsername).Methods("GET")
+
+	router.HandleFunc("/login/{username}/{password}", handler.Login).Methods("GET")
+	router.HandleFunc("/userRegistration/",  IsAuthorized( IsAuthorized( IsAuthorized( IsAuthorized(handler.CreateRegisteredUser)).Methods("POST")
+	router.HandleFunc("/getMyPersonalData/{id}",  IsAuthorized( IsAuthorized( IsAuthorized(handler.GetMyPersonalData)).Methods("GET")
+	router.HandleFunc("/changeMyPersonalData/{id}",  IsAuthorized( IsAuthorized(handler.ChangePersonalData)).Methods("POST")
+  router.HandleFunc("/getAccountByUsername/{username}",  IsAuthorized(handler.GetAccountByUsername)).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), router))
 }
+
+
 
 func main() {
 	database := initDB()

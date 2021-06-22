@@ -70,6 +70,14 @@ func (repo *RegisteredUserRepository) GetRegisteredUserByID(id uint) (*model.Reg
 	return registeredUser, nil
 }
 
+
+func (repo *RegisteredUserRepository) GetRegisteredUserByUsername(username string) (*model.Account, error) {
+	registeredUser := &model.Account{}
+	repo.Database.Model(&registeredUser)
+	repo.Database.First(&registeredUser,"username = ?" , username)
+	return registeredUser, nil
+}
+
 func (repo *RegisteredUserRepository) UpdateRegisterUser(registeredUser *model.RegisteredUser) error {
 	err := repo.Database.Save(registeredUser.Account).Error
 	if err == nil {

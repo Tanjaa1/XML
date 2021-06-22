@@ -2,11 +2,10 @@ package main
 
 import (
 	"fmt"
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 	"os"
-
-	"github.com/gorilla/mux"
 
 	"gorm.io/gorm"
 
@@ -15,6 +14,7 @@ import (
 	"user-request-service/repository"
 	"user-request-service/service"
 )
+
 
 func initDB() *gorm.DB {
 	//database, err := gorm.Open(sqlite.Open("consumers.db"), &gorm.Config{})
