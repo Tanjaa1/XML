@@ -33,6 +33,23 @@ func (handler *PostHandler) SearchHashtag(w http.ResponseWriter, r *http.Request
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&result)
 }
+func (handler *PostHandler) SearchLocation(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	result, err := handler.Service.SearchLocation(vars["name"])
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+	if result !=nil {
+		w.WriteHeader(http.StatusOK)
+	}else{
+		w.WriteHeader(http.StatusOK)
+
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&result)
+}
+
 func (handler *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request){
 	fmt.Println("creating post ****************************************************")
 	//filename,filepath :=uploadFile(w,r)

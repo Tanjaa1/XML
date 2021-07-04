@@ -71,6 +71,12 @@ func (repo *RegisteredUserRepository) GetRegisteredUserByID(id uint) (*model.Reg
 }
 
 
+func (repo *RegisteredUserRepository) ProfileSearch(name string)  ([] model.Account, error) {
+	var listResult []model.Account
+	result:=repo.Database.Table("accounts").Find(&listResult,"username like ?",name)
+	return listResult,result.Error
+}
+
 func (repo *RegisteredUserRepository) GetRegisteredUserByUsername(username string) (*model.Account, error) {
 	registeredUser := &model.Account{}
 	repo.Database.Model(&registeredUser)

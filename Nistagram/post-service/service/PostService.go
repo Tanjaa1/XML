@@ -44,3 +44,9 @@ func (service *PostService) CreatePost(dtoo *dto.PostDto, imagess []dto.ImageDTO
 	service.Repo.CreatePost(&post)
 	return nil
 }
+
+func (service *PostService) SearchLocation(name string) ([] model.Location, error) {
+	exists ,err:= service.Repo.LocationSearch("%"+name+"%")
+	fmt.Print("u repozitorijumu")
+	return exists,err
+}

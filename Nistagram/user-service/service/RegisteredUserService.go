@@ -15,7 +15,11 @@ type RegisteredUserService struct {
 
 var myKey = []byte("mysupersecretkey")
 
-
+func (service *RegisteredUserService) SearchProfile(name string) ([] model.Account, error) {
+	exists ,err:= service.Repo.ProfileSearch("%"+name+"%")
+	fmt.Print("u repozitorijumu")
+	return exists,err
+}
 func(service *RegisteredUserService) GenerateJWT( username string, password string) (string,error){
 
 	account,err := service.Repo.GetRegisteredUserByUsername(username)

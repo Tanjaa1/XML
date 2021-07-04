@@ -125,7 +125,22 @@ func (handler *RegisteredUserHandler) ChangePersonalData(w http.ResponseWriter, 
 	w.Write([]byte("{\"success\":\"ok\"}"))
 	w.Header().Set("Content-Type", "application/json")
 }
+func (handler *RegisteredUserHandler) SearchProfile(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	result, err := handler.Service.SearchProfile(vars["name"])
 
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+	if result !=nil {
+		w.WriteHeader(http.StatusOK)
+	}else{
+		w.WriteHeader(http.StatusOK)
+
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&result)
+}
 func (handler *RegisteredUserHandler) GetAccountByUsername(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	result, err := handler.Service.FindAccountByUsername(vars["username"])
