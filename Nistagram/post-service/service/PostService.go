@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"post-service/dto"
 	"post-service/model"
 	"post-service/repository"
@@ -9,7 +10,11 @@ import (
 type PostService struct {
 	Repo *repository.PostRepository
 }
-
+func (service *PostService) SearchHashtag(name string) ([] model.Hashtag, error) {
+	exists ,err:= service.Repo.TagSearch("%"+name+"%")
+	fmt.Print("u repozitorijumu")
+	return exists,err
+}
 func (service *PostService) CreatePost(dtoo *dto.PostDto, imagess []dto.ImageDTO) error {
 
 	var images []model.Image

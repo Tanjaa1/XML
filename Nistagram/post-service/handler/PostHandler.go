@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"github.com/gorilla/mux"
 	//"encoding/json"
 	"fmt"
 	"io"
@@ -16,6 +17,22 @@ type PostHandler struct {
 	Service *service.PostService
 }
 
+func (handler *PostHandler) SearchHashtag(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	result, err := handler.Service.SearchHashtag(vars["name"])
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+	if result !=nil {
+		w.WriteHeader(http.StatusOK)
+	}else{
+		w.WriteHeader(http.StatusOK)
+
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&result)
+}
 func (handler *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request){
 	fmt.Println("creating post ****************************************************")
 	//filename,filepath :=uploadFile(w,r)
@@ -89,6 +106,8 @@ func (handler *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request){
 	w.WriteHeader(http.StatusCreated)
 	w.Header().Set("Content-Type", "application/json")
 }
+
+
 
 //func uploadFile(w http.ResponseWriter, r *http.Request) (filename string, path string) {
 //	r.ParseMultipartForm(1 << 2)

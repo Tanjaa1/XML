@@ -21,7 +21,6 @@ func (handler *ConsumerHandler) Hello(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("%d %v\n", i, addr)
 	}
 }
-
 func (handler *ConsumerHandler) CreateConsumer(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("creating")
 	var consumer model.Comment

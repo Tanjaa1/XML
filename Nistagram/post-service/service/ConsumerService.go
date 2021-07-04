@@ -15,6 +15,7 @@ func (service *ConsumerService) CreateConsumer(consumer *model.Comment) error {
 	return nil
 }
 
+
 func (service *ConsumerService) UserExists(consumerId string) (bool, error) {
 	id, err := uuid.Parse(consumerId)
 	if err != nil {

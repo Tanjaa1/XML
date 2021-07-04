@@ -21,3 +21,9 @@ func (repo *PostRepository) CreatePost(post *model.Post) error {
 	}
 }
 
+func (repo *PostRepository) TagSearch(name string)  ([] model.Hashtag, error) {
+	var listResult []model.Hashtag
+	result:=repo.Database.Table("hashtags").Find(&listResult,"name like ?",name)
+
+	return listResult,result.Error
+}
