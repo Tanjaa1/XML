@@ -3,6 +3,7 @@ package repository
 import (
 	"fmt"
 	"gorm.io/gorm"
+	"post-service/dto"
 	"post-service/model"
 )
 
@@ -48,9 +49,15 @@ func (repo *PostRepository) GetPostByLocation()  ([] model.Post, error) {
 	return listResult,result.Error
 }
 
-func (repo *PostRepository) GetPostByHashtag(idR string)  ([] model.Post, error) {
+func (repo *PostRepository) GetPostByHashtag(idH string)  ([] model.Post, error) {
 	var listResult []model.Post
-	result := repo.Database.Preload("Post").First(&listResult, "hashtag_id = ?", idR);
+	var Pom model.Post
+	var res []dto.PostHashtag
+	result := repo.Database.Table("hash_tags_posts").Find(&res,"hashtag_id like ?",idH)
+	for itt := range res{
+		repo.Database.Table("posts").Find(&Pom,"id like ?",res[itt].Post)
+		listResult=append(listResult, Pom)
+	}
 	if len(listResult)==0{
 		return listResult,nil
 	}

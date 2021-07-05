@@ -38,3 +38,8 @@ type LocationDTO struct {
 	City                      string             `json:"city"`
 	Country                   string             `json:"country"`
 }
+
+type PostHashtag struct {
+	Post uint `json:"post_id"`
+	Hashtag uint `json:"hashtag_id"`
+}

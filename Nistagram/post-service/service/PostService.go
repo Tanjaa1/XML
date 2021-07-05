@@ -65,7 +65,6 @@ func (service *PostService) GetPostByLocation(idR string) ([] model.Post, error)
 	var result [] model.Post
 
 	for item := range exists{
-		fmt.Println(strings.Compare(strconv.FormatUint(uint64(exists[item].Location.ID), 10),idR)==0)
 		if strings.Compare(strconv.FormatUint(uint64(exists[item].Location.ID), 10),idR)==0{
 			result=append(result, exists[item])
 		}
@@ -75,5 +74,16 @@ func (service *PostService) GetPostByLocation(idR string) ([] model.Post, error)
 
 func (service *PostService) GetPostByHashtag(idR string) ([] model.Post, error) {
 	exists ,err:= service.Repo.GetPostByHashtag(idR)
+	//var result [] model.Post
+	//
+	//for item := range exists{
+	//	for item2 := range exists[item].HashTags{
+	//		fmt.Println(exists[item].HashTags[item2].ID)
+	//		if strings.Compare(strconv.FormatUint(uint64(exists[item].HashTags[item2].ID), 10),idR)==0{
+	//			result=append(result, exists[item])
+	//			continue
+	//		}
+	//	}
+	//}
 	return exists,err
 }
