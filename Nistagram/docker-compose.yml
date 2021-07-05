@@ -63,6 +63,8 @@ services:
       - backend
     environment:
       PORT: ${POST_SERVICE_PORT}
+    volumes:
+      - ./post-service/files:/go/app/files
 
   message-service:
     image: message-service:compose_build
@@ -93,6 +95,9 @@ services:
         - backend
       environment:
         PORT: ${ADMIN_REQUEST_SERVICE_PORT}
+
+
+
 
   db_relational:
     container_name: db_mysql

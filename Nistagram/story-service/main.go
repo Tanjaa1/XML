@@ -23,14 +23,14 @@ func initDB() *gorm.DB {
 	}
 	database.AutoMigrate(&model.Story{})
 
-	/*Loading test data*/
-	consumers := []model.Story{
-		{Content: "sdfghjk"},
-		{Content: "asdfghjk"},
-	}
-	for _, consumer := range consumers {
-		database.Create(&consumer)
-	}
+	///*Loading test data*/
+	//consumers := []model.Story{
+	//	{Content: "sdfghjk"},
+	//	{Content: "asdfghjk"},
+	//}
+	//for _, consumer := range consumers {
+	//	database.Create(&consumer)
+	//}
 	return database
 }
 
@@ -56,9 +56,9 @@ func handleFunc(handler *handler.ConsumerHandler) {
 }
 
 func main() {
-	database := initDB()
-	repo := initRepo(database)
-	service := initServices(repo)
-	handler := initHandler(service)
-	handleFunc(handler)
+	//database := initDB()
+	//repo := initRepo(database)
+	//service := initServices(repo)
+	//handler := initHandler(service)
+	//handleFunc(handler)
 }

@@ -1,14 +1,13 @@
 package model
 
 import (
-	"github.com/google/uuid"
 	"time"
 )
 
 type Story struct {
-	ID                        uuid.UUID          `json:"id"`
-	SeenBy                    []int			     `json:"seenBy" gorm:"not null"`
-	Content                   string             `json:"content" gorm:"not null"`
+	//ID                        uuid.UUID          `json:"id"`
+	//SeenBy                    []int			     `json:"seenBy" gorm:"not null"`
+	//Content                   string             `json:"content" gorm:"not null"`
 	CloseFriends              bool               `json:"closeFriends" gorm:"not null"`
 	TagsIdLink                []int              `json:"tags"`
 	LinkId                    int                `json:"link"`
