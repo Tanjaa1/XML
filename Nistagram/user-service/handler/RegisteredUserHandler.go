@@ -21,10 +21,25 @@ type RegisteredUserHandler struct {
 //	}
 //}
 
+func (handler *RegisteredUserHandler) Login(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+   	username := vars["username"]
+	password := vars["password"]
+
+	validToken,err := handler.Service.GenerateJWT(username,password)
+
+	if err != nil{
+		fmt.Fprintf(w,err.Error())
+	}
+
+	fmt.Fprintf(w,validToken)
+}
+
 func setupCorsResponse(w *http.ResponseWriter, req *http.Request) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "*")
 	(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Authorization")
+
 }
 
 func (handler *RegisteredUserHandler) CreateRegisteredUser(w http.ResponseWriter, r *http.Request) {
@@ -53,6 +68,8 @@ func (handler *RegisteredUserHandler) CreateRegisteredUser(w http.ResponseWriter
 	w.WriteHeader(http.StatusCreated)
 	w.Header().Set("Content-Type", "application/json")
 }
+
+
 
 func (handler *RegisteredUserHandler) GetMyPersonalData(w http.ResponseWriter, r *http.Request) {
 	//data, err := handler.Service.GetMyPersonalData(util.GetLoggedUserIDFromToken(r))

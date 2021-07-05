@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
 	"gorm.io/driver/mysql"
 	"io"
 	"log"
@@ -23,6 +24,9 @@ import (
 	"post-service/repository"
 	"post-service/service"
 )
+
+var mySigningKey = []byte("mysupersecretkey")
+
 
 func initDB() *gorm.DB {
 	time.Sleep(time.Duration(20) *time.Second)
@@ -58,6 +62,61 @@ func initServices(repo *repository.PostRepository) *service.PostService {
 func initHandler(service *service.PostService) *handler.PostHandler {
 	return &handler.PostHandler{Service: service}
 }
+
+func IsAuthorized(handler http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		if r.Header["Authorization"] == nil {
+			fmt.Println("TOKEN JE NIL")
+			err := ((http.StatusUnauthorized))
+			json.NewEncoder(w).Encode(err)
+			return
+		}
+
+
+		token, err := jwt.Parse(r.Header["Authorization"][0], func(token *jwt.Token) (interface{}, error) {
+			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, fmt.Errorf("There was an error in parsing")
+			}
+			return mySigningKey, nil
+		})
+
+
+		if err != nil {
+			fmt.Println(err)
+			err := ((http.StatusUnauthorized))
+			json.NewEncoder(w).Encode(err)
+			return
+		}
+
+		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+			if claims["role"] == "admin" {
+
+				r.Header.Set("Role", "admin")
+				handler.ServeHTTP(w, r)
+				return
+
+			} else if claims["role"] == "user" {
+
+				r.Header.Set("Role", "user")
+				handler.ServeHTTP(w, r)
+				return
+			} else
+			{
+				r.Header.Set("Role", "user")
+				handler.ServeHTTP(w, r)
+				return
+			}
+
+			fmt.Println("ULOGA")
+
+		}
+
+		json.NewEncoder(w).Encode((http.StatusUnauthorized))
+	}
+}
+
+
 func handleFunc(handler *handler.PostHandler) {
 	router := mux.NewRouter().StrictSlash(true)
 
@@ -65,7 +124,7 @@ func handleFunc(handler *handler.PostHandler) {
 	//router.HandleFunc("/", handler.CreateConsumer).Methods("POST")
 	//router.HandleFunc("/verify/{consumerId}", handler.Verify).Methods("GET")
 
-	router.HandleFunc("/upload", handler.CreatePost).Methods("POST")
+	router.HandleFunc("/upload",handler.CreatePost).Methods("POST")
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), router))
 }
