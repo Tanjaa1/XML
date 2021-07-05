@@ -28,11 +28,11 @@ func setupCorsResponse(w *http.ResponseWriter, req *http.Request) {
 }
 
 func (handler *RegisteredUserHandler) CreateRegisteredUser(w http.ResponseWriter, r *http.Request) {
-	(w).Header().Set("Access-Control-Allow-Origin", "*")
-	(w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-	(w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-
-	w.Header().Set("Content-Type","application/json")
+	//(w).Header().Set("Access-Control-Allow-Origin", "*")
+	//(w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	//(w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+	//
+	//w.Header().Set("Content-Type","application/json")
 	fmt.Println("creating")
 	var registeredUser dto.RequestRegisteredUser
 	fmt.Println(r.Body)
@@ -44,13 +44,13 @@ func (handler *RegisteredUserHandler) CreateRegisteredUser(w http.ResponseWriter
 	}
 	fmt.Println("prosao decoder")
 	fmt.Println(registeredUser.Account)
-	errr := handler.Service.CreateRegisteredUser(&registeredUser)
-	if errr == nil {
-		fmt.Println(errr)
-		w.WriteHeader(http.StatusCreated)
+	err = handler.Service.CreateRegisteredUser(&registeredUser)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusExpectationFailed)
 		return
 	}
-	w.WriteHeader(http.StatusExpectationFailed)
+	w.WriteHeader(http.StatusCreated)
 	w.Header().Set("Content-Type", "application/json")
 }
 

@@ -40,7 +40,7 @@
 </template>
 
 <script>
-//import axios from "axios";
+import axios from "axios";
 
 
 export default {
@@ -107,32 +107,46 @@ export default {
       if(this.Validation()){
         
 
-        fetch("http://localhost:8080/api/user/userRegistration/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(this.registeredUser),
-        mode:"no-cors"
-      })
-            .then(//(response) => {
-              //alert(response.value)
-            //if(response.status == 201){
-              alert("User created")
-            // }else{
-            //   alert("Username not unique")
-            // }
-          )//})
+      //   fetch("http://localhost:8080/api/user/userRegistration/", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify(this.registeredUser),
+      //   mode:"no-cors"
+      // })
+      //       .then(//(response) => {
+      //         //alert(response.value)
+      //       //if(response.status == 201){
+      //         alert("User created")
+      //       // }else{
+      //       //   alert("Username not unique")
+      //       // }
+      //     )//})
           
           //  axios({
           //       method: "post",
           //       url: 'http://localhost:8080/api/user/userRegistration/',
           //       headers: {"Content-Type": "application/json", "crossDomain": true,"Access-Control-Allow-Origin": "*", "mode":"no-cors", credentials:"include"},
           //        data: JSON.stringify(this.registeredUser)
-          //    })//.then(response => {
-            //   alert(response)
-            //   // if (response.status==200){
-            //   //     alert('Success');
-            //   //}
-            // })
+          //    }).then(response => {
+          //     alert(response)
+          //      if (response.status==200){
+          //          alert('Success');
+          //     }
+          //   })
+
+            axios
+                .post("http://localhost:8080/api/user/userRegistration", this.registeredUser)
+                .then(response => {
+                  if (response.status==201){
+                    alert('Successful registration');
+                  }
+              })
+               .catch(error => {
+                // print(error.status == 417)
+                if(error == "Error: Request failed with status code 417"){
+                   alert("Usename and email mast be unique")
+                  }
+                })
 
             // axios
             //     .post('http://localhost:8080/api/user/userRegistration/', this.registeredUser, {
