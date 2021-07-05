@@ -5,6 +5,8 @@ import (
 	"post-service/dto"
 	"post-service/model"
 	"post-service/repository"
+	"strconv"
+	"strings"
 )
 
 type PostService struct {
@@ -17,6 +19,7 @@ func (service *PostService) SearchHashtag(name string) ([] model.Hashtag, error)
 }
 func (service *PostService) CreatePost(dtoo *dto.PostDto, imagess []dto.ImageDTO) error {
 
+	
 	var images []model.Image
 	for _, item := range imagess {
 		images = append(images, model.Image{Filename: item.Filename, Filepath: item.Filepath})
@@ -48,5 +51,29 @@ func (service *PostService) CreatePost(dtoo *dto.PostDto, imagess []dto.ImageDTO
 func (service *PostService) SearchLocation(name string) ([] model.Location, error) {
 	exists ,err:= service.Repo.LocationSearch("%"+name+"%")
 	fmt.Print("u repozitorijumu")
+	return exists,err
+}
+
+func (service *PostService) GetPostByRegisterUser(idR string) ([] model.Post, error) {
+	exists ,err:= service.Repo.GetPostByRegisterUser(idR)
+	fmt.Print("u repozitorijumu")
+	return exists,err
+}
+
+func (service *PostService) GetPostByLocation(idR string) ([] model.Post, error) {
+	exists ,err:= service.Repo.GetPostByLocation()
+	var result [] model.Post
+
+	for item := range exists{
+		fmt.Println(strings.Compare(strconv.FormatUint(uint64(exists[item].Location.ID), 10),idR)==0)
+		if strings.Compare(strconv.FormatUint(uint64(exists[item].Location.ID), 10),idR)==0{
+			result=append(result, exists[item])
+		}
+	}
+	return result,err
+}
+
+func (service *PostService) GetPostByHashtag(idR string) ([] model.Post, error) {
+	exists ,err:= service.Repo.GetPostByHashtag(idR)
 	return exists,err
 }

@@ -136,6 +136,8 @@ func (service *RegisteredUserService) FindAccountByUsername(username string) (bo
 	return false, nil
 }
 
+
+
 //func (service *ConsumerService) UserExists(consumerId string) (bool, error) {
 //	id, err := uuid.Parse(consumerId)
 //	if err != nil {

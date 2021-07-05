@@ -49,7 +49,52 @@ func (handler *PostHandler) SearchLocation(w http.ResponseWriter, r *http.Reques
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&result)
 }
+func (handler *PostHandler) GetPostByLocation(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	result, err := handler.Service.GetPostByLocation(vars["locationId"])
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+	}
+	if result !=nil {
+		w.WriteHeader(http.StatusOK)
+	}else{
+		w.WriteHeader(http.StatusOK)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&result)
+}
+func (handler *PostHandler) GetPostByHashtag(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	result, err := handler.Service.GetPostByHashtag(vars["hashtagId"])
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+	if result !=nil {
+		w.WriteHeader(http.StatusOK)
+	}else{
+		w.WriteHeader(http.StatusOK)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&result)
+}
 
+func (handler *PostHandler) GetPostByRegisterUser(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	result, err := handler.Service.GetPostByRegisterUser(vars["idR"])
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+	if result !=nil {
+		w.WriteHeader(http.StatusOK)
+	}else{
+		w.WriteHeader(http.StatusOK)
+
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&result)
+}
 func (handler *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request){
 	fmt.Println("creating post ****************************************************")
 	//filename,filepath :=uploadFile(w,r)

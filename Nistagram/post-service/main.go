@@ -68,6 +68,9 @@ func handleFunc(handler *handler.PostHandler) {
 	router.HandleFunc("/upload", handler.CreatePost).Methods("POST")
 	router.HandleFunc("/searchHashtag/{name}", handler.SearchHashtag).Methods("GET")
 	router.HandleFunc("/searchLocation/{name}", handler.SearchLocation).Methods("GET")
+	router.HandleFunc("/getPostByRegisterUser/{idR}", handler.GetPostByRegisterUser).Methods("GET")
+	router.HandleFunc("/getPostByLocation/{locationId}", handler.GetPostByLocation).Methods("GET")
+	router.HandleFunc("/getPostByHashtags/{hashtagId}", handler.GetPostByHashtag).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), router))
 }

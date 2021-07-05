@@ -117,7 +117,7 @@ func handleFunc(handler *handler.RegisteredUserHandler) {
 	router.HandleFunc("/userRegistration/", handler.CreateRegisteredUser).Methods("POST")
 	router.HandleFunc("/getMyPersonalData/{id}",   IsAuthorized(handler.GetMyPersonalData)).Methods("GET")
 	router.HandleFunc("/changeMyPersonalData/{id}",  IsAuthorized(handler.ChangePersonalData)).Methods("POST")
-  router.HandleFunc("/getAccountByUsername/{username}",  IsAuthorized(handler.GetAccountByUsername)).Methods("GET")
+  	router.HandleFunc("/getAccountByUsername/{username}",  IsAuthorized(handler.GetAccountByUsername)).Methods("GET")
 	router.HandleFunc("/searchProfile/{name}", handler.SearchProfile).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), router))
