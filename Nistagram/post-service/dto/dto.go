@@ -43,3 +43,16 @@ type PostHashtag struct {
 	Post uint `json:"post_id"`
 	Hashtag uint `json:"hashtag_id"`
 }
+
+type PostComment struct {
+	Post uint `json:"post_id"`
+	Comment uint `json:"comment_id"`
+}
+type PostImages struct {
+	Post uint `json:"post_id"`
+	Image uint `json:"image_id"`
+}
+type PostTags struct {
+	Post uint `json:"post_id"`
+	Tag uint `json:"tag_id"`
+}

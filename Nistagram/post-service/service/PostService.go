@@ -87,3 +87,20 @@ func (service *PostService) GetPostByHashtag(idR string) ([] model.Post, error) 
 	//}
 	return exists,err
 }
+
+func (service *PostService) GetCommentsByPostId(idR string) ([] model.Comment, error) {
+	exists ,err:= service.Repo.GetCommentsByPostId(idR)
+	return exists,err
+}
+func (service *PostService) GetImagesByPostId(idR string) ([] model.Image, error) {
+	exists ,err:= service.Repo.GetImagesByPostId(idR)
+	return exists,err
+}
+func (service *PostService) GetTagsByPostId(idR string) ([] model.Link, error) {
+	exists ,err:= service.Repo.GetTagsByPostId(idR)
+	return exists,err
+}
+func (service *PostService) GetHashtagsByPostId(idR string) ([] model.Hashtag, error) {
+	exists ,err:= service.Repo.GetHashtagsByPostId(idR)
+	return exists,err
+}

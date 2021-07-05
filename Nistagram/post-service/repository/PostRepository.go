@@ -63,3 +63,63 @@ func (repo *PostRepository) GetPostByHashtag(idH string)  ([] model.Post, error)
 	}
 	return listResult,result.Error
 }
+
+func (repo *PostRepository) GetCommentsByPostId(idH string)  ([] model.Comment, error) {
+	var listResult []model.Comment
+	var Pom model.Comment
+	var res []dto.PostComment
+	result := repo.Database.Table("comments_posts").Find(&res,"post_id like ?",idH)
+	for itt := range res{
+		repo.Database.Table("comments").Find(&Pom,"id like ?",res[itt].Comment)
+		listResult=append(listResult, Pom)
+	}
+	if len(listResult)==0{
+		return listResult,nil
+	}
+	return listResult,result.Error
+}
+
+func (repo *PostRepository) GetImagesByPostId(idH string)  ([] model.Image, error) {
+	var listResult []model.Image
+	var Pom model.Image
+	var res []dto.PostImages
+	result := repo.Database.Table("images_posts").Find(&res,"post_id like ?",idH)
+	for itt := range res{
+		repo.Database.Table("images").Find(&Pom,"id like ?",res[itt].Image)
+		listResult=append(listResult, Pom)
+	}
+	if len(listResult)==0{
+		return listResult,nil
+	}
+	return listResult,result.Error
+}
+
+func (repo *PostRepository) GetTagsByPostId(idH string)  ([] model.Link, error) {
+	var listResult []model.Link
+	var Pom model.Link
+	var res []dto.PostTags
+	result := repo.Database.Table("tags_link_posts").Find(&res,"post_id like ?",idH)
+	for itt := range res{
+		repo.Database.Table("comments").Find(&Pom,"id like ?",res[itt].Tag)
+		listResult=append(listResult, Pom)
+	}
+	if len(listResult)==0{
+		return listResult,nil
+	}
+	return listResult,result.Error
+}
+
+func (repo *PostRepository) GetHashtagsByPostId(idH string)  ([] model.Hashtag, error) {
+	var listResult []model.Hashtag
+	var Pom model.Hashtag
+	var res []dto.PostHashtag
+	result := repo.Database.Table("hash_tags_posts").Find(&res,"post_id like ?",idH)
+	for itt := range res{
+		repo.Database.Table("hashtags").Find(&Pom,"id like ?",res[itt].Hashtag)
+		listResult=append(listResult, Pom)
+	}
+	if len(listResult)==0{
+		return listResult,nil
+	}
+	return listResult,result.Error
+}

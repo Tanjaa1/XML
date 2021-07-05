@@ -72,6 +72,11 @@ func handleFunc(handler *handler.PostHandler) {
 	router.HandleFunc("/getPostByLocation/{locationId}", handler.GetPostByLocation).Methods("GET")
 	router.HandleFunc("/getPostByHashtags/{hashtagId}", handler.GetPostByHashtag).Methods("GET")
 
+	router.HandleFunc("/getCommentsByPostId/{postId}", handler.GetCommentsByPostId).Methods("GET")
+	router.HandleFunc("/getImagesByPostId/{postId}", handler.GetImagesByPostId).Methods("GET")
+	router.HandleFunc("/getTagsByPostId/{postId}", handler.GetTagsByPostId).Methods("GET")
+	router.HandleFunc("/getHashtagsByPostId/{postId}", handler.GetHashtagsByPostId).Methods("GET")
+
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), router))
 }
 
