@@ -21,3 +21,13 @@ func (repo *PostRepository) CreatePost(post *model.Post) error {
 	}
 }
 
+func (repo *PostRepository) CreateCollection(collection *model.Collection) error {
+	result := repo.Database.Create(collection)
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("Post not created")
+	}else{
+		fmt.Println("Post created")
+		return  nil
+	}
+}
+

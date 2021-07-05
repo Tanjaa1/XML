@@ -38,3 +38,9 @@ type LocationDTO struct {
 	City                      string             `json:"city"`
 	Country                   string             `json:"country"`
 }
+
+type CollectionDTO struct {
+	Name                      string			 `json:"name"`
+	UserId                    int                `json:"userId"`
+	Posts                     []int              `json:"posts"`
+}

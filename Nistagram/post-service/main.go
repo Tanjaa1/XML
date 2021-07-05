@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gorilla/handlers"
 	"gorm.io/driver/mysql"
 	"io"
 	"log"
@@ -30,7 +31,7 @@ var mySigningKey = []byte("mysupersecretkey")
 
 func initDB() *gorm.DB {
 	time.Sleep(time.Duration(20) *time.Second)
-	dsn := "root:root@tcp(host.docker.internal:3306)/mydb?parseTime=True&charset=utf8&autocommit=false"
+	dsn := "root:root@tcp(host.docker.internal:3306)/mydb3?parseTime=True&charset=utf8&autocommit=false"
 	//dsn := "root:root@tcp(127.0.0.1:3306)/mydb?parseTime=True&charset=utf8&autocommit=false"
 	database, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
@@ -44,6 +45,10 @@ func initDB() *gorm.DB {
 	database.AutoMigrate(&model.Link{})
 	database.AutoMigrate(&model.Collection{})
 	database.AutoMigrate(&model.Comment{})
+	database.AutoMigrate(&model.PostIdList{})
+
+	//database.Migrator().CreateConstraint(&model.Collection{}, "postList")
+	//database.Migrator().CreateConstraint(&model.Collection{}, "fk_collections_posts")
 
 	database.AutoMigrate(&model.Post{},&model.Location{})
 
@@ -119,14 +124,19 @@ func IsAuthorized(handler http.HandlerFunc) http.HandlerFunc {
 
 func handleFunc(handler *handler.PostHandler) {
 	router := mux.NewRouter().StrictSlash(true)
-
+	headers := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization", "Access-Control-Allow-Headers", "text/plain"})
+	methods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"})
+	origins := handlers.AllowedOrigins([]string{"http://localhost:8081"})
+	credential := handlers.AllowCredentials()
+	h := handlers.CORS(headers, methods, origins, credential)
 	//router.HandleFunc("/", handler.Hello).Methods("GET")
 	//router.HandleFunc("/", handler.CreateConsumer).Methods("POST")
 	//router.HandleFunc("/verify/{consumerId}", handler.Verify).Methods("GET")
 
 	router.HandleFunc("/upload",handler.CreatePost).Methods("POST")
+	router.HandleFunc("/createCollection",handler.CreateCollection).Methods("POST")
 
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), router))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), h(router)))
 }
 //--------------------------------------------------------------------------------------------------------------
 type Imgpath struct {
