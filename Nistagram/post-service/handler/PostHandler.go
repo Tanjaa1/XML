@@ -138,6 +138,37 @@ func (handler *PostHandler) AddIntoCollection(w http.ResponseWriter, r *http.Req
 	w.Header().Set("Content-Type", "application/json")
 }
 
+func (handler *PostHandler) AddComment(w http.ResponseWriter, r *http.Request){
+
+	var dto dto.CommentDTO
+	err := json.NewDecoder(r.Body).Decode(&dto)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	vars := mux.Vars(r)
+	id := vars["id"]
+	fmt.Println("Ispisuje se id")
+	fmt.Println(id)
+	id2,err := strconv.ParseInt(id, 10, 64)
+	if err != nil{
+		fmt.Println(err)
+	}
+	id3 := int(id2)
+
+	fmt.Println("creating")
+	err = handler.Service.AddComment(&dto,id3)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusExpectationFailed)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+}
+
 //func uploadFile(w http.ResponseWriter, r *http.Request) (filename string, path string) {
 //	r.ParseMultipartForm(1 << 2)
 //	file, handler, err := r.FormFile("file")

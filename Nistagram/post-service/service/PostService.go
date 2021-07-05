@@ -121,3 +121,15 @@ func (service *PostService) AddIntoCollection(postId int, collectionName string)
 		service.Repo.AddIntoCollection(result)
 		return nil
 }
+
+func (service *PostService) AddComment(dtoo *dto.CommentDTO, postId int) error {
+
+	result,_ := service.Repo.GetPostById(postId)
+	//var posts []model.PostIdList
+
+	result.Comments = append(result.Comments, model.Comment{Content: dtoo.Content, AuthorIdLink: dtoo.AuthorIdLink})
+	//collection := model.Collection{Name: result.Name, UserId: result.UserId, Posts: result.}
+
+	service.Repo.AddComment(result)
+	return nil
+}

@@ -136,6 +136,7 @@ func handleFunc(handler *handler.PostHandler) {
 	router.HandleFunc("/upload",handler.CreatePost).Methods("POST")
 	router.HandleFunc("/createCollection",handler.CreateCollection).Methods("POST")
 	router.HandleFunc("/addIntoCollection/{id}/{name}",handler.AddIntoCollection).Methods("POST")
+	router.HandleFunc("/addComment/{id}",handler.AddComment).Methods("POST")
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), h(router)))
 }

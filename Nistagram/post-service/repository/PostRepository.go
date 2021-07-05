@@ -46,3 +46,31 @@ func (repo *PostRepository) GetCollectionByName(name string) (*model.Collection,
 	return collection, nil
 }
 
+func (repo *PostRepository) GetPostById(id int) (*model.Post, error) {
+	post := &model.Post{}
+	repo.Database.Model(&post)
+	//repo.Database.First(&collection,"name = ?" , name)
+	err := repo.Database.Preload("Images").Preload("Comments").Preload("TagsLink").Preload("HashTags").Preload("Location").First(&post, "ID = ?", id).Error
+	fmt.Println("Images: ")
+	fmt.Println( len(post.Images))
+	fmt.Println("Comments:")
+	fmt.Println(len(post.Comments))
+	fmt.Println("tAgsLink:")
+	fmt.Println(len(post.TagsLink))
+	fmt.Println("Hashtags:")
+	fmt.Println(len(post.HashTags))
+	fmt.Println("LoCATION")
+	fmt.Println(post.Location.Place)
+	if err != nil{
+		return nil,err
+	}
+	return post, nil
+}
+
+func (repo *PostRepository) AddComment(post *model.Post) error {
+	err := repo.Database.Save(post).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
