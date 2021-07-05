@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"post-service/dto"
 	"post-service/model"
 	"post-service/repository"
@@ -90,17 +91,33 @@ func (service *PostService) CreateCollection(dtoo *dto.CollectionDTO) error {
 	//	posts = append(posts, model.Post{Images: images,Comments: comments,UserId: dtoo.UserId,Description: item.Description,
 	//		TagsLink: links,HashTags: hashtags,Location: location, CloseFriends: false})
 	//}
-	var posts []model.PostIdList
-	for _,s := range dtoo.Posts {
-		posts = append(posts, model.PostIdList{PostId:s})
+	result,_ := service.Repo.GetCollectionByName(dtoo.Name)
+	if result == nil {
+		var posts []model.PostIdList
+		for _, s := range dtoo.Posts {
+			posts = append(posts, model.PostIdList{PostId: s})
+		}
+		//var posts []int
+		//for _,s := range dtoo.Posts {
+		//	posts = append(posts, s)
+		//}
+
+		collection := model.Collection{Name: dtoo.Name, UserId: dtoo.UserId, Posts: posts}
+
+		service.Repo.CreateCollection(&collection)
+		return nil
 	}
-	//var posts []int
-	//for _,s := range dtoo.Posts {
-	//	posts = append(posts, s)
-	//}
+	return fmt.Errorf("collection with this name already exists")
+}
 
-	collection := model.Collection{Name: dtoo.Name,UserId: dtoo.UserId, Posts: posts}
+func (service *PostService) AddIntoCollection(postId int, collectionName string) error {
 
-	service.Repo.CreateCollection(&collection)
-	return nil
+	result,_ := service.Repo.GetCollectionByName(collectionName)
+	//var posts []model.PostIdList
+
+	result.Posts = append(result.Posts, model.PostIdList{PostId: postId})
+	//collection := model.Collection{Name: result.Name, UserId: result.UserId, Posts: result.}
+
+		service.Repo.AddIntoCollection(result)
+		return nil
 }

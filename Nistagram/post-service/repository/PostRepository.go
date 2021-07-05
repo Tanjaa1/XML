@@ -31,3 +31,18 @@ func (repo *PostRepository) CreateCollection(collection *model.Collection) error
 	}
 }
 
+func (repo *PostRepository) AddIntoCollection(collection *model.Collection) error {
+		err := repo.Database.Save(collection).Error
+		if err != nil {
+			return err
+		}
+		return nil
+}
+
+func (repo *PostRepository) GetCollectionByName(name string) (*model.Collection, error) {
+	collection := &model.Collection{}
+	repo.Database.Model(&collection)
+	repo.Database.First(&collection,"name = ?" , name)
+	return collection, nil
+}
+
