@@ -70,7 +70,9 @@ func (service *RegisteredUserService) GetMyPersonalData(userId uint) (dto.MyProf
 	if err != nil {
 		return dto.MyProfileDTO{}, err
 	}
+	fmt.Println("Pol korisnika:")
 	account := registeredUser.Account
+	fmt.Println(model.ConvertGenderToString(account.Gender))
 	ret := dto.MyProfileDTO{Username: account.Username,Password: account.Password,Name: account.Name, Surname: account.Surname,
 		Email: account.Email, PhoneNumber: account.PhoneNumber, Gender: model.ConvertGenderToString(account.Gender),
 		DateOfBirth: "treba uraditi"/*account.DateOfBirth*/, Description: registeredUser.Description,

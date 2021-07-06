@@ -17,6 +17,7 @@ type Post struct {
 	Location                  Location           `json:"location" gorm:"foreignKey:ID"`
 	//SeenBy                    []int			     `json:"seenBy" gorm:"not null"`
 	CloseFriends              bool               `json:"closeFriends"`
+	PostType                  PostType			 `json:"postType"`
 }
 
 type PostType int
@@ -34,4 +35,21 @@ type Image struct {
 
 func (post *Post) AddHashtag(item Hashtag){
 	post.HashTags = append(post.HashTags, item)
+}
+
+
+func ConvertPostType(postTypeString string)(postType PostType) {
+	if postTypeString == "POST" {
+		return POST
+	}else {
+		return STORY
+	}
+}
+
+func ConvertPostTypeToString(postType PostType)(postTypeString string) {
+	if postType == POST {
+		return "POST"
+	}else {
+		return "STORY"
+	}
 }

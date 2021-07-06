@@ -12,6 +12,7 @@ type PostDto struct {
 	Location                  LocationDTO        `json:"location"`
 	//SeenBy                    []int			     `json:"seenBy" gorm:"not null"`
 	CloseFriends              bool               `json:"closeFriends"`
+	PostType                  string			 `json:"postType"`
 }
 
 type ImageDTO struct {

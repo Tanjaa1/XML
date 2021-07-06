@@ -71,19 +71,33 @@ export default {
 	},
 	beforeMount(){
 
-		axios({
-            method: "get",
-            url:  'http://localhost:8080/api/user/getMyPersonalData/20'// + this.username,
-        }).then(response => {
-              if(response.status==200){
-                this.userr = response.data;
-				alert(this.userr.password)
-				if(response.data.gender=='FEMALE')
-				document.getElementById("female").checked=true
-			else
-				document.getElementById("male").checked=true
-              }
-            })
+		// axios({
+        //     method: "get",
+        //     url:  'http://localhost:8080/api/user/getMyPersonalData/20'// + this.username,
+        // }).then(response => {
+        //       if(response.status==200){
+        //         this.userr = response.data;
+		// 		alert(this.userr.password)
+		// 		if(response.data.gender=='FEMALE')
+		// 		document.getElementById("female").checked=true
+		// 	else
+		// 		document.getElementById("male").checked=true
+        //       }
+        //     })
+
+			axios
+                .get("http://localhost:8080/api/user/getMyPersonalData/20")
+                .then(response => {
+                  if (response.status==200){
+					this.userr = response.data
+					if(response.data.gender=='FEMALE'){
+						document.getElementById("female").checked=true
+					}else
+						document.getElementById("male").checked=true
+                }
+              })
+
+			
 		
 	// 	axios
     //     .get('http://localhost:8080/api/user/getMyPersonalData/5',{
@@ -154,15 +168,30 @@ export default {
 
 
 			document.getElementById("save").hidden=true;
-				fetch("http://localhost:8080/api/user/changeMyPersonalData/20",{
-			body:  JSON.stringify(this.userDto),
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			mode:"no-cors"
-		})
-			.then(
-				this.userr = this.userDto
-			)  
+		// 		fetch("http://localhost:8080/api/user/changeMyPersonalData/20",{
+		// 	body:  JSON.stringify(this.userDto),
+		// 	method: "POST",
+		// 	headers: { "Content-Type": "application/json" },
+		// 	mode:"no-cors"
+		// })
+		// 	.then(
+		// 		this.userr = this.userDto
+		// 	)  
+
+			axios
+                .post("http://localhost:8080/api/user/changeMyPersonalData/20", this.userDto)
+                .then(response => {
+                  if (response.status==200){
+                    alert('Successful');
+					this.userr = this.userDto
+                  }
+              })
+               .catch(error => {
+                // print(error.status == 417)
+                if(error == "Error: Request failed with status code 400"){
+                   alert("Error")
+                  }
+                })
 		
 		// axios({
         //         method: "post",

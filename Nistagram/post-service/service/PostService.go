@@ -35,7 +35,7 @@ func (service *PostService) CreatePost(dtoo *dto.PostDto, imagess []dto.ImageDTO
 	}
 
 	post := model.Post{Images: images,Comments: comments,UserId: dtoo.UserId,Description: dtoo.Description,
-		TagsLink: links,HashTags: hashtags,Location: location, CloseFriends: false}
+		TagsLink: links,HashTags: hashtags,Location: location, CloseFriends: false, PostType: model.ConvertPostType(dtoo.PostType)}
 
 	service.Repo.CreatePost(&post)
 	return nil
