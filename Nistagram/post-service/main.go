@@ -42,6 +42,7 @@ func initDB() *gorm.DB {
 	database.AutoMigrate(&model.Comment{})
 
 	database.AutoMigrate(&model.Post{},&model.Location{})
+	database.AutoMigrate(&model.Post{},&model.Hashtag{})
 
 	return database
 

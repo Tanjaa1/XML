@@ -42,7 +42,8 @@ func (repo *PostRepository) GetPostByRegisterUser(idR string)  ([] model.Post, e
 
 func (repo *PostRepository) GetPostByLocation()  ([] model.Post, error) {
 	var listResult []model.Post
-	result := repo.Database.Exec("Select * from posts").Find(&listResult);
+	result := repo.Database.Preload("Location").Exec("Select * from posts").Find(&listResult);
+	fmt.Println("repooo")
 	if len(listResult)==0{
 		return listResult,nil
 	}
@@ -55,12 +56,14 @@ func (repo *PostRepository) GetPostByHashtag(idH string)  ([] model.Post, error)
 	var res []dto.PostHashtag
 	result := repo.Database.Table("hash_tags_posts").Find(&res,"hashtag_id like ?",idH)
 	for itt := range res{
-		repo.Database.Table("posts").Find(&Pom,"id like ?",res[itt].Post)
-		listResult=append(listResult, Pom)
+		repo.Database.Preload("Location").Find(&Pom,"id like ?",res[itt].Post)
+		//repo.Database.First(&Pom, "id = ?", res[itt].Post)
+		//listResult=append(listResult, Pom)
+		fmt.Println(Pom.ID)
 	}
-	if len(listResult)==0{
-		return listResult,nil
-	}
+	//if len(listResult)==0{
+	//	return listResult,nil
+	//}
 	return listResult,result.Error
 }
 
@@ -70,7 +73,8 @@ func (repo *PostRepository) GetCommentsByPostId(idH string)  ([] model.Comment, 
 	var res []dto.PostComment
 	result := repo.Database.Table("comments_posts").Find(&res,"post_id like ?",idH)
 	for itt := range res{
-		repo.Database.Table("comments").Find(&Pom,"id like ?",res[itt].Comment)
+		//repo.Database.Table("comments").Find(&Pom,"id like ?",res[itt].Comment)
+		repo.Database.Preload("Comment").Exec("Select * from comments where id like ?",res[itt].Comment).Find(&Pom);
 		listResult=append(listResult, Pom)
 	}
 	if len(listResult)==0{
@@ -85,7 +89,9 @@ func (repo *PostRepository) GetImagesByPostId(idH string)  ([] model.Image, erro
 	var res []dto.PostImages
 	result := repo.Database.Table("images_posts").Find(&res,"post_id like ?",idH)
 	for itt := range res{
-		repo.Database.Table("images").Find(&Pom,"id like ?",res[itt].Image)
+		//repo.Database.Table("images").Find(&Pom,"id like ?",res[itt].Image)
+		repo.Database.Preload("Image").Exec("Select * from images where id like ?",res[itt].Image).Find(&Pom);
+
 		listResult=append(listResult, Pom)
 	}
 	if len(listResult)==0{
@@ -100,7 +106,9 @@ func (repo *PostRepository) GetTagsByPostId(idH string)  ([] model.Link, error) 
 	var res []dto.PostTags
 	result := repo.Database.Table("tags_link_posts").Find(&res,"post_id like ?",idH)
 	for itt := range res{
-		repo.Database.Table("comments").Find(&Pom,"id like ?",res[itt].Tag)
+		//repo.Database.Table("comments").Find(&Pom,"id like ?",res[itt].Tag)
+		repo.Database.Preload("Link").Exec("Select * from links where id like ?",res[itt].Tag).Find(&Pom);
+
 		listResult=append(listResult, Pom)
 	}
 	if len(listResult)==0{
@@ -113,9 +121,13 @@ func (repo *PostRepository) GetHashtagsByPostId(idH string)  ([] model.Hashtag, 
 	var listResult []model.Hashtag
 	var Pom model.Hashtag
 	var res []dto.PostHashtag
+	fmt.Print("repozitorijum")
+
 	result := repo.Database.Table("hash_tags_posts").Find(&res,"post_id like ?",idH)
 	for itt := range res{
-		repo.Database.Table("hashtags").Find(&Pom,"id like ?",res[itt].Hashtag)
+		//repo.Database.Table("hashtags").Find(&Pom,"id like ?",res[itt].Hashtag)
+		repo.Database.Preload("HashTag").Exec("Select * from hashtags where id like ?",res[itt].Hashtag).Find(&Pom);
+
 		listResult=append(listResult, Pom)
 	}
 	if len(listResult)==0{

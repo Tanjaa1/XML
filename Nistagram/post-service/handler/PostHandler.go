@@ -77,6 +77,7 @@ func (handler *PostHandler) GetPostByHashtag(w http.ResponseWriter, r *http.Requ
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&result)
+
 }
 
 func (handler *PostHandler) GetPostByRegisterUser(w http.ResponseWriter, r *http.Request) {
@@ -216,14 +217,22 @@ func (handler *PostHandler) GetTagsByPostId(w http.ResponseWriter, r *http.Reque
 
 func (handler *PostHandler) GetHashtagsByPostId(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
+	fmt.Print("handler0")
 	result, err := handler.Service.GetHashtagsByPostId(vars["postId"])
+	fmt.Print("handler")
+
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		fmt.Print("greska 1")
+
 	}
 	if result !=nil {
 		w.WriteHeader(http.StatusOK)
+		fmt.Print("greska 2")
+
 	}else{
 		w.WriteHeader(http.StatusOK)
+		fmt.Print("greska 3")
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&result)

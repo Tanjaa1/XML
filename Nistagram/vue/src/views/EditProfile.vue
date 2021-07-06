@@ -6,28 +6,28 @@
         
 							<div class="form-group">
 								First name*:
-								<input id="name" v-model="userr.name"   type="text" class="form-control" disabled />
+								<input id="name"  type="text" class="form-control" disabled />
 								Last name*:
-								<input id="surname"  v-model="userr.surname" type="text" class="form-control" disabled />
+								<input id="surname"   type="text" class="form-control" disabled />
               </div><br>
 							<div class="form-group">
               Username*:
-								<input id="username" v-model="userr.username" type="text" class="form-control" disabled />
+								<input id="username"  type="text" class="form-control" disabled />
 							Bio:
-							<input id="bio" type="text" v-model="userr.description"  class="form-control" style="width:15%" disabled />
+							<input id="bio" type="text"   class="form-control" style="width:15%" disabled />
               </div>
 							<br>
 							<div class="form-group">
 								Email*:
-								<input id="email"  v-model="userr.email" type="email" class="form-control" disabled />
+								<input id="email"  type="email" class="form-control" disabled />
 								Phone number*:
-								<input id="phone" v-model="userr.phoneNumber"  type="text" minlength="10" maxlength="10" name="txtEmpPhone" class="form-control" disabled />
+								<input id="phone"  type="text" minlength="10" maxlength="10" name="txtEmpPhone" class="form-control" disabled />
 							</div><br>
 							<div class="form-group date" id="from-datepicker">
 								Date of birth:
-								<input id="date" v-model="userr.dateOfBirth" type="text" minlength="10" maxlength="10" class="form-control" disabled />
+								<input id="date" type="text" minlength="10" maxlength="10" class="form-control" disabled />
 							Web site:
-								<input id="website"  v-model="userr.website" type="text"  class="form-control" style="width:170px" disabled />
+								<input id="website"   type="text"  class="form-control" style="width:170px" disabled />
 							</div><br>
               <div class="form-group">
 								<div class="maxl">
@@ -118,7 +118,7 @@ export default {
 	// })
 	},
 	
-  methods: {
+  methods: {/*
 		Save(){
 			document.getElementById("name").disabled=true;
             document.getElementById("surname").disabled=true;
@@ -296,7 +296,7 @@ export default {
 			document.getElementById("phone").style.borderColor="Black"
 			document.getElementById("date").style.borderColor="Black"
 			document.getElementById("username").style.borderColor="Black"
-		}
+		}*/
 	}
 }
 </script>

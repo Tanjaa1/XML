@@ -65,6 +65,8 @@ func (service *PostService) GetPostByLocation(idR string) ([] model.Post, error)
 	var result [] model.Post
 
 	for item := range exists{
+
+		fmt.Println(strconv.FormatUint(uint64(exists[item].Location.ID),10))
 		if strings.Compare(strconv.FormatUint(uint64(exists[item].Location.ID), 10),idR)==0{
 			result=append(result, exists[item])
 		}
@@ -102,5 +104,7 @@ func (service *PostService) GetTagsByPostId(idR string) ([] model.Link, error) {
 }
 func (service *PostService) GetHashtagsByPostId(idR string) ([] model.Hashtag, error) {
 	exists ,err:= service.Repo.GetHashtagsByPostId(idR)
+	fmt.Print("servis")
+
 	return exists,err
 }
