@@ -45,3 +45,9 @@ type CollectionDTO struct {
 	UserId                    int                `json:"userId"`
 	Posts                     []int              `json:"posts"`
 }
+
+type CollectionDTOO struct {
+	Name                      string			 `json:"name"`
+	UserId                    int                `json:"userId"`
+	Posts                     []PostDto          `json:"posts"`
+}

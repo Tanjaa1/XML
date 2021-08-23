@@ -51,16 +51,6 @@ func (repo *PostRepository) GetPostById(id int) (*model.Post, error) {
 	repo.Database.Model(&post)
 	//repo.Database.First(&collection,"name = ?" , name)
 	err := repo.Database.Preload("Images").Preload("Comments").Preload("TagsLink").Preload("HashTags").Preload("Location").First(&post, "ID = ?", id).Error
-	fmt.Println("Images: ")
-	fmt.Println( len(post.Images))
-	fmt.Println("Comments:")
-	fmt.Println(len(post.Comments))
-	fmt.Println("tAgsLink:")
-	fmt.Println(len(post.TagsLink))
-	fmt.Println("Hashtags:")
-	fmt.Println(len(post.HashTags))
-	fmt.Println("LoCATION")
-	fmt.Println(post.Location.Place)
 	if err != nil{
 		return nil,err
 	}
@@ -73,4 +63,16 @@ func (repo *PostRepository) AddComment(post *model.Post) error {
 		return err
 	}
 	return nil
+}
+
+func (repo *PostRepository) GetCollectionsByUserId(id int) ([]model.Collection, error) {
+	collections := []model.Collection{}
+	repo.Database.Model(&collections)
+	//repo.Database.First(&collection,"name = ?" , name)
+	err := repo.Database.Preload("Posts").Find(&collections, "user_id = ?", id).Error
+	if err != nil{
+		return nil,err
+	}
+	fmt.Println(len(collections))
+	return collections, nil
 }

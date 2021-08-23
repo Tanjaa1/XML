@@ -133,3 +133,50 @@ func (service *PostService) AddComment(dtoo *dto.CommentDTO, postId int) error {
 	service.Repo.AddComment(result)
 	return nil
 }
+
+func (service *PostService) GetCollectionsByUserId(userId int) ([]dto.CollectionDTOO, error) {
+	collections, err := service.Repo.GetCollectionsByUserId(userId)
+	if err != nil {
+		return []dto.CollectionDTOO{}, err
+	}
+	var result []dto.CollectionDTOO
+	var postList []dto.PostDto
+	for _,item := range collections{
+		//var post &model.Post{}
+		for _, item1 := range item.Posts {
+			post,_ := service.Repo.GetPostById(item1.PostId)
+
+			var images []dto.ImageDTO
+			for _, item2 := range post.Images {
+				images = append(images, dto.ImageDTO{Filename: item2.Filename, Filepath: item2.Filepath})
+			}
+
+			location := dto.LocationDTO{Place: post.Location.Place, City: post.Location.City, Country: post.Location.Country}
+			var hashtags []dto.HashtagDTO
+			for _, item3 := range post.HashTags {
+				hashtags = append(hashtags, dto.HashtagDTO{Name: item3.Name})
+			}
+
+			var links []dto.LinkDTO
+			for _, item4 := range post.TagsLink {
+				links = append(links, dto.LinkDTO{Name: item4.Name, LinkType: model.ConvertLinkTypeToString(item4.LinkType)})
+			}
+
+			var comments []dto.CommentDTO
+			for _, item5 := range post.Comments {
+				comments = append(comments, dto.CommentDTO{Content: item5.Content, AuthorIdLink: item5.AuthorIdLink})
+			}
+
+			postDTO := dto.PostDto{Images: images, Comments: comments, UserId: post.UserId, Description: post.Description,
+				TagsLink: links, HashTags: hashtags, Location: location, CloseFriends: false, PostType: model.ConvertPostTypeToString(post.PostType)}
+
+			postList = append(postList, postDTO)
+
+			}
+
+
+		result =  append(result, dto.CollectionDTOO{Name: item.Name, UserId: item.UserId, Posts: postList})
+	}
+
+	return result, nil
+}

@@ -31,3 +31,17 @@ func ConvertLinkType(linkTypeString string)(linkType LinkType) {
 		return HASHTAG_LINK
 	}
 }
+
+func ConvertLinkTypeToString(linkType LinkType)(linkTypeString string) {
+	if linkType == USER_LINK {
+		return "USER_LINK"
+	}else if linkType == POST_LINK{
+		return "POST_LINK"
+	}else if linkType == STORY_LINK{
+		return "STORY_LINK"
+	}else if linkType == CAMPAIGN_LINK{
+		return "CAMPAIGN_LINK"
+	}else{
+		return "HASHTAG_LINK"
+	}
+}
