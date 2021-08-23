@@ -8,10 +8,10 @@
             68Q-3 49 6 24.5T39 0h952q24 0 33 24.5t-7 43.5z"
             fill="#FFF"></path>
         </svg>
-    <transition name="fade" appear>
+    <transition name="fade" appear style="height:250px">
     <div class="sub-menu" v-if="isOpen">
         <div v-for="(item,i) in items" :key="i" class="menu-item">
-            <a href='item.link'>{{item.title}}</a>
+            <a v-on:click="Find(item)">{{item.title}}</a>
         </div>
     </div>
     </transition>
@@ -26,6 +26,11 @@ export default {
         return{
             isOpen: false
         }
+    },
+    methods:{        
+        Find(item) {
+             this.$router.push(item.link)
+        }
     }
 }
 </script>
@@ -35,7 +40,6 @@ nav .menu-item svg{
     width: 10px;
     margin-left: 10px;
 }
-
 nav .menu-item .sub-menu{
     position: absolute;
     background-color: #4c4c5a;

@@ -20,7 +20,7 @@ export default {
             services:[
                 {
                     title:'Profile',
-                    link:'#Profile'
+                    link:'Profil'
                 },
                 {
                     title:'Saved',
@@ -29,6 +29,10 @@ export default {
                 {
                     title:'Settings',
                     link:'EditProfile'
+                },
+                {
+                    title:'Activity',
+                    link:'LD'
                 },
                 {
                     title:'Log Out',

@@ -4,6 +4,10 @@ import Proba from '../views/Proba.vue'
 import Profil from '../views/Profil.vue'
 import EditProfile from '../views/EditProfile.vue'
 import Login from '../views/Login.vue'
+import VerificationRequest from '../views/VerificationRequest.vue'
+import Requests from '../views/Requests.vue'
+import LikesAndDislikes from '../views/LikesAndDislikes.vue'
+
 const routes = [
   {
     path: '/',
@@ -29,6 +33,21 @@ const routes = [
     path: '/Login',
     name: 'Login',
     component: Login
+  },
+  {
+    path: '/VerificationRequest',
+    name: 'VerificationRequest',
+    component: VerificationRequest
+  },
+  {
+    path: '/Requests',
+    name: 'Requestins',
+    component: Requests
+  },
+  {
+    path: '/LD',
+    name: 'LikesAndDislikes',
+    component: LikesAndDislikes
   },
   {
     path: '/about',
