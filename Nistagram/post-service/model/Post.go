@@ -10,8 +10,8 @@ type Post struct {
 	Comments                  []Comment          `json:"comments" gorm:"many2many:comments_posts;"`
 	UserId                    int                `json:"userId"`
 	Description               string             `json:"description"`
-	//Likes                     []int              `json:"likes"`
-	//Dislikes                  []int              `json:"dislikes"`
+	//Likes                     []Link             `json:"likes" gorm:"many2many:likes_posts;"`
+	//Dislikes                  []Link             `json:"dislikes" gorm:"many2many:dislikes_posts;"`
 	TagsLink                  []Link             `json:"tagsLink" gorm:"many2many:tagsLink_posts;"`
 	HashTags                  []Hashtag          `json:"hashTags" gorm:"many2many:hashTags_posts;"`
 	Location                  Location           `json:"location" gorm:"foreignKey:ID"`
@@ -19,6 +19,19 @@ type Post struct {
 	CloseFriends              bool               `json:"closeFriends"`
 	PostType                  PostType			 `json:"postType"`
 }
+
+type Like struct {
+	PostId            int                `json:"postId"`
+	UserId            int                `json:"userId"`
+	LikeType          LinkType           `json:"linkType"`
+
+}
+
+type LikeType int
+const (
+	LIKE LikeType = iota
+	DISLIKE
+)
 
 type PostType int
 const (

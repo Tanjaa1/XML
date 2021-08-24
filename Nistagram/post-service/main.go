@@ -46,6 +46,7 @@ func initDB() *gorm.DB {
 	database.AutoMigrate(&model.Collection{})
 	database.AutoMigrate(&model.Comment{})
 	database.AutoMigrate(&model.PostIdList{})
+	database.AutoMigrate(&model.Like{})
 
 	//database.Migrator().CreateConstraint(&model.Collection{}, "postList")
 	//database.Migrator().CreateConstraint(&model.Collection{}, "fk_collections_posts")
