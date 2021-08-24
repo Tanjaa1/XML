@@ -51,3 +51,11 @@ type CollectionDTOO struct {
 	UserId                    int                `json:"userId"`
 	Posts                     []PostDto          `json:"posts"`
 }
+
+type LikeDTO struct {
+	PostId            int                 `json:"postId"`
+	UserId            int                 `json:"userId"`
+	Username          string              `json:"username"`
+	LikeType          string              `json:"linkType"`
+
+}

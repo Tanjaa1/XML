@@ -21,9 +21,11 @@ type Post struct {
 }
 
 type Like struct {
+	gorm.Model
 	PostId            int                `json:"postId"`
 	UserId            int                `json:"userId"`
-	LikeType          LinkType           `json:"linkType"`
+	Username          string              `json:"username"`
+	LikeType          LikeType           `json:"likeType"`
 
 }
 
@@ -64,5 +66,21 @@ func ConvertPostTypeToString(postType PostType)(postTypeString string) {
 		return "POST"
 	}else {
 		return "STORY"
+	}
+}
+
+func ConvertLikeType(likeTypeString string)(likeType LikeType) {
+	if likeTypeString == "LIKE" {
+		return LIKE
+	}else {
+		return DISLIKE
+	}
+}
+
+func ConvertLikeTypeToString(likeType LikeType)(likeTypeString string) {
+	if likeType == LIKE {
+		return "LIKE"
+	}else {
+		return "DISLIKE"
 	}
 }

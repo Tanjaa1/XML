@@ -92,6 +92,10 @@ func (service *PostService) CreateCollection(dtoo *dto.CollectionDTO) error {
 	//		TagsLink: links,HashTags: hashtags,Location: location, CloseFriends: false})
 	//}
 	result,_ := service.Repo.GetCollectionByName(dtoo.Name)
+	fmt.Println("ispis name")
+	fmt.Println(dtoo.Name)
+	fmt.Println("ispis result")
+	fmt.Println(result)
 	if result == nil {
 		var posts []model.PostIdList
 		for _, s := range dtoo.Posts {
@@ -179,4 +183,72 @@ func (service *PostService) GetCollectionsByUserId(userId int) ([]dto.Collection
 	}
 
 	return result, nil
+}
+
+func (service *PostService) CreateLike(dtoo *dto.LikeDTO) error {
+
+	l, _ := service.Repo.GetLikeByUserIdAndPostId(dtoo.UserId,dtoo.PostId)
+	if l != nil {
+		if l.LikeType != model.ConvertLikeType(dtoo.LikeType){
+			l.LikeType = model.ConvertLikeType(dtoo.LikeType)
+			err1 := service.Repo.UpdateLike(l)
+			return err1
+		}else {
+			return fmt.Errorf("Like already exists")
+		}
+	}else{
+		like := model.Like{PostId: dtoo.PostId,UserId: dtoo.UserId,Username: dtoo.Username,
+			LikeType: model.ConvertLikeType(dtoo.LikeType)}
+		result := service.Repo.CreateLike(&like)
+		return result
+	}
+}
+
+func (service *PostService) GetLikeByPostId(postId int) ([]dto.LikeDTO,error) {
+
+	fmt.Println("Usao u service")
+	likes, _ := service.Repo.GetLikeByPostId(postId)
+	var likesDto []dto.LikeDTO
+	for _, item := range likes {
+		likesDto = append(likesDto, dto.LikeDTO{PostId: item.PostId, UserId: item.UserId, Username: item.Username,
+			LikeType: model.ConvertLikeTypeToString(item.LikeType)})
+	}
+
+	return likesDto,nil
+}
+
+func (service *PostService) GetPostsByUserId(userId int) ([]dto.PostDto,error) {
+
+	fmt.Println("Usao u service")
+	likes, _ := service.Repo.GetLikeByUserId(userId)
+	var postsDto []dto.PostDto
+	for _, item := range likes {
+		post,_ := service.Repo.GetPostById(item.PostId)
+
+		var images []dto.ImageDTO
+		for _, item := range post.Images {
+			images = append(images, dto.ImageDTO{Filename: item.Filename, Filepath: item.Filepath})
+		}
+
+		location := dto.LocationDTO{Place: post.Location.Place, City: post.Location.City, Country: post.Location.Country}
+
+		var hashtags []dto.HashtagDTO
+		for _, item := range post.HashTags {
+			hashtags = append(hashtags, dto.HashtagDTO{Name: item.Name})
+		}
+
+		var links []dto.LinkDTO
+		for _, item := range post.TagsLink {
+			links = append(links, dto.LinkDTO{Name: item.Name, LinkType: model.ConvertLinkTypeToString(item.LinkType)})
+		}
+
+		var comments []dto.CommentDTO
+		for _, item := range post.Comments {
+			comments = append(comments, dto.CommentDTO{Content: item.Content, AuthorIdLink: item.AuthorIdLink})
+		}
+		postsDto = append(postsDto, dto.PostDto{Images: images,Comments: comments,UserId: post.UserId,Description: post.Description,
+			TagsLink: links,HashTags: hashtags,Location: location, CloseFriends: false, PostType: model.ConvertPostTypeToString(post.PostType)})
+	}
+
+	return postsDto,nil
 }

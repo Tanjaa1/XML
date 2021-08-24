@@ -30,6 +30,7 @@ var mySigningKey = []byte("mysupersecretkey")
 
 
 func initDB() *gorm.DB {
+	fmt.Println("Usao u initDB")
 	time.Sleep(time.Duration(20) *time.Second)
 	dsn := "root:root@tcp(host.docker.internal:3306)/mydb3?parseTime=True&charset=utf8&autocommit=false"
 	//dsn := "root:root@tcp(127.0.0.1:3306)/mydb?parseTime=True&charset=utf8&autocommit=false"
@@ -37,7 +38,7 @@ func initDB() *gorm.DB {
 	if err != nil {
 		log.Fatal(err)
 	}
-	database.AutoMigrate(&Img{})
+	//database.AutoMigrate(&Img{})
 	database.AutoMigrate(&model.Post{})
 	database.AutoMigrate(&model.Image{})
 	database.AutoMigrate(&model.Hashtag{})
@@ -124,6 +125,7 @@ func IsAuthorized(handler http.HandlerFunc) http.HandlerFunc {
 
 
 func handleFunc(handler *handler.PostHandler) {
+	fmt.Println("Usao u handleFunc")
 	router := mux.NewRouter().StrictSlash(true)
 	headers := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization", "Access-Control-Allow-Headers", "text/plain"})
 	methods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"})
@@ -139,6 +141,9 @@ func handleFunc(handler *handler.PostHandler) {
 	router.HandleFunc("/addIntoCollection/{id}/{name}",handler.AddIntoCollection).Methods("POST")
 	router.HandleFunc("/addComment/{id}",handler.AddComment).Methods("POST")
 	router.HandleFunc("/GetCollectionsByUserId/{id}",handler.GetCollectionsByUserId).Methods("GET")
+	router.HandleFunc("/addLike",handler.AddLike).Methods("POST")
+	router.HandleFunc("/getLikesByPostId/{id}",handler.GetLikeByPostId).Methods("GET")
+	router.HandleFunc("/getPostsByUserId/{id}",handler.GetPostsByUserId).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), h(router)))
 }
@@ -321,6 +326,7 @@ func getimg(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	fmt.Println("Usao u main")
 	database := initDB()
 	repo := initRepo(database)
 	service := initServices(repo)

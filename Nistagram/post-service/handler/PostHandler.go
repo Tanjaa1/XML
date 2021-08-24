@@ -196,3 +196,71 @@ func (handler *PostHandler) GetCollectionsByUserId(w http.ResponseWriter, r *htt
 	//w.Header().Set("Content-Type", "application/json")
 	//json.NewEncoder(w).Encode(&result)
 }
+
+func (handler *PostHandler) AddLike(w http.ResponseWriter, r *http.Request){
+	fmt.Println("Usao u handler")
+	fmt.Println("creating")
+	var like dto.LikeDTO
+	fmt.Println(r.Body)
+	err := json.NewDecoder(r.Body).Decode(&like)
+	fmt.Println(err)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	fmt.Println("prosao decoder")
+	err = handler.Service.CreateLike(&like)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusExpectationFailed)
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
+	w.Header().Set("Content-Type", "application/json")
+}
+
+func (handler *PostHandler) GetLikeByPostId(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Usao u handler")
+	vars := mux.Vars(r)
+	id := vars["id"]
+	fmt.Println("Ispisuje se id")
+	fmt.Println(id)
+	id2,err := strconv.ParseInt(id, 10, 64)
+	if err != nil{
+		fmt.Println(err)
+	}
+	id3 := int(id2)
+	result, err := handler.Service.GetLikeByPostId(id3)
+
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(result)
+}
+
+func (handler *PostHandler) GetPostsByUserId(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Usao u handler")
+	vars := mux.Vars(r)
+	id := vars["id"]
+	fmt.Println("Ispisuje se id")
+	fmt.Println(id)
+	id2,err := strconv.ParseInt(id, 10, 64)
+	if err != nil{
+		fmt.Println(err)
+	}
+	id3 := int(id2)
+	result, err := handler.Service.GetPostsByUserId(id3)
+
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(result)
+}
