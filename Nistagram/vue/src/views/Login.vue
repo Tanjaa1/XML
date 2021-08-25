@@ -19,7 +19,6 @@
 </template>
 
 <script>
-const axios=require('axios')
 
 export default {
   name: 'Login',
@@ -32,14 +31,9 @@ export default {
 		}
 	},
   methods: {
-		Login(){
+		LogIn(){
 			if(document.getElementById("logusername").value!="" && document.getElementById("logpassword").value!=""){
-				axios({
-            method: "get",
-            url:  'http://localhost:8080/api/user/login/' +document.getElementById("logusername").value + '/' + document.getElementById("logpassword").value
-        }).then(response => {
-            alert(response.data)
-            })
+				//poziv
 			}else{
 				this.error.push('Username/password is incorrect!');
 			}

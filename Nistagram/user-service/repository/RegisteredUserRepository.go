@@ -101,6 +101,18 @@ func (repo *RegisteredUserRepository) FindAccountByUsername(username string) (bo
 	return true, nil
 }
 
+func (repo *RegisteredUserRepository) FindAccountByEmail(email string) (bool, error) {
+	fmt.Println("Ulazak u metodu za mail")
+	account := &model.Account{}
+	if err := repo.Database.First(&account, "email = ?", email).Error; err == nil {
+		fmt.Println("Ispis greske u accountu")
+		fmt.Println(err)
+		fmt.Println(account.Name)
+		return false, err
+	}
+	return true, nil
+}
+
 //func (repo *ConsumerRepository) ConsumerExists(consumerId uuid.UUID) bool {
 //	var count int64
 //	repo.Database.Where("id = ?", consumerId).Find(&model.Account{}).Count(&count)

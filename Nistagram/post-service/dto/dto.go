@@ -12,6 +12,7 @@ type PostDto struct {
 	Location                  LocationDTO        `json:"location"`
 	//SeenBy                    []int			     `json:"seenBy" gorm:"not null"`
 	CloseFriends              bool               `json:"closeFriends"`
+	PostType                  string			 `json:"postType"`
 }
 
 type ImageDTO struct {
@@ -37,4 +38,24 @@ type LocationDTO struct {
 	Place                     string             `json:"place"`
 	City                      string             `json:"city"`
 	Country                   string             `json:"country"`
+}
+
+type CollectionDTO struct {
+	Name                      string			 `json:"name"`
+	UserId                    int                `json:"userId"`
+	Posts                     []int              `json:"posts"`
+}
+
+type CollectionDTOO struct {
+	Name                      string			 `json:"name"`
+	UserId                    int                `json:"userId"`
+	Posts                     []PostDto          `json:"posts"`
+}
+
+type LikeDTO struct {
+	PostId            int                 `json:"postId"`
+	UserId            int                 `json:"userId"`
+	Username          string              `json:"username"`
+	LikeType          string              `json:"linkType"`
+
 }

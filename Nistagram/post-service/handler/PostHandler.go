@@ -2,6 +2,9 @@ package handler
 
 import (
 	"encoding/json"
+	"github.com/gorilla/mux"
+	"strconv"
+
 	//"encoding/json"
 	"fmt"
 	"io"
@@ -90,52 +93,197 @@ func (handler *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request){
 	w.Header().Set("Content-Type", "application/json")
 }
 
-//func uploadFile(w http.ResponseWriter, r *http.Request) (filename string, path string) {
-//	r.ParseMultipartForm(1 << 2)
-//	file, handler, err := r.FormFile("file")
-//	if err != nil {
-//		fmt.Println("Error Retrieving the File")
-//		fmt.Println(err)
-//		return
-//	}
-//
-//	fmt.Println("Prosao FormFile---------------------")
-//
-//	defer file.Close()
-//
-//	fmt.Printf("Uploaded File: %+v\n", handler.Filename)
-//	fmt.Printf("File Size: %+v\n", handler.Size)
-//	fmt.Printf("MIME Header: %+v\n", handler.Header)
-//
-//	//dst, err := os.OpenFile("./images/"+handler.Filename, os.O_WRONLY|os.O_CREATE, 0666)
-//	dst, err := os.Create("./files/"+handler.Filename)
-//	fmt.Println("Ispis greske******************************")
-//	fmt.Println(err)
-//	if err != nil {
-//		fmt.Println(err)
-//		return
-//	}
-//
-//	fmt.Println("Prosao Create-------------------------------------------")
-//
-//	defer dst.Close()
-//	if _, err := io.Copy(dst, file); err != nil {
-//		http.Error(w, err.Error(), http.StatusInternalServerError)
-//		return
-//	}
-//	filepat := "\\post-service\\files\\"+handler.Filename
-//	fmt.Println(filepat)
-//	//database := initDB()
-//	fmt.Println("izmedju db i insert")
-//	//var img = model.I{Filename: handler.Filename, Filepath: filepat}
-//	//fmt.Println("Ispis slike:///////////////////////////////////////////////")
-//	//fmt.Println(img)
-//	//database.Create(&img)
-//	//if err != nil {
-//	//	panic(err.Error())
-//	//}
-//	fmt.Println(handler.Filename)
-//	fmt.Println(filepat)
-//	fmt.Fprintf(w, "Successfully Uploaded File\n"+"")
-//	return handler.Filename,filepat
-//}
+func (handler *PostHandler) CreateCollection(w http.ResponseWriter, r *http.Request){
+	fmt.Println("creating")
+	var collection dto.CollectionDTO
+	fmt.Println(r.Body)
+	err := json.NewDecoder(r.Body).Decode(&collection)
+	fmt.Println(err)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	fmt.Println("prosao decoder")
+	err = handler.Service.CreateCollection(&collection)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusExpectationFailed)
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
+	w.Header().Set("Content-Type", "application/json")
+}
+
+func (handler *PostHandler) AddIntoCollection(w http.ResponseWriter, r *http.Request){
+
+	vars := mux.Vars(r)
+	id := vars["id"]
+	fmt.Println("Ispisuje se id")
+	fmt.Println(id)
+	id2,err := strconv.ParseInt(id, 10, 64)
+	if err != nil{
+		fmt.Println(err)
+	}
+	id3 := int(id2)
+
+	collectionName :=  vars["name"]
+	fmt.Println("creating")
+	err = handler.Service.AddIntoCollection(id3,collectionName)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusExpectationFailed)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+}
+
+func (handler *PostHandler) AddComment(w http.ResponseWriter, r *http.Request){
+
+	var dto dto.CommentDTO
+	err := json.NewDecoder(r.Body).Decode(&dto)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	vars := mux.Vars(r)
+	id := vars["id"]
+	fmt.Println("Ispisuje se id")
+	fmt.Println(id)
+	id2,err := strconv.ParseInt(id, 10, 64)
+	if err != nil{
+		fmt.Println(err)
+	}
+	id3 := int(id2)
+
+	fmt.Println("creating")
+	err = handler.Service.AddComment(&dto,id3)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusExpectationFailed)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+}
+
+func (handler *PostHandler) GetCollectionsByUserId(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+	fmt.Println("Ispisuje se id")
+	fmt.Println(id)
+	id2,err := strconv.ParseInt(id, 10, 64)
+	if err != nil{
+		fmt.Println(err)
+	}
+	id3 := int(id2)
+	result, err := handler.Service.GetCollectionsByUserId(id3)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&result)
+	//if result == true {
+	//	w.WriteHeader(http.StatusOK)
+	//}else{
+	//	w.WriteHeader(http.StatusOK)
+	//}
+	//w.Header().Set("Content-Type", "application/json")
+	//json.NewEncoder(w).Encode(&result)
+}
+
+func (handler *PostHandler) AddLike(w http.ResponseWriter, r *http.Request){
+	fmt.Println("Usao u handler")
+	fmt.Println("creating")
+	var like dto.LikeDTO
+	fmt.Println(r.Body)
+	err := json.NewDecoder(r.Body).Decode(&like)
+	fmt.Println(err)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	fmt.Println("prosao decoder")
+	err = handler.Service.CreateLike(&like)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusExpectationFailed)
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
+	w.Header().Set("Content-Type", "application/json")
+}
+
+func (handler *PostHandler) GetLikeByPostId(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Usao u handler")
+	vars := mux.Vars(r)
+	id := vars["id"]
+	fmt.Println("Ispisuje se id")
+	fmt.Println(id)
+	id2,err := strconv.ParseInt(id, 10, 64)
+	if err != nil{
+		fmt.Println(err)
+	}
+	id3 := int(id2)
+	result, err := handler.Service.GetLikeByPostId(id3)
+
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(result)
+}
+
+func (handler *PostHandler) GetPostsByUserId(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Usao u handler")
+	vars := mux.Vars(r)
+	id := vars["id"]
+	fmt.Println("Ispisuje se id")
+	fmt.Println(id)
+	id2,err := strconv.ParseInt(id, 10, 64)
+	if err != nil{
+		fmt.Println(err)
+	}
+	id3 := int(id2)
+	result, err := handler.Service.GetPostsByUserId(id3)
+
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(result)
+}
+
+func (handler *PostHandler) GetStoriesByUserId(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Usao u handler")
+	vars := mux.Vars(r)
+	id := vars["id"]
+	fmt.Println("Ispisuje se id")
+	fmt.Println(id)
+	id2,err := strconv.ParseInt(id, 10, 64)
+	if err != nil{
+		fmt.Println(err)
+	}
+	id3 := int(id2)
+	result, err := handler.Service.GetStoriesByUserId(id3)
+
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(result)
+}

@@ -71,19 +71,34 @@ export default {
 	},
 	beforeMount(){
 
-		axios({
-            method: "get",
-            url:  'http://localhost:8080/api/user/getMyPersonalData/20'// + this.username,
-        }).then(response => {
-              if(response.status==200){
-                this.userr = response.data;
-				alert(this.userr.password)
-				if(response.data.gender=='FEMALE')
-				document.getElementById("female").checked=true
-			else
-				document.getElementById("male").checked=true
-              }
-            })
+		// axios({
+        //     method: "get",
+        //     url:  'http://localhost:8080/api/user/getMyPersonalData/20'// + this.username,
+        // }).then(response => {
+        //       if(response.status==200){
+        //         this.userr = response.data;
+		// 		alert(this.userr.password)
+		// 		if(response.data.gender=='FEMALE')
+		// 		document.getElementById("female").checked=true
+		// 	else
+		// 		document.getElementById("male").checked=true
+        //       }
+        //     })
+
+			axios
+                .get("http://localhost:8080/api/user/getMyPersonalData/20")
+                .then(response => {
+                  if (response.status==200){
+					this.userr = response.data
+					this.userr.dateOfBirth = this.userr.dateOfBirth.split(" ")[0]
+					if(response.data.gender=='FEMALE'){
+						document.getElementById("female").checked=true
+					}else
+						document.getElementById("male").checked=true
+                }
+              })
+
+			
 		
 	// 	axios
     //     .get('http://localhost:8080/api/user/getMyPersonalData/5',{
@@ -120,6 +135,8 @@ export default {
 	
   methods: {
 		Save(){
+			this.error = []
+			if(this.Validation()){
 			document.getElementById("name").disabled=true;
             document.getElementById("surname").disabled=true;
             document.getElementById("username").disabled=true;
@@ -154,15 +171,29 @@ export default {
 
 
 			document.getElementById("save").hidden=true;
-				fetch("http://localhost:8080/api/user/changeMyPersonalData/20",{
-			body:  JSON.stringify(this.userDto),
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			mode:"no-cors"
-		})
-			.then(
-				this.userr = this.userDto
-			)  
+		// 		fetch("http://localhost:8080/api/user/changeMyPersonalData/20",{
+		// 	body:  JSON.stringify(this.userDto),
+		// 	method: "POST",
+		// 	headers: { "Content-Type": "application/json" },
+		// 	mode:"no-cors"
+		// })
+		// 	.then(
+		// 		this.userr = this.userDto
+		// 	)  
+			axios
+                .post("http://localhost:8080/api/user/changeMyPersonalData/20", this.userDto)
+                .then(response => {
+                  if (response.status==200){
+                    alert('Successful');
+					this.userr = this.userDto
+                  }
+              })
+               .catch(error => {
+                // print(error.status == 417)
+                if(error == "Error: Request failed with status code 400"){
+                   alert("Error")
+                  }
+                })
 		
 		// axios({
         //         method: "post",
@@ -188,6 +219,7 @@ export default {
 		// 		document.getElementById("male").checked=true
         //       }
         //     })
+			}
 		},
 		Edit(){
 			this.Reset()
@@ -227,24 +259,28 @@ export default {
 				document.getElementById("name").style.borderColor="Red"
 				r=false
 			}else{
-				if(!document.getElementById("name").value[0].match('[A-Z]'))
-        this.error.push('The name may contain only letters');
-      }
+				if(!document.getElementById("name").value[0].match('[A-Z]')){
+					this.error.push('The name may contain only letters');
+					r=false
+				}
+			}
 
 			if(document.getElementById("surname").value==""){
 				document.getElementById("surname").style.borderColor="Red"
 				r=false
 			}else{
-				if(!document.getElementById("surname").value[0].match('[A-Z]'))
-        this.error.push('The surname may contain only letters');
-      }
+				if(!document.getElementById("surname").value[0].match('[A-Z]')){
+					this.error.push('The surname may contain only letters');
+					r=false
+				}
+			}
 
 			if(document.getElementById("email").value==""){
 				document.getElementById("email").style.borderColor="Red"
 				r=false
 			}else{
         if(!document.getElementById("email").value.match('@gmail.com' || '@uns.ac.rs' || '@hotmail.com' || '@yahoo.com' )){
-          
+          r=false
         this.error.push('Email form not valid!');
         }
       }
@@ -253,24 +289,30 @@ export default {
 				document.getElementById("phone").style.borderColor="Red"
 				r=false
 			}else{
-        if(!document.getElementById("phone").value.match('[0-1]'))
+        if(!document.getElementById("phone").value.match('[0-1]')){
           this.error.push('The phone number may contain only numbers!');
+			r=false
+		}
       }
 			if(document.getElementById("date").value==""){
 				document.getElementById("date").style.borderColor="Red"
 				r=false
 			}else{
-        if(!document.getElementById("date").value[2].match('/') || !document.getElementById("date").value[5].match('/'))
+        if(!document.getElementById("date").value[4].match('-') || !document.getElementById("date").value[7].match('-')){
           this.error.push('Pleace put valid date form!');
+			r=false
+		}
       }
 
 			if(document.getElementById("username").value==""){
 				document.getElementById("username").style.borderColor="Red"
 				r=false
 			}else{
-				if(!document.getElementById("username").value[0].match('[A-Z]'))
-        this.error.push('The username may contain only letters');
-      }
+				if(!document.getElementById("username").value[0].match('[A-Z]')){
+					this.error.push('The username may contain only letters');
+					r=false
+				}
+			}
 			if(this.error==[]) return true
 			else return r
 

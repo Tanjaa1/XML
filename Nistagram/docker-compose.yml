@@ -34,26 +34,6 @@ services:
     environment:
       PORT: ${USER_REQUEST_SERVICE_PORT}
 
-  tag-service:
-    image: tag-service:compose_build
-    build:
-      context: ./tag-service
-      dockerfile: Dockerfile
-    networks:
-      - backend
-    environment:
-      PORT: ${TAG_SERVICE_PORT}
-
-  story-service:
-    image: story-service:compose_build
-    build:
-      context: ./story-service
-      dockerfile: Dockerfile
-    networks:
-      - backend
-    environment:
-      PORT: ${STORY_SERVICE_PORT}
-
   post-service:
     image: post-service:compose_build
     build:
@@ -75,16 +55,6 @@ services:
       - backend
     environment:
       PORT: ${MESSAGE_SERVICE_PORT}
-
-  campaign-service:
-    image: campaign-service:compose_build
-    build:
-      context: ./campaign-service
-      dockerfile: Dockerfile
-    networks:
-      - backend
-    environment:
-      PORT: ${CAMPAIGN_SERVICE_PORT}
 
   admin-request-service:
       image: admin-request-service:compose_build

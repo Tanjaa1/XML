@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gorilla/handlers"
 	"gorm.io/driver/mysql"
 	"io"
 	"log"
@@ -29,14 +30,15 @@ var mySigningKey = []byte("mysupersecretkey")
 
 
 func initDB() *gorm.DB {
+	fmt.Println("Usao u initDB")
 	time.Sleep(time.Duration(20) *time.Second)
-	dsn := "root:root@tcp(host.docker.internal:3306)/mydb?parseTime=True&charset=utf8&autocommit=false"
+	dsn := "root:root@tcp(host.docker.internal:3306)/mydb3?parseTime=True&charset=utf8&autocommit=false"
 	//dsn := "root:root@tcp(127.0.0.1:3306)/mydb?parseTime=True&charset=utf8&autocommit=false"
 	database, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal(err)
 	}
-	database.AutoMigrate(&Img{})
+	//database.AutoMigrate(&Img{})
 	database.AutoMigrate(&model.Post{})
 	database.AutoMigrate(&model.Image{})
 	database.AutoMigrate(&model.Hashtag{})
@@ -44,6 +46,11 @@ func initDB() *gorm.DB {
 	database.AutoMigrate(&model.Link{})
 	database.AutoMigrate(&model.Collection{})
 	database.AutoMigrate(&model.Comment{})
+	database.AutoMigrate(&model.PostIdList{})
+	database.AutoMigrate(&model.Like{})
+
+	//database.Migrator().CreateConstraint(&model.Collection{}, "postList")
+	//database.Migrator().CreateConstraint(&model.Collection{}, "fk_collections_posts")
 
 	database.AutoMigrate(&model.Post{},&model.Location{})
 
@@ -118,15 +125,29 @@ func IsAuthorized(handler http.HandlerFunc) http.HandlerFunc {
 
 
 func handleFunc(handler *handler.PostHandler) {
+	fmt.Println("Usao u handleFunc")
 	router := mux.NewRouter().StrictSlash(true)
-
+	headers := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization", "Access-Control-Allow-Headers", "text/plain"})
+	methods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"})
+	origins := handlers.AllowedOrigins([]string{"http://localhost:8081"})
+	credential := handlers.AllowCredentials()
+	h := handlers.CORS(headers, methods, origins, credential)
 	//router.HandleFunc("/", handler.Hello).Methods("GET")
 	//router.HandleFunc("/", handler.CreateConsumer).Methods("POST")
 	//router.HandleFunc("/verify/{consumerId}", handler.Verify).Methods("GET")
 
 	router.HandleFunc("/upload",handler.CreatePost).Methods("POST")
+	router.HandleFunc("/createCollection",handler.CreateCollection).Methods("POST")
+	router.HandleFunc("/addIntoCollection/{id}/{name}",handler.AddIntoCollection).Methods("POST")
+	router.HandleFunc("/addComment/{id}",handler.AddComment).Methods("POST")
+	router.HandleFunc("/GetCollectionsByUserId/{id}",handler.GetCollectionsByUserId).Methods("GET")
+	router.HandleFunc("/addLike",handler.AddLike).Methods("POST")
+	router.HandleFunc("/getLikesByPostId/{id}",handler.GetLikeByPostId).Methods("GET")
+	router.HandleFunc("/getPostsByUserId/{id}",handler.GetPostsByUserId).Methods("GET")
+	router.HandleFunc("/getStoriesByUserId/{id}",handler.GetStoriesByUserId).Methods("GET")
 
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), router))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), h(router)))
+	//log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", "8080"), h(router)))
 }
 //--------------------------------------------------------------------------------------------------------------
 type Imgpath struct {
@@ -307,6 +328,7 @@ func getimg(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	fmt.Println("Usao u main")
 	database := initDB()
 	repo := initRepo(database)
 	service := initServices(repo)
