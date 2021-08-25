@@ -133,6 +133,16 @@ func (service *RegisteredUserService) FindAccountByEmail(email string) (bool, er
 	return false, nil
 }
 
+func(service *RegisteredUserService) GetUserByUsername(username string) (dto.RequestAccount,error) {
+
+	account, err := service.Repo.GetRegisteredUserByUsername(username)
+
+	accountDto := dto.RequestAccount{Id: account.ID,Name: account.Name, Surname: account.Surname, DateOfBirth: account.DateOfBirth.String(),
+		Email: account.Email, Username: account.Username, Password: account.Password, Gender: model.ConvertGenderToString(account.Gender),
+		PhoneNumber: account.PhoneNumber}
+	return accountDto,err
+}
+
 //func (service *ConsumerService) UserExists(consumerId string) (bool, error) {
 //	id, err := uuid.Parse(consumerId)
 //	if err != nil {

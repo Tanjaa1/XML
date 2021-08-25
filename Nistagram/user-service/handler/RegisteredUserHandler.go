@@ -143,6 +143,24 @@ func (handler *RegisteredUserHandler) GetAccountByUsername(w http.ResponseWriter
 	json.NewEncoder(w).Encode(&result)
 }
 
+func (handler *RegisteredUserHandler) GetUserByUsername(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	result, err := handler.Service.GetUserByUsername(vars["username"])
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(result)
+}
+
 //func (ts *postServer) CreateRegisteredUser(w http.ResponseWriter, req *http.Request) {
 //	span := tracer.StartSpanFromRequest("cretePostHandler", ts.tracer, req)
 //	defer span.Finish()
