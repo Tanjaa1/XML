@@ -47,8 +47,10 @@ func (service *RegisteredUserService) CreateRegisteredUser(dto *dto.RequestRegis
 	result, _ := service.FindAccountByUsername(dto.Account.Username)
 	result1, _ := service.FindAccountByEmail(dto.Account.Email)
 	//var err error
+
 	if result == true && result1 == true {
-		account := model.Account{Name: dto.Account.Name, Surname: dto.Account.Surname, DateOfBirth: time.Now(),
+		time,_ :=time.Parse("2006-01-02", dto.Account.DateOfBirth)
+		account := model.Account{Name: dto.Account.Name, Surname: dto.Account.Surname, DateOfBirth: time,
 			Email: dto.Account.Email, Username: dto.Account.Username, Password: dto.Account.Password, Gender: model.ConvertGender(dto.Account.Gender),
 			PhoneNumber: dto.Account.PhoneNumber}
 		fmt.Println("kreiran akaunt")

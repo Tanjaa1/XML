@@ -106,35 +106,7 @@ export default {
       }
       if(this.Validation()){
         
-
-      //   fetch("http://localhost:8080/api/user/userRegistration/", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify(this.registeredUser),
-      //   mode:"no-cors"
-      // })
-      //       .then(//(response) => {
-      //         //alert(response.value)
-      //       //if(response.status == 201){
-      //         alert("User created")
-      //       // }else{
-      //       //   alert("Username not unique")
-      //       // }
-      //     )//})
-          
-          //  axios({
-          //       method: "post",
-          //       url: 'http://localhost:8080/api/user/userRegistration/',
-          //       headers: {"Content-Type": "application/json", "crossDomain": true,"Access-Control-Allow-Origin": "*", "mode":"no-cors", credentials:"include"},
-          //        data: JSON.stringify(this.registeredUser)
-          //    }).then(response => {
-          //     alert(response)
-          //      if (response.status==200){
-          //          alert('Success');
-          //     }
-          //   })
-
-            axios
+        axios
                 .post("http://localhost:8080/api/user/userRegistration", this.registeredUser)
                 .then(response => {
                   if (response.status==201){
@@ -147,6 +119,34 @@ export default {
                    alert("Usename and email mast be unique")
                   }
                 })
+
+
+      //   fetch("http://localhost:8080/api/user/userRegistration/", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify(this.registeredUser),
+      //   mode:"no-cors"
+      // })
+           // .then(//(response) => {
+              //alert(response.value)
+            //if(response.status == 201){
+             // alert("User created")
+            // }else{
+            //   alert("Username not unique")
+            // }
+          //)//})
+          
+          //  axios({
+          //       method: "post",
+          //       url: 'http://localhost:8080/api/user/userRegistration/',
+          //       headers: {"Content-Type": "application/json", "crossDomain": true,"Access-Control-Allow-Origin": "*", "mode":"no-cors", credentials:"include"},
+          //        data: JSON.stringify(this.registeredUser)
+          //    })//.then(response => {
+            //   alert(response)
+            //   // if (response.status==200){
+            //   //     alert('Success');
+            //   //}
+            // })
 
             // axios
             //     .post('http://localhost:8080/api/user/userRegistration/', this.registeredUser, {
@@ -190,16 +190,20 @@ export default {
 				document.getElementById("name").style.borderColor="Red"
 				r=false
 			}else{
-				if(! document.getElementById("name").value[0].match('[A-Z]'))
-        this.error.push('The name may contain only letters');
+				if(! document.getElementById("name").value[0].match('[A-Z]')){
+          this.error.push('The name may contain only letters');
+          r=false
+        }
       }
 
 			if(document.getElementById("surname").value==""){
 				document.getElementById("surname").style.borderColor="Red"
 				r=false
 			}else{
-				if(!document.getElementById("surname").value[0].match('[A-Z]'))
-        this.error.push('The surname may contain only letters');
+				if(!document.getElementById("surname").value[0].match('[A-Z]')){
+          this.error.push('The surname may contain only letters');
+          r=false
+        }
       }
 			if(document.getElementById("password1").value==""){
 				document.getElementById("password1").style.borderColor="Red"
@@ -217,8 +221,8 @@ export default {
 				r=false
 			}else{
         if(!document.getElementById("email").value.match('@gmail.com' || '@uns.ac.rs' || '@hotmail.com' || '@yahoo.com' )){
-          
-        this.error.push('Email form not valid!');
+          r=false
+          this.error.push('Email form not valid!');
         }
       }
 
@@ -226,23 +230,29 @@ export default {
 				document.getElementById("phone").style.borderColor="Red"
 				r=false
 			}else{
-        if(!document.getElementById("phone").value.match('[0-1]'))
+        if(!document.getElementById("phone").value.match('[0-1]')){
           this.error.push('The phone number may contain only numbers!');
+          r=false
+        }
       }
 			if(document.getElementById("date").value==""){
 				document.getElementById("date").style.borderColor="Red"
 				r=false
 			}else{
-        if(!document.getElementById("date").value[2].match('/') || !document.getElementById("date").value[5].match('/'))
+        if(!document.getElementById("date").value[4].match('-') || !document.getElementById("date").value[7].match('-')){
           this.error.push('Pleace put valid date form!');
+          r=false
+        }
       }
 
 			if(document.getElementById("username").value==""){
 				document.getElementById("username").style.borderColor="Red"
 				r=false
 			}else{
-				if(!document.getElementById("username").value[0].match('[A-Z]'))
-        this.error.push('The username may contain only letters');
+				if(!document.getElementById("username").value[0].match('[A-Z]')){
+          this.error.push('The username may contain only letters');
+          r=false
+        }
       }
 			if(this.error==[]) return true
 			else return r

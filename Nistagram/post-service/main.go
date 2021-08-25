@@ -144,8 +144,10 @@ func handleFunc(handler *handler.PostHandler) {
 	router.HandleFunc("/addLike",handler.AddLike).Methods("POST")
 	router.HandleFunc("/getLikesByPostId/{id}",handler.GetLikeByPostId).Methods("GET")
 	router.HandleFunc("/getPostsByUserId/{id}",handler.GetPostsByUserId).Methods("GET")
+	router.HandleFunc("/getStoriesByUserId/{id}",handler.GetStoriesByUserId).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), h(router)))
+	//log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", "8080"), h(router)))
 }
 //--------------------------------------------------------------------------------------------------------------
 type Imgpath struct {

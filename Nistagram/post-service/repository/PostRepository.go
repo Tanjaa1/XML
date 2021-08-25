@@ -125,6 +125,8 @@ func (repo *PostRepository) UpdateLike(like *model.Like) error {
 }
 
 func (repo *PostRepository) GetLikeByPostId(postId int) ([]model.Like, error) {
+	fmt.Println("Ispis id -----------------")
+	fmt.Println(postId)
 	var like []model.Like
 	repo.Database.Model(&like)
 	err := repo.Database.Find(&like,"post_id = ?" , postId).Error
@@ -139,6 +141,8 @@ func (repo *PostRepository) GetLikeByPostId(postId int) ([]model.Like, error) {
 }
 
 func (repo *PostRepository) GetLikeByUserId(userId int) ([]model.Like, error) {
+	fmt.Println("Ispis id -----------------")
+	fmt.Println(userId)
 	var like []model.Like
 	repo.Database.Model(&like)
 	err := repo.Database.Find(&like,"user_id = ?" , userId).Error
@@ -150,4 +154,18 @@ func (repo *PostRepository) GetLikeByUserId(userId int) ([]model.Like, error) {
 		return nil,err
 	}
 	return like, nil
+}
+
+func (repo *PostRepository) GetStoriesByUserId(id int) ([]model.Post, error) {
+	fmt.Println("Ispis model.PostType(1)")
+	fmt.Println(model.PostType(1))
+	//post := &model.Post{}
+	var stories []model.Post
+	repo.Database.Model(&stories)
+	//repo.Database.First(&collection,"name = ?" , name)
+	err := repo.Database.Preload("Images").Preload("Comments").Preload("TagsLink").Preload("HashTags").Preload("Location").Find(&stories, "user_id = ? and post_type = ?", id,model.PostType(1)).Error
+	if err != nil{
+		return nil,err
+	}
+	return stories, nil
 }

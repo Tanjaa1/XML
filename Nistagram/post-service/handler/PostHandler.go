@@ -264,3 +264,26 @@ func (handler *PostHandler) GetPostsByUserId(w http.ResponseWriter, r *http.Requ
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(result)
 }
+
+func (handler *PostHandler) GetStoriesByUserId(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Usao u handler")
+	vars := mux.Vars(r)
+	id := vars["id"]
+	fmt.Println("Ispisuje se id")
+	fmt.Println(id)
+	id2,err := strconv.ParseInt(id, 10, 64)
+	if err != nil{
+		fmt.Println(err)
+	}
+	id3 := int(id2)
+	result, err := handler.Service.GetStoriesByUserId(id3)
+
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(result)
+}

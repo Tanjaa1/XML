@@ -5,6 +5,7 @@ import (
 	"post-service/dto"
 	"post-service/model"
 	"post-service/repository"
+	"time"
 )
 
 type PostService struct {
@@ -221,6 +222,9 @@ func (service *PostService) GetPostsByUserId(userId int) ([]dto.PostDto,error) {
 
 	fmt.Println("Usao u service")
 	likes, _ := service.Repo.GetLikeByUserId(userId)
+	fmt.Println("Ispis lisla likes")
+	fmt.Println(len(likes))
+	fmt.Println(likes)
 	var postsDto []dto.PostDto
 	for _, item := range likes {
 		post,_ := service.Repo.GetPostById(item.PostId)
@@ -252,3 +256,49 @@ func (service *PostService) GetPostsByUserId(userId int) ([]dto.PostDto,error) {
 
 	return postsDto,nil
 }
+
+func (service *PostService) GetStoriesByUserId(userId int) ([]dto.PostDto,error) {
+
+	fmt.Println("Usao u service")
+	stories, _ := service.Repo.GetStoriesByUserId(userId)
+	fmt.Println(len(stories))
+	var postsDto []dto.PostDto
+	for _, item := range stories {
+		timein := item.CreatedAt.Add(time.Hour * 24)
+		//timein := item.CreatedAt.AddDate(0, 0, 1)(time.Hour * 24 + time.Minute * 1 + time.Second * 1)
+		fmt.Println("Ispis timr in")
+		fmt.Println(timein)
+		t := timein.Sub(time.Now())
+		if t>0 {
+
+			//post,_ := service.Repo.GetStoriesById(item.PostId)
+
+			var images []dto.ImageDTO
+			for _, item := range item.Images {
+				images = append(images, dto.ImageDTO{Filename: item.Filename, Filepath: item.Filepath})
+			}
+
+			location := dto.LocationDTO{Place: item.Location.Place, City: item.Location.City, Country: item.Location.Country}
+
+			var hashtags []dto.HashtagDTO
+			for _, item1 := range item.HashTags {
+				hashtags = append(hashtags, dto.HashtagDTO{Name: item1.Name})
+			}
+
+			var links []dto.LinkDTO
+			for _, item1 := range item.TagsLink {
+				links = append(links, dto.LinkDTO{Name: item1.Name, LinkType: model.ConvertLinkTypeToString(item1.LinkType)})
+			}
+
+			var comments []dto.CommentDTO
+			for _, item1 := range item.Comments {
+				comments = append(comments, dto.CommentDTO{Content: item1.Content, AuthorIdLink: item1.AuthorIdLink})
+			}
+			postsDto = append(postsDto, dto.PostDto{Images: images, Comments: comments, UserId: item.UserId, Description: item.Description,
+				TagsLink: links, HashTags: hashtags, Location: location, CloseFriends: false, PostType: model.ConvertPostTypeToString(item.PostType)})
+		}
+	}
+
+	return postsDto,nil
+}
+
