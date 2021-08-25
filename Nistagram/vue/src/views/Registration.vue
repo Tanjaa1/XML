@@ -6,19 +6,27 @@
       <div class="row">
         <div class="col-md-6">
           <div class="form-group">
+            First name *
             <input id="name" type="text" class="form-control" placeholder="First Name *" value="" /><br>
+            Last name *
             <input id="surname" type="text" class="form-control" placeholder="Last Name *" value="" />  
           </div><br>
           <div class="form-group">
+            Username *
             <input id="username" type="text" class="form-control" placeholder="Username *" value="" /> <br>
+            Email *
             <input id="email" type="email" class="form-control" placeholder="Your Email *" value="" />        
           </div><br>
           <div class="form-group">
+            Password *
             <input id="password1" type="password" class="form-control" placeholder="Password *" value="" /><br>
+            Confirm password *
             <input id="password2" type="password" class="form-control"  placeholder="Confirm Password *" value="" /> 
           </div><br>
           <div class="form-group">         
+            Date od birth *
             <input id="date" type="text" class="form-control" placeholder="Date of birth *" value="" /><br>
+            Phone number *
             <input id="phone" type="text" minlength="10" maxlength="10" name="txtEmpPhone" class="form-control" placeholder="Your Phone *" value="" />
           </div><br>
               <label class="radio inline"> 

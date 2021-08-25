@@ -77,7 +77,7 @@ func (service *RegisteredUserService) GetMyPersonalData(userId uint) (dto.MyProf
 	fmt.Println(model.ConvertGenderToString(account.Gender))
 	ret := dto.MyProfileDTO{Username: account.Username,Password: account.Password,Name: account.Name, Surname: account.Surname,
 		Email: account.Email, PhoneNumber: account.PhoneNumber, Gender: model.ConvertGenderToString(account.Gender),
-		DateOfBirth: "treba uraditi"/*account.DateOfBirth*/, Description: registeredUser.Description,
+		DateOfBirth:account.DateOfBirth.String(), Description: registeredUser.Description,
 		Website: registeredUser.Website, IsVerified: registeredUser.IsVerified, IsPrivate: registeredUser.IsPrivate,
 		AcceptingMessage: registeredUser.AcceptingMessage, AcceptingTag: registeredUser.AcceptingTag,
 		UserType: model.ConvertUserTypeToString(registeredUser.UserType)}
@@ -93,7 +93,8 @@ func (service *RegisteredUserService) ChangePersonalData(dto dto.MyProfileDTO, u
 		fmt.Println(dto.Name)
 		fmt.Println(registeredUser.Account.Name)
 		registeredUser.Account.Surname = dto.Surname
-		//registeredUser.Account.DateOfBirth = dto.Account.DateOfBirth
+		time,_ :=time.Parse("2006-01-02", dto.DateOfBirth)
+		registeredUser.Account.DateOfBirth = time
 		registeredUser.Account.Email = dto.Email
 		registeredUser.Account.Username = dto.Username
 		registeredUser.Account.Password = dto.Password
