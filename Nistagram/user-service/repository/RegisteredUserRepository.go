@@ -52,16 +52,15 @@ func (repo *RegisteredUserRepository) CreateRegisteredUser(registeredUser *model
 	//return fmt.Errorf("Greska prilikom kreiranja accounta")
 }
 
-func (repo *RegisteredUserRepository) CreateAccount(account *model.Account) int64 {
-	result := repo.Database.Create(account)
-	fmt.Println("trebalo je da ga kreira")
-	fmt.Println(result)
-	//TODO convert to logs
-	if result.RowsAffected == 0 {
-		return result.RowsAffected
-	}
-	return result.RowsAffected
-}
+//func (repo *RegisteredUserRepository) CreateAccount(account *model.Account) int64 {
+//	result := repo.Database.Create(account)
+//	fmt.Println("trebalo je da ga kreira")
+//	fmt.Println(result)
+//	if result.RowsAffected == 0 {
+//		return result.RowsAffected
+//	}
+//	return result.RowsAffected
+//}
 
 func (repo *RegisteredUserRepository) GetRegisteredUserByID(id uint) (*model.RegisteredUser, error) {
 	registeredUser := &model.RegisteredUser{}
@@ -71,12 +70,49 @@ func (repo *RegisteredUserRepository) GetRegisteredUserByID(id uint) (*model.Reg
 	return registeredUser, nil
 }
 
+
 func (repo *RegisteredUserRepository) GetRegisteredUserByUsername(username string) (*model.Account, error) {
 	registeredUser := &model.Account{}
 	repo.Database.Model(&registeredUser)
 	repo.Database.First(&registeredUser,"username = ?" , username)
 	return registeredUser, nil
 }
+
+func (repo *RegisteredUserRepository) UpdateRegisterUser(registeredUser *model.RegisteredUser) error {
+	err := repo.Database.Save(registeredUser.Account).Error
+	if err == nil {
+		err1 := repo.Database.Save(registeredUser).Error
+		if err1 != nil {
+			return err
+		}
+		return nil
+	}
+	return nil
+}
+
+func (repo *RegisteredUserRepository) FindAccountByUsername(username string) (bool, error) {
+	account := &model.Account{}
+	if err := repo.Database.First(&account, "username = ?", username).Error; err == nil {
+		fmt.Println("Ispis greske u accountu")
+		fmt.Println(err)
+		fmt.Println(account.Name)
+		return false, err
+	}
+	return true, nil
+}
+
+func (repo *RegisteredUserRepository) FindAccountByEmail(email string) (bool, error) {
+	fmt.Println("Ulazak u metodu za mail")
+	account := &model.Account{}
+	if err := repo.Database.First(&account, "email = ?", email).Error; err == nil {
+		fmt.Println("Ispis greske u accountu")
+		fmt.Println(err)
+		fmt.Println(account.Name)
+		return false, err
+	}
+	return true, nil
+}
+
 //func (repo *ConsumerRepository) ConsumerExists(consumerId uuid.UUID) bool {
 //	var count int64
 //	repo.Database.Where("id = ?", consumerId).Find(&model.Account{}).Count(&count)

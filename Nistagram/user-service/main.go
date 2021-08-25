@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/handlers"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
 	"gorm.io/driver/mysql"
@@ -44,7 +45,7 @@ func initDB() *gorm.DB {
 func IsAuthorized(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		if r.Header["Token"] == nil {
+		if r.Header["Authorization"] == nil {
 			fmt.Println("TOKEN JE NIL")
 			err := ((http.StatusUnauthorized))
 			json.NewEncoder(w).Encode(err)
@@ -52,7 +53,7 @@ func IsAuthorized(handler http.HandlerFunc) http.HandlerFunc {
 		}
 
 
-		token, err := jwt.Parse(r.Header["Token"][0], func(token *jwt.Token) (interface{}, error) {
+		token, err := jwt.Parse(r.Header["Authorization"][0], func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("There was an error in parsing")
 			}
@@ -107,16 +108,23 @@ func initHandler(service *service.RegisteredUserService) *handler.RegisteredUser
 }
 func handleFunc(handler *handler.RegisteredUserHandler) {
 	router := mux.NewRouter().StrictSlash(true)
+	headers := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization", "Access-Control-Allow-Headers", "text/plain"})
+	methods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"})
+	origins := handlers.AllowedOrigins([]string{"http://localhost:8081"})
+	credential := handlers.AllowCredentials()
+	h := handlers.CORS(headers, methods, origins, credential)
+
 
 	//router.HandleFunc("/", handler.Hello).Methods("GET")
 	//router.HandleFunc("/", handler.CreateConsumer).Methods("POST")
 	//router.HandleFunc("/verify/{consumerId}", handler.Verify).Methods("GET")
-
-	router.HandleFunc("/userRegistration/", IsAuthorized(handler.CreateRegisteredUser)).Methods("POST")
-	router.HandleFunc("/getMyPersonalData/{id}", IsAuthorized(handler.GetMyPersonalData)).Methods("GET")
+	router.HandleFunc("/userRegistration", handler.CreateRegisteredUser).Methods("POST")
+	router.HandleFunc("/getMyPersonalData/{id}", handler.GetMyPersonalData).Methods("GET")
+	router.HandleFunc("/changeMyPersonalData/{id}", handler.ChangePersonalData).Methods("POST")
+	router.HandleFunc("/getAccountByUsername/{username}", handler.GetAccountByUsername).Methods("GET")
 	router.HandleFunc("/login/{username}/{password}", handler.Login).Methods("GET")
 
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), router))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), h(router)))
 }
 
 

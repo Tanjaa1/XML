@@ -44,19 +44,27 @@ func(service *RegisteredUserService) GenerateJWT( username string, password stri
 func (service *RegisteredUserService) CreateRegisteredUser(dto *dto.RequestRegisteredUser) error {
 	fmt.Println("DTO NAME:")
 	fmt.Println(dto.Account.Name)
-	account := model.Account{Name: dto.Account.Name, Surname: dto.Account.Surname, DateOfBirth: time.Now(),
-			Email: dto.Account.Email,Username: dto.Account.Username, Password: dto.Account.Password, Gender: model.ConvertGender(dto.Account.Gender),
-	 		PhoneNumber: dto.Account.PhoneNumber}
-	fmt.Println("kreiran akaunt")
-	fmt.Println(account)
-	//service.Repo.CreateAccount(&account)
-	registeredUser := model.RegisteredUser{Account: account,Description: dto.Description, Website: dto.Website, IsVerified: dto.IsVerified, IsPrivate: dto.IsPrivate,
-		AcceptingMessage: dto.AcceptingMessage, AcceptingTag: dto.AcceptingTag,/* UserType: model.NONE*//*, FollowingRequestIdList: dto.FollowingRequestIdList,*/
-		/*RelatedUsers: dto.RelatedUsers*//*[]model.RelatedUser{},*/ /*CollectionsIdList: dto.CollectionsIdList, CooperationRequestIdList: dto.CooperationRequestIdList,
-		MessageRequestIdList: dto.MessageRequestIdList, HighlightsIdList: dto.HighlightsIdList*/}
+	result, _ := service.FindAccountByUsername(dto.Account.Username)
+	result1, _ := service.FindAccountByEmail(dto.Account.Email)
+	//var err error
 
-	service.Repo.CreateRegisteredUser(&registeredUser)
-	return nil
+	if result == true && result1 == true {
+		time,_ :=time.Parse("2006-01-02", dto.Account.DateOfBirth)
+		account := model.Account{Name: dto.Account.Name, Surname: dto.Account.Surname, DateOfBirth: time,
+			Email: dto.Account.Email, Username: dto.Account.Username, Password: dto.Account.Password, Gender: model.ConvertGender(dto.Account.Gender),
+			PhoneNumber: dto.Account.PhoneNumber}
+		fmt.Println("kreiran akaunt")
+		fmt.Println(account)
+		//service.Repo.CreateAccount(&account)
+		registeredUser := model.RegisteredUser{Account: account, Description: dto.Description, Website: dto.Website, IsVerified: dto.IsVerified, IsPrivate: dto.IsPrivate,
+			AcceptingMessage: dto.AcceptingMessage, AcceptingTag: dto.AcceptingTag, /* UserType: model.NONE*//*, FollowingRequestIdList: dto.FollowingRequestIdList,*/
+			/*RelatedUsers: dto.RelatedUsers*//*[]model.RelatedUser{},*/ /*CollectionsIdList: dto.CollectionsIdList, CooperationRequestIdList: dto.CooperationRequestIdList,
+			MessageRequestIdList: dto.MessageRequestIdList, HighlightsIdList: dto.HighlightsIdList*/}
+
+		service.Repo.CreateRegisteredUser(&registeredUser)
+		return nil
+	}
+	return fmt.Errorf("Username and Email not unique")
 }
 
 func (service *RegisteredUserService) GetMyPersonalData(userId uint) (dto.MyProfileDTO, error) {
@@ -64,59 +72,66 @@ func (service *RegisteredUserService) GetMyPersonalData(userId uint) (dto.MyProf
 	if err != nil {
 		return dto.MyProfileDTO{}, err
 	}
+	fmt.Println("Pol korisnika:")
 	account := registeredUser.Account
-	ret := dto.MyProfileDTO{Username: account.Username, Name: account.Name, Surname: account.Surname,
+	fmt.Println(model.ConvertGenderToString(account.Gender))
+	ret := dto.MyProfileDTO{Username: account.Username,Password: account.Password,Name: account.Name, Surname: account.Surname,
 		Email: account.Email, PhoneNumber: account.PhoneNumber, Gender: model.ConvertGenderToString(account.Gender),
-		DateOfBirth: "treba uraditi"/*account.DateOfBirth*/, Description: registeredUser.Description,
+		DateOfBirth:account.DateOfBirth.String(), Description: registeredUser.Description,
 		Website: registeredUser.Website, IsVerified: registeredUser.IsVerified, IsPrivate: registeredUser.IsPrivate,
 		AcceptingMessage: registeredUser.AcceptingMessage, AcceptingTag: registeredUser.AcceptingTag,
 		UserType: model.ConvertUserTypeToString(registeredUser.UserType)}
 	return ret, nil
 }
 
-//func (service *ProfileService) ChangePersonalData(dto dto.PersonalDataDTO, loggedUserId uint) error {
-//	profile, err := service.ProfileRepository.GetProfileByID(loggedUserId)
-//	if err != nil {
-//		return err
-//	}
-//	callAuth := bool(false)
-//	if profile.Email != dto.Email {
-//		callAuth = true
-//	}
-//	if profile.Username != dto.Username {
-//		//TODO: change data in other ms
-//		err = service.changeUsernameInPostService(loggedUserId, dto.Username)
-//		if err != nil { return err }
-//	}
-//	profile.Username = dto.Username
-//	profile.Website = dto.Website
-//	profile.Biography = dto.Biography
-//	profile.Email = dto.Email
-//	profile.PersonalData.Name = dto.Name
-//	profile.PersonalData.BirthDate = dto.BirthDate
-//	profile.PersonalData.Gender = dto.Gender
-//	profile.PersonalData.Surname = dto.Surname
-//	profile.PersonalData.Telephone = dto.Telephone
-//	err = service.ProfileRepository.UpdateProfile(profile)
-//	if err != nil {
-//		return err
-//	}
-//	if callAuth {
-//		postBody, _ := json.Marshal(map[string]string{
-//			"profileId": util.Uint2String(profile.ID),
-//			"email":     profile.Email,
-//		})
-//		responseBody := bytes.NewBuffer(postBody)
-//		authHost, authPort := util.GetAuthHostAndPort()
-//		_, err = http.Post("http://"+authHost+":"+authPort+"/update-user", "application/json", responseBody)
-//		if err != nil {
-//			fmt.Println(err)
-//			return err
-//		}
-//	}
-//	err = service.ProfileRepository.UpdatePersonalData(profile.PersonalData)
-//	return err
-//}
+func (service *RegisteredUserService) ChangePersonalData(dto dto.MyProfileDTO, userId uint) error {
+		registeredUser, err := service.Repo.GetRegisteredUserByID(userId)
+		if err != nil {
+			return err
+		}
+		registeredUser.Account.Name = dto.Name
+		fmt.Println(dto.Name)
+		fmt.Println(registeredUser.Account.Name)
+		registeredUser.Account.Surname = dto.Surname
+		time,_ :=time.Parse("2006-01-02", dto.DateOfBirth)
+		registeredUser.Account.DateOfBirth = time
+		registeredUser.Account.Email = dto.Email
+		registeredUser.Account.Username = dto.Username
+		registeredUser.Account.Password = dto.Password
+		registeredUser.Account.Gender = model.ConvertGender(dto.Gender)
+		registeredUser.Account.PhoneNumber = dto.PhoneNumber
+		registeredUser.Description = dto.Description
+		registeredUser.Website = dto.Website
+		registeredUser.IsVerified = dto.IsVerified
+		registeredUser.IsPrivate = dto.IsPrivate
+		registeredUser.AcceptingMessage = dto.AcceptingMessage
+		registeredUser.AcceptingTag = dto.AcceptingTag
+		registeredUser.UserType = model.ConvertUserType(dto.UserType)
+		err = service.Repo.UpdateRegisterUser(registeredUser)
+	return err
+}
+
+func (service *RegisteredUserService) FindAccountByUsername(username string) (bool, error) {
+	account, err := service.Repo.FindAccountByUsername(username)
+	if err != nil {
+		return false, err
+	}
+	if account == true {
+		return true, nil
+	}
+	return false, nil
+}
+
+func (service *RegisteredUserService) FindAccountByEmail(email string) (bool, error) {
+	account, err := service.Repo.FindAccountByEmail(email)
+	if err != nil {
+		return false, err
+	}
+	if account == true {
+		return true, nil
+	}
+	return false, nil
+}
 
 //func (service *ConsumerService) UserExists(consumerId string) (bool, error) {
 //	id, err := uuid.Parse(consumerId)
