@@ -252,6 +252,7 @@ export default {
       reader.onload = (e) => {
         item.image = e.target.result;
       };
+      alert(item.image)
       reader.readAsDataURL(file);
     },
     removeImage: function (item) {
