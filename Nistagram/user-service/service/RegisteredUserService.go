@@ -143,6 +143,12 @@ func(service *RegisteredUserService) GetUserByUsername(username string) (dto.Req
 	return accountDto,err
 }
 
+func (service *RegisteredUserService) SearchProfile(name string) ([] model.Account, error) {
+	exists ,err:= service.Repo.ProfileSearch("%"+name+"%")
+	fmt.Print("u repozitorijumu")
+	return exists,err
+}
+
 //func (service *ConsumerService) UserExists(consumerId string) (bool, error) {
 //	id, err := uuid.Parse(consumerId)
 //	if err != nil {

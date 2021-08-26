@@ -89,15 +89,12 @@ export default {
             pict:[1,2,3,4]
 		}
 	},beforeMount() {
-		localStorage.setItem('isLogged', false);
-		localStorage.setItem('userId', "");
-
 
 	},
   methods: {
       Edit(){
 		this.$router.push('/');
-    }
+    },
   }
 }
 </script>

@@ -169,3 +169,71 @@ func (repo *PostRepository) GetStoriesByUserId(id int) ([]model.Post, error) {
 	}
 	return stories, nil
 }
+
+func (repo *PostRepository) GetLocationById(id uint) (*model.Location, error) {
+	location := &model.Location{}
+	repo.Database.Model(&location)
+	err := repo.Database.First(&location,"ID = ?" , id).Error
+	fmt.Println("Ispis err")
+	fmt.Println(err)
+	if err != nil{
+		return nil,err
+	}
+	return location, nil
+}
+
+func (repo *PostRepository) GetHashtagById(id uint) (*model.Hashtag, error) {
+	hashtag := &model.Hashtag{}
+	repo.Database.Model(&hashtag)
+	err := repo.Database.First(&hashtag,"ID = ?" , id).Error
+	fmt.Println("Ispis err")
+	fmt.Println(err)
+	if err != nil{
+		return nil,err
+	}
+	return hashtag, nil
+}
+
+func (repo *PostRepository) GetHashtagByName(name string) (*model.Hashtag, error) {
+	hashtag := &model.Hashtag{}
+	repo.Database.Model(&hashtag)
+	err := repo.Database.First(&hashtag,"name = ?" , name).Error
+	fmt.Println("Ispis err")
+	fmt.Println(err)
+	if err != nil{
+		return nil,err
+	}
+	return hashtag, nil
+}
+
+func (repo *PostRepository) GetLinkById(id uint) (*model.Link, error) {
+	link := &model.Link{}
+	repo.Database.Model(&link)
+	err := repo.Database.First(&link,"ID = ?" , id).Error
+	fmt.Println("Ispis err")
+	fmt.Println(err)
+	if err != nil{
+		return nil,err
+	}
+	return link, nil
+}
+
+func (repo *PostRepository) CreateHashtag(hashtag *model.Hashtag) error {
+	result := repo.Database.Create(hashtag)
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("Like not created")
+	}else{
+		fmt.Println("Like created")
+		return  nil
+	}
+}
+
+func (repo *PostRepository) CreateLink(link *model.Link) error {
+	result := repo.Database.Create(link)
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("Like not created")
+	}else{
+		fmt.Println("Like created")
+		return  nil
+	}
+}

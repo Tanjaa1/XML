@@ -128,3 +128,9 @@ func (repo *RegisteredUserRepository) Close() error {
 	db.Close()
 	return nil
 }
+
+func (repo *RegisteredUserRepository) ProfileSearch(name string)  ([] model.Account, error) {
+	var listResult []model.Account
+	result:=repo.Database.Table("accounts").Find(&listResult,"username like ?",name)
+	return listResult,result.Error
+}

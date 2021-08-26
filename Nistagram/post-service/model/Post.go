@@ -13,11 +13,16 @@ type Post struct {
 	//Likes                     []Link             `json:"likes" gorm:"many2many:likes_posts;"`
 	//Dislikes                  []Link             `json:"dislikes" gorm:"many2many:dislikes_posts;"`
 	TagsLink                  []Link             `json:"tagsLink" gorm:"many2many:tagsLink_posts;"`
-	HashTags                  []Hashtag          `json:"hashTags" gorm:"many2many:hashTags_posts;"`
-	Location                  Location           `json:"location" gorm:"foreignKey:ID"`
+	HashTagsIdList            []HashtagIdList    `json:"hashTagsIdList" gorm:"many2many:hashTags_posts;"`
+	LocationId                uint               `json:"locationId"`
 	//SeenBy                    []int			     `json:"seenBy" gorm:"not null"`
 	CloseFriends              bool               `json:"closeFriends"`
 	PostType                  PostType			 `json:"postType"`
+}
+
+type HashtagIdList struct {
+	gorm.Model
+	HashtagId                    uint			    `json:"HashtagId"`
 }
 
 type Like struct {
@@ -48,9 +53,9 @@ type Image struct {
 }
 
 
-func (post *Post) AddHashtag(item Hashtag){
-	post.HashTags = append(post.HashTags, item)
-}
+//func (post *Post) AddHashtag(item Hashtag){
+//	post.HashTags = append(post.HashTags, item)
+//}
 
 
 func ConvertPostType(postTypeString string)(postType PostType) {

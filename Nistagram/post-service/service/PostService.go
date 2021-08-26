@@ -5,6 +5,7 @@ import (
 	"post-service/dto"
 	"post-service/model"
 	"post-service/repository"
+	"strconv"
 	"time"
 )
 
@@ -19,10 +20,16 @@ func (service *PostService) CreatePost(dtoo *dto.PostDto, imagess []dto.ImageDTO
 		images = append(images, model.Image{Filename: item.Filename, Filepath: item.Filepath})
 	}
 
-	location := model.Location{Place: dtoo.Location.Place, City: dtoo.Location.City, Country: dtoo.Location.Country}
-	var hashtags []model.Hashtag
+	var hashtags []model.HashtagIdList
 	for _, item := range dtoo.HashTags {
-		hashtags = append(hashtags, model.Hashtag{Name: item.Name})
+		h,_ := service.Repo.GetHashtagByName(item.Name)
+		if h != nil {
+			hashtags = append(hashtags, model.HashtagIdList{HashtagId: h.ID})
+		}else{
+			hashtag := model.Hashtag{Name: item.Name}
+			service.Repo.CreateHashtag(&hashtag)
+			hashtags = append(hashtags, model.HashtagIdList{HashtagId: hashtag.ID})
+		}
 	}
 
 	var links []model.Link
@@ -34,9 +41,9 @@ func (service *PostService) CreatePost(dtoo *dto.PostDto, imagess []dto.ImageDTO
 	for _, item := range dtoo.Comments {
 		comments = append(comments, model.Comment{Content: item.Content, AuthorIdLink: item.AuthorIdLink})
 	}
-
-	post := model.Post{Images: images,Comments: comments,UserId: dtoo.UserId,Description: dtoo.Description,
-		TagsLink: links,HashTags: hashtags,Location: location, CloseFriends: false, PostType: model.ConvertPostType(dtoo.PostType)}
+	intVar, _ := strconv.Atoi(dtoo.UserId)
+	post := model.Post{Images: images,Comments: comments,UserId: intVar,Description: dtoo.Description,
+		TagsLink: links,HashTagsIdList: hashtags,LocationId: dtoo.Location.Id, CloseFriends: false, PostType: model.ConvertPostType(dtoo.PostType)}
 
 	service.Repo.CreatePost(&post)
 	return nil
@@ -156,10 +163,12 @@ func (service *PostService) GetCollectionsByUserId(userId int) ([]dto.Collection
 				images = append(images, dto.ImageDTO{Filename: item2.Filename, Filepath: item2.Filepath})
 			}
 
-			location := dto.LocationDTO{Place: post.Location.Place, City: post.Location.City, Country: post.Location.Country}
+			l, _ := service.Repo.GetLocationById(post.LocationId)
+			location := dto.LocationDTO{Place: l.Place, City: l.City, Country: l.Country}
 			var hashtags []dto.HashtagDTO
-			for _, item3 := range post.HashTags {
-				hashtags = append(hashtags, dto.HashtagDTO{Name: item3.Name})
+			for _, item3 := range post.HashTagsIdList {
+				h,_ := service.Repo.GetHashtagById(item3.HashtagId)
+				hashtags = append(hashtags, dto.HashtagDTO{Name: h.Name})
 			}
 
 			var links []dto.LinkDTO
@@ -171,8 +180,8 @@ func (service *PostService) GetCollectionsByUserId(userId int) ([]dto.Collection
 			for _, item5 := range post.Comments {
 				comments = append(comments, dto.CommentDTO{Content: item5.Content, AuthorIdLink: item5.AuthorIdLink})
 			}
-
-			postDTO := dto.PostDto{Images: images, Comments: comments, UserId: post.UserId, Description: post.Description,
+			stringVar := strconv.Itoa(post.UserId)
+			postDTO := dto.PostDto{Images: images, Comments: comments, UserId: stringVar, Description: post.Description,
 				TagsLink: links, HashTags: hashtags, Location: location, CloseFriends: false, PostType: model.ConvertPostTypeToString(post.PostType)}
 
 			postList = append(postList, postDTO)
@@ -234,11 +243,13 @@ func (service *PostService) GetPostsByUserId(userId int) ([]dto.PostDto,error) {
 			images = append(images, dto.ImageDTO{Filename: item.Filename, Filepath: item.Filepath})
 		}
 
-		location := dto.LocationDTO{Place: post.Location.Place, City: post.Location.City, Country: post.Location.Country}
+		l, _ := service.Repo.GetLocationById(post.LocationId)
+		location := dto.LocationDTO{Place: l.Place, City: l.City, Country: l.Country}
 
 		var hashtags []dto.HashtagDTO
-		for _, item := range post.HashTags {
-			hashtags = append(hashtags, dto.HashtagDTO{Name: item.Name})
+		for _, item := range post.HashTagsIdList {
+			h,_ := service.Repo.GetHashtagById(item.HashtagId)
+			hashtags = append(hashtags, dto.HashtagDTO{Name: h.Name})
 		}
 
 		var links []dto.LinkDTO
@@ -250,7 +261,8 @@ func (service *PostService) GetPostsByUserId(userId int) ([]dto.PostDto,error) {
 		for _, item := range post.Comments {
 			comments = append(comments, dto.CommentDTO{Content: item.Content, AuthorIdLink: item.AuthorIdLink})
 		}
-		postsDto = append(postsDto, dto.PostDto{Images: images,Comments: comments,UserId: post.UserId,Description: post.Description,
+		stringVar := strconv.Itoa(post.UserId)
+		postsDto = append(postsDto, dto.PostDto{Images: images,Comments: comments,UserId: stringVar,Description: post.Description,
 			TagsLink: links,HashTags: hashtags,Location: location, CloseFriends: false, PostType: model.ConvertPostTypeToString(post.PostType)})
 	}
 
@@ -278,11 +290,13 @@ func (service *PostService) GetStoriesByUserId(userId int) ([]dto.PostDto,error)
 				images = append(images, dto.ImageDTO{Filename: item.Filename, Filepath: item.Filepath})
 			}
 
-			location := dto.LocationDTO{Place: item.Location.Place, City: item.Location.City, Country: item.Location.Country}
+			l, _ := service.Repo.GetLocationById(item.LocationId)
+			location := dto.LocationDTO{Place: l.Place, City: l.City, Country: l.Country}
 
 			var hashtags []dto.HashtagDTO
-			for _, item1 := range item.HashTags {
-				hashtags = append(hashtags, dto.HashtagDTO{Name: item1.Name})
+			for _, item1 := range item.HashTagsIdList {
+				h,_ := service.Repo.GetHashtagById(item1.HashtagId)
+				hashtags = append(hashtags, dto.HashtagDTO{Name: h.Name})
 			}
 
 			var links []dto.LinkDTO
@@ -294,7 +308,8 @@ func (service *PostService) GetStoriesByUserId(userId int) ([]dto.PostDto,error)
 			for _, item1 := range item.Comments {
 				comments = append(comments, dto.CommentDTO{Content: item1.Content, AuthorIdLink: item1.AuthorIdLink})
 			}
-			postsDto = append(postsDto, dto.PostDto{Images: images, Comments: comments, UserId: item.UserId, Description: item.Description,
+			stringVar := strconv.Itoa(item.UserId)
+			postsDto = append(postsDto, dto.PostDto{Images: images, Comments: comments, UserId: stringVar, Description: item.Description,
 				TagsLink: links, HashTags: hashtags, Location: location, CloseFriends: false, PostType: model.ConvertPostTypeToString(item.PostType)})
 		}
 	}
@@ -302,3 +317,12 @@ func (service *PostService) GetStoriesByUserId(userId int) ([]dto.PostDto,error)
 	return postsDto,nil
 }
 
+func (service *PostService) SearchLocation(name string) ([] dto.LocationDTO, error) {
+	exists ,err:= service.Repo.LocationSearch("%"+name+"%")
+	var locations []dto.LocationDTO
+	for _, item := range exists {
+		locations = append(locations, dto.LocationDTO{Id: item.ID,Place: item.Place, City: item.City, Country: item.Country})
+	}
+	fmt.Print("u repozitorijumu")
+	return locations,err
+}

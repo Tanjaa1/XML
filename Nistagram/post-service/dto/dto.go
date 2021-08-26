@@ -3,7 +3,7 @@ package dto
 type PostDto struct {
 	Images                   []ImageDTO 		 `json:"images"`
 	Comments                 []CommentDTO        `json:"comments"`
-	UserId                    int                `json:"userId"`
+	UserId                    string                `json:"userId"`
 	Description               string             `json:"description"`
 	//Likes                     []int              `json:"likes"`
 	//Dislikes                  []int              `json:"dislikes"`
@@ -26,15 +26,18 @@ type CommentDTO struct {
 }
 
 type LinkDTO struct {
+	Id                        uint               `json:"id" gorm:"not null"`
 	Name                      string             `json:"name"`
 	LinkType                  string             `json:"linkType"`
 }
 
 type HashtagDTO struct {
+	Id                        uint               `json:"id" gorm:"not null"`
 	Name                      string             `json:"name"`
 }
 
 type LocationDTO struct {
+	Id                        uint               `json:"id" gorm:"not null"`
 	Place                     string             `json:"place"`
 	City                      string             `json:"city"`
 	Country                   string             `json:"country"`

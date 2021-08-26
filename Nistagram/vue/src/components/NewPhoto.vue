@@ -44,34 +44,34 @@
                 <transition name="fade" appear>
                         <div class="sub-menu" v-if="isOpen">
                             <div v-for="l in locationtag" :key="l"  >
-                                <button  @click="location=l, isOpen=false">{{l}}</button>
+                                <button  @click="location=l, isOpen=false">{{l.place}} {{l.city}} {{l.country}}</button>
                             </div>
                         </div>
                     </transition>
-                    <input v-if="location==null" type="text" @click="isOpenP=false,isOpen=!isOpen"/>
+                    <input v-if="location==null" id="locationSearch" type="text" @click="isOpenP=false,isOpen=!isOpen" v-on:input="search()"/>
                  
-                <small v-if="location!=null">{{this.location}}</small>
+                <small v-if="location!=null">{{this.location.place}} {{this.location.city}} {{this.location.country}}</small>
                 <input v-if="location!=null" class="btn" type="button" value="X"  @click="location=null,isOpen=false,isOpenP=false"/>
                    <br>
                    <br>
                 <small>Tag people </small>
-                <input type="text" @click="isOpen=false,isOpenP=!isOpenP"/>
+                <input type="text" @click="isOpen=false,isOpenP=!isOpenP" id="searchTagId" v-on:input="searchTags()"/>
                    <br>
                  <transition name="fade" appear>
                         <div class="sub-menu" v-if="isOpenP" >
                             <div v-for="p in peoplestag" :key="p">
-                                <button v-on:click="Taged(p),isOpen=false,isOpenP=false">{{p}}</button>
+                                <button v-on:click="Taged(p),isOpen=false,isOpenP=false">{{p.username}}</button>
                             </div>
                         </div>
                     </transition>
                    <br>
                    <div v-for="p in tagedPeoples" :key="p">
-                       <small>{{p}}</small>
+                       <small>{{p.username}}</small>
                         <input class="btn" type="button" value="X"  @click="removeTag(p),isOpen=false,isOpenP=false"/>
                    </div>
                 <small>Descriotion:</small><br>
-            <textarea type="text" @click="isOpen=false,isOpenP=false"/><br><br><br>
-                <input value="Add post" class="btnP" type="button" v-on:click="NewPhoto(),isOpen=false,isOpenP=false"/>
+            <textarea type="text" v-model="post.description" @click="isOpen=false,isOpenP=false"/><br><br><br>
+                <input value="Add post" class="btnP" type="button" v-on:click="CreatePost(),isOpen=false,isOpenP=false"/>
             </div>
         </div><br>
     </div>
@@ -111,11 +111,106 @@ export default {
             tagedLocation:null,
             peoples:[],
             tagedPeoples:[],
-			peoplestag:['pera','mika','janko'],
-            locationtag:['Novi Sad','Beograd','FTN']
+			peoplestag:[],
+            locationtag:[],
+            images:[],
+            hashTags:[],
+            post:{
+                description:null,
+                tagsLink:[],
+                hashTags:[],
+                location:null,
+                userId:null,
+                postType:"POST"
+            }
         }
     },
+    beforeMount(){
+    },
     methods:{
+        searchTags(){
+            axios
+                .get("http://localhost:8080/api/user/searchProfile/" + document.getElementById("searchTagId").value,
+				{
+							headers: {
+								'Authorization': 'Bearer' + " " + localStorage.getItem('token')
+							}
+				})
+                .then(response => {
+					this.peoplestag = response.data
+              })
+        },
+        search(){
+            axios
+                .get("http://localhost:8080/api/post/searchLocation/" + document.getElementById("locationSearch").value,
+				{
+							headers: {
+								'Authorization': 'Bearer' + " " + localStorage.getItem('token')
+							}
+				})
+                .then(response => {
+					this.locationtag = response.data
+                    alert("Ispis id")
+                    alert(this.locationtag[0].id)
+              })
+        },
+        CreatePost(){
+
+            let b = this.post.description.split(" ")
+            alert(b)
+            for(let i = 0; i < b.length; i++){
+                if(b[i].includes("#")){
+                    let c = b[i].split("#")
+                    for(let j = 1; j < c.length; j++){
+                        let h = {
+                            name: c[j]
+                        }
+                        this.post.hashTags.push(h)
+                    }
+                }
+            }
+            alert(this.post.hashTags)
+            for(let i = 0; i < this.tagedPeoples.length; i++){
+                let ob = {
+                    name : this.tagedPeoples[i].username,
+                    linkType : "USER_LINK"
+                }
+                this.post.tagsLink.push(ob)
+            }
+            this.post.location = this.location
+            this.post.userId = localStorage.getItem('userId')
+            alert(localStorage.getItem('token'))
+            alert(localStorage.getItem('userId'))
+            //alert(this.post.userId)
+            const params = new FormData()
+            alert(this.images)
+            for(let i = 0; i < this.images.length; i++)
+                params.append('file', this.images[i])
+            let json = JSON.stringify(this.post);
+            params.append('data', json);
+            //alert(params)
+        axios
+                .post("http://localhost:8080/api/post/upload", params,
+				{
+							headers: {
+								'Authorization': 'Bearer' + " " + localStorage.getItem('token'),
+                                'Content-Type': 'multipart/form-data',
+							}
+				})
+                .then(response => {
+                  if (response.status==200){
+                    alert('Successful');
+					this.userr = this.userDto
+                  }
+              })
+               .catch(error => {
+                // print(error.status == 417)
+                if(error == "Error: Request failed with status code 400"){
+                   alert("Error")
+                  }
+                })
+		
+    },
         setSelected(tab){
             this.selected=tab;
         },
@@ -127,7 +222,9 @@ export default {
     let data = new FormData();
     data.append('name', 'my-picture');
     data.append('file', e.target.files[0]); 
-
+    //alert(e.target.files[0])
+    this.images.push(e.target.files[0])
+    //alert(this.images)
     let config = {
       header : {
         'Content-Type' : 'image/png'

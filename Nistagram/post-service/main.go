@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"os"
 	"post-service/model"
+	"strings"
 	"time"
 
 	//"text/template"
@@ -81,7 +82,7 @@ func IsAuthorized(handler http.HandlerFunc) http.HandlerFunc {
 		}
 
 
-		token, err := jwt.Parse(r.Header["Authorization"][0], func(token *jwt.Token) (interface{}, error) {
+		token, err := jwt.Parse(strings.Split(r.Header["Authorization"][0], "Bearer ")[1], func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("There was an error in parsing")
 			}
@@ -136,7 +137,7 @@ func handleFunc(handler *handler.PostHandler) {
 	//router.HandleFunc("/", handler.CreateConsumer).Methods("POST")
 	//router.HandleFunc("/verify/{consumerId}", handler.Verify).Methods("GET")
 
-	router.HandleFunc("/upload",handler.CreatePost).Methods("POST")
+	router.HandleFunc("/upload",IsAuthorized(handler.CreatePost)).Methods("POST")
 	router.HandleFunc("/createCollection",IsAuthorized(handler.CreateCollection)).Methods("POST")
 	router.HandleFunc("/addIntoCollection/{id}/{name}",IsAuthorized(handler.AddIntoCollection)).Methods("POST")
 	router.HandleFunc("/addComment/{id}",IsAuthorized(handler.AddComment)).Methods("POST")
@@ -145,6 +146,7 @@ func handleFunc(handler *handler.PostHandler) {
 	router.HandleFunc("/getLikesByPostId/{id}",handler.GetLikeByPostId).Methods("GET")
 	router.HandleFunc("/getPostsByUserId/{id}",handler.GetPostsByUserId).Methods("GET")
 	router.HandleFunc("/getStoriesByUserId/{id}",handler.GetStoriesByUserId).Methods("GET")
+	router.HandleFunc("/searchLocation/{name}", IsAuthorized(handler.SearchLocation)).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), h(router)))
 	//log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", "8080"), h(router)))

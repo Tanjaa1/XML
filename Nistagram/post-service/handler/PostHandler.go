@@ -31,6 +31,8 @@ func (handler *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request){
 	}
 
 	files := r.MultipartForm.File["file"]
+	fmt.Println("Ispis files")
+	fmt.Println(files)
 
 	var filename string
 	var filepat string
@@ -77,6 +79,8 @@ func (handler *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request){
 // Ostali podaci
 	var post dto.PostDto
 	data := r.MultipartForm.Value["data"]
+	fmt.Println("ispis data")
+	fmt.Println(data)
 
 	err = json.Unmarshal([]byte(data[0]), &post)
 	if err != nil{
@@ -84,6 +88,8 @@ func (handler *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request){
 		w.Write([]byte("{\"success\":\"error\"}"))
 		return
 	}
+	fmt.Println("ispis date param location")
+	fmt.Println(post.Location)
 	err = handler.Service.CreatePost(&post, images)
 	if err != nil {
 		fmt.Println(err)
@@ -286,4 +292,21 @@ func (handler *PostHandler) GetStoriesByUserId(w http.ResponseWriter, r *http.Re
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(result)
+}
+
+func (handler *PostHandler) SearchLocation(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	result, err := handler.Service.SearchLocation(vars["name"])
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+	if result !=nil {
+		w.WriteHeader(http.StatusOK)
+	}else{
+		w.WriteHeader(http.StatusOK)
+
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&result)
 }

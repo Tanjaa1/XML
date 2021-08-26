@@ -161,6 +161,23 @@ func (handler *RegisteredUserHandler) GetUserByUsername(w http.ResponseWriter, r
 	json.NewEncoder(w).Encode(result)
 }
 
+func (handler *RegisteredUserHandler) SearchProfile(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	result, err := handler.Service.SearchProfile(vars["name"])
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+	if result !=nil {
+		w.WriteHeader(http.StatusOK)
+	}else{
+		w.WriteHeader(http.StatusOK)
+
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&result)
+}
+
 //func (ts *postServer) CreateRegisteredUser(w http.ResponseWriter, req *http.Request) {
 //	span := tracer.StartSpanFromRequest("cretePostHandler", ts.tracer, req)
 //	defer span.Finish()
