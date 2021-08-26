@@ -237,3 +237,9 @@ func (repo *PostRepository) CreateLink(link *model.Link) error {
 		return  nil
 	}
 }
+
+func (repo *PostRepository) HashtagSearch(name string)  ([] model.Hashtag, error) {
+	var listResult []model.Hashtag
+	result:=repo.Database.Table("hashtags").Find(&listResult,"name like ?",name)
+	return listResult,result.Error
+}

@@ -326,3 +326,13 @@ func (service *PostService) SearchLocation(name string) ([] dto.LocationDTO, err
 	fmt.Print("u repozitorijumu")
 	return locations,err
 }
+
+func (service *PostService) SearchHashtag(name string) ([] dto.HashtagDTO, error) {
+	exists ,err:= service.Repo.HashtagSearch("%"+name+"%")
+	var hashtags []dto.HashtagDTO
+	for _, item := range exists {
+		hashtags = append(hashtags, dto.HashtagDTO{Id: item.ID,Name: item.Name})
+	}
+	fmt.Print("u repozitorijumu")
+	return hashtags,err
+}

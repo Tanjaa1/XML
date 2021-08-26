@@ -1,6 +1,6 @@
 <template>
     <div class="menu-item">
-        <input style="width:200px" href="#" id="searchfield" @click="isOpen=!isOpen"  v-on:input="search()"/>
+        <input style="width:200px" href="#" id="searchTagId" @click="isOpen=!isOpen"  v-on:input="search()"/>
     <transition name="fade" appear>
     <div class="sub-menu" v-if="isOpen">
         <TabNav :tabs="['Accounts','Tags','Locations']" :selected="selected" @selected="setSelected">
@@ -38,9 +38,9 @@ export default {
         return{
             isOpen: false,
             selected: 'Accounts',
-            tags:[{name:"dddddddd"}],
-            profiles:[{username:"AAAAAAA"}],
-            locations:[{city:"da",place:"da",country:"ne"}]
+            tags:[],
+            profiles:[],
+            locations:[]
         }
     },
     methods:{
@@ -48,27 +48,38 @@ export default {
             this.selected=tab;
         },
         search(){
-            axios({
-                method: "get",
-                url:  'http://localhost:8080/api/post/searchLocation/'+document.getElementById("searchfield")
-            }).then(response => {
-                this.locations=response.data
-                })
+             axios
+                .get("http://localhost:8080/api/user/searchProfile/" + document.getElementById("searchTagId").value,
+				{
+							headers: {
+								'Authorization': 'Bearer' + " " + localStorage.getItem('token')
+							}
+				})
+                .then(response => {
+					this.profiles = response.data
+              })
+            axios
+                .get("http://localhost:8080/api/post/searchLocation/" + document.getElementById("searchTagId").value,
+				{
+							headers: {
+								'Authorization': 'Bearer' + " " + localStorage.getItem('token')
+							}
+				})
+                .then(response => {
+					this.locations = response.data
+              })
 
-            axios({
-                method: "get",
-                url:  'http://localhost:8080/api/post/searchHashtag/'+document.getElementById("searchfield")
-            }).then(response => {
-                this.tags=response.data
-                })
-
-            axios({
-                method: "get",
-                url:  'http://localhost:8080/api/user/searchLocation/'+document.getElementById("searchfield")
-            }).then(response => {
-                this.profiles=response.data
-                })
-        }
+              axios
+                .get("http://localhost:8080/api/post/searchHashtag/" + document.getElementById("searchTagId").value,
+				{
+							headers: {
+								'Authorization': 'Bearer' + " " + localStorage.getItem('token')
+							}
+				})
+                .then(response => {
+					this.tags = response.data
+              })
+        },
     }
 }
 </script>
