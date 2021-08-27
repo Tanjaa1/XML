@@ -35,8 +35,12 @@
         <div class="container">
             <div class="row" v-for="item in items" :key="item">
                 <div class="col-sm-6">
-                    <img :src="item.image" v-if="item.image" style="width:25%"/>
-                    <input class="btn" type="button" value="X" v-if="item.image" @click="removeImage(items[item.iid])"/>
+                    <video v-if="item.image.includes('video')" style="width:45%" controls>
+					<source v-bind:src="item.image" type="video/mp4">
+					Your browser does not support the video tag.
+					</video>
+                    <img :src="item.image" v-if="item.image.includes('image')" style="width:25%"/>
+                    <input class="btn" type="button" value="X" v-if="item.image != ''" @click="removeImage(items[item.iid])"/>
                 </div>
             </div>
             <div  v-if="items[0].image || items[1].image || items[2].image || items[3].image || items[4].image">
@@ -55,7 +59,7 @@
                    <br>
                    <br>
                 <small>Tag people </small>
-                <input type="text" @click="isOpen=false,isOpenP=!isOpenP" id="searchTagId" v-on:input="searchTags()"/>
+                <input type="text" @click="isOpen=false,isOpenP=!isOpenP" id="ss" v-on:input="searchTags()"/>
                    <br>
                  <transition name="fade" appear>
                         <div class="sub-menu" v-if="isOpenP" >
@@ -85,23 +89,23 @@ export default {
         return{
             items: [
        {
-         image: false,
+         image: '',
          iid:0,
        },
        {
-         image: false,
+         image: '',
          iid:1,
        },
        {
-         image: false,
+         image: '',
          iid:2,
        },
        {
-         image: false,
+         image: '',
          iid:3,
        },
        {
-         image: false,
+         image: '',
          iid:4,
        },
     ],
@@ -129,8 +133,10 @@ export default {
     },
     methods:{
         searchTags(){
-            axios
-                .get("http://localhost:8080/api/user/searchProfile/" + document.getElementById("searchTagId").value,
+            alert("Ispis")
+            alert(document.getElementById("ss").value)
+              axios
+                .get("http://localhost:8080/api/user/searchProfile/" + document.getElementById("ss").value,
 				{
 							headers: {
 								'Authorization': 'Bearer' + " " + localStorage.getItem('token')
@@ -252,11 +258,10 @@ export default {
       reader.onload = (e) => {
         item.image = e.target.result;
       };
-      alert(item.image)
       reader.readAsDataURL(file);
     },
     removeImage: function (item) {
-      item.image = false; 
+      item.image = ''; 
     },
         Taged(p){
             if(this.tagedPeoples.indexOf(p, 0)==-1)

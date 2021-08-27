@@ -1,7 +1,11 @@
 package service
 
 import (
+	"bytes"
 	"fmt"
+	"image"
+	"image/png"
+	"os"
 	"post-service/dto"
 	"post-service/model"
 	"post-service/repository"
@@ -39,10 +43,11 @@ func (service *PostService) CreatePost(dtoo *dto.PostDto, imagess []dto.ImageDTO
 
 	var comments []model.Comment
 	for _, item := range dtoo.Comments {
-		comments = append(comments, model.Comment{Content: item.Content, AuthorIdLink: item.AuthorIdLink})
+		comments = append(comments, model.Comment{Content: item.Content, Username: item.Username})
 	}
 	intVar, _ := strconv.Atoi(dtoo.UserId)
-	post := model.Post{Images: images,Comments: comments,UserId: intVar,Description: dtoo.Description,
+	intVa := uint(intVar)
+	post := model.Post{Images: images,Comments: comments,UserId: intVa,Description: dtoo.Description,
 		TagsLink: links,HashTagsIdList: hashtags,LocationId: dtoo.Location.Id, CloseFriends: false, PostType: model.ConvertPostType(dtoo.PostType)}
 
 	service.Repo.CreatePost(&post)
@@ -107,7 +112,7 @@ func (service *PostService) CreateCollection(dtoo *dto.CollectionDTO) error {
 	if result == nil {
 		var posts []model.PostIdList
 		for _, s := range dtoo.Posts {
-			posts = append(posts, model.PostIdList{PostId: s})
+			posts = append(posts, model.PostIdList{PostId: uint(s)})
 		}
 		//var posts []int
 		//for _,s := range dtoo.Posts {
@@ -122,7 +127,7 @@ func (service *PostService) CreateCollection(dtoo *dto.CollectionDTO) error {
 	return fmt.Errorf("collection with this name already exists")
 }
 
-func (service *PostService) AddIntoCollection(postId int, collectionName string) error {
+func (service *PostService) AddIntoCollection(postId uint, collectionName string) error {
 
 	result,_ := service.Repo.GetCollectionByName(collectionName)
 	//var posts []model.PostIdList
@@ -134,19 +139,19 @@ func (service *PostService) AddIntoCollection(postId int, collectionName string)
 		return nil
 }
 
-func (service *PostService) AddComment(dtoo *dto.CommentDTO, postId int) error {
+func (service *PostService) AddComment(dtoo *dto.CommentDTO, postId uint) error {
 
 	result,_ := service.Repo.GetPostById(postId)
 	//var posts []model.PostIdList
 
-	result.Comments = append(result.Comments, model.Comment{Content: dtoo.Content, AuthorIdLink: dtoo.AuthorIdLink})
+	result.Comments = append(result.Comments, model.Comment{Content: dtoo.Content, Username: dtoo.Username})
 	//collection := model.Collection{Name: result.Name, UserId: result.UserId, Posts: result.}
 
 	service.Repo.AddComment(result)
 	return nil
 }
 
-func (service *PostService) GetCollectionsByUserId(userId int) ([]dto.CollectionDTOO, error) {
+func (service *PostService) GetCollectionsByUserId(userId uint) ([]dto.CollectionDTOO, error) {
 	collections, err := service.Repo.GetCollectionsByUserId(userId)
 	if err != nil {
 		return []dto.CollectionDTOO{}, err
@@ -160,7 +165,7 @@ func (service *PostService) GetCollectionsByUserId(userId int) ([]dto.Collection
 
 			var images []dto.ImageDTO
 			for _, item2 := range post.Images {
-				images = append(images, dto.ImageDTO{Filename: item2.Filename, Filepath: item2.Filepath})
+				images = append(images, dto.ImageDTO{Filename: item2.Filename,Img: service.ConvertImgToBytes(item2.Filepath)})
 			}
 
 			l, _ := service.Repo.GetLocationById(post.LocationId)
@@ -178,10 +183,10 @@ func (service *PostService) GetCollectionsByUserId(userId int) ([]dto.Collection
 
 			var comments []dto.CommentDTO
 			for _, item5 := range post.Comments {
-				comments = append(comments, dto.CommentDTO{Content: item5.Content, AuthorIdLink: item5.AuthorIdLink})
+				comments = append(comments, dto.CommentDTO{Content: item5.Content, Username: item5.Username})
 			}
-			stringVar := strconv.Itoa(post.UserId)
-			postDTO := dto.PostDto{Images: images, Comments: comments, UserId: stringVar, Description: post.Description,
+			stringVar := strconv.Itoa(int(post.UserId))
+			postDTO := dto.PostDto{Id: post.ID,Images: images, Comments: comments, UserId: stringVar, Description: post.Description,
 				TagsLink: links, HashTags: hashtags, Location: location, CloseFriends: false, PostType: model.ConvertPostTypeToString(post.PostType)}
 
 			postList = append(postList, postDTO)
@@ -214,10 +219,10 @@ func (service *PostService) CreateLike(dtoo *dto.LikeDTO) error {
 	}
 }
 
-func (service *PostService) GetLikeByPostId(postId int) ([]dto.LikeDTO,error) {
+func (service *PostService) GetLikeByPostId(postId uint, liketype model.LikeType) ([]dto.LikeDTO,error) {
 
 	fmt.Println("Usao u service")
-	likes, _ := service.Repo.GetLikeByPostId(postId)
+	likes, _ := service.Repo.GetLikeByPostId(postId, liketype)
 	var likesDto []dto.LikeDTO
 	for _, item := range likes {
 		likesDto = append(likesDto, dto.LikeDTO{PostId: item.PostId, UserId: item.UserId, Username: item.Username,
@@ -227,7 +232,7 @@ func (service *PostService) GetLikeByPostId(postId int) ([]dto.LikeDTO,error) {
 	return likesDto,nil
 }
 
-func (service *PostService) GetPostsByUserId(userId int) ([]dto.PostDto,error) {
+func (service *PostService) GetLikedPostsByUserId(userId uint) ([]dto.PostDto,error) {
 
 	fmt.Println("Usao u service")
 	likes, _ := service.Repo.GetLikeByUserId(userId)
@@ -240,7 +245,7 @@ func (service *PostService) GetPostsByUserId(userId int) ([]dto.PostDto,error) {
 
 		var images []dto.ImageDTO
 		for _, item := range post.Images {
-			images = append(images, dto.ImageDTO{Filename: item.Filename, Filepath: item.Filepath})
+			images = append(images, dto.ImageDTO{Filename: item.Filename, Img: service.ConvertImgToBytes(item.Filepath)})
 		}
 
 		l, _ := service.Repo.GetLocationById(post.LocationId)
@@ -259,17 +264,17 @@ func (service *PostService) GetPostsByUserId(userId int) ([]dto.PostDto,error) {
 
 		var comments []dto.CommentDTO
 		for _, item := range post.Comments {
-			comments = append(comments, dto.CommentDTO{Content: item.Content, AuthorIdLink: item.AuthorIdLink})
+			comments = append(comments, dto.CommentDTO{Content: item.Content, Username: item.Username})
 		}
-		stringVar := strconv.Itoa(post.UserId)
-		postsDto = append(postsDto, dto.PostDto{Images: images,Comments: comments,UserId: stringVar,Description: post.Description,
+		stringVar := strconv.Itoa(int(post.UserId))
+		postsDto = append(postsDto, dto.PostDto{Id: post.ID,Images: images,Comments: comments,UserId: stringVar,Description: post.Description,
 			TagsLink: links,HashTags: hashtags,Location: location, CloseFriends: false, PostType: model.ConvertPostTypeToString(post.PostType)})
 	}
 
 	return postsDto,nil
 }
 
-func (service *PostService) GetStoriesByUserId(userId int) ([]dto.PostDto,error) {
+func (service *PostService) GetStoriesByUserId(userId uint) ([]dto.PostDto,error) {
 
 	fmt.Println("Usao u service")
 	stories, _ := service.Repo.GetStoriesByUserId(userId)
@@ -287,7 +292,7 @@ func (service *PostService) GetStoriesByUserId(userId int) ([]dto.PostDto,error)
 
 			var images []dto.ImageDTO
 			for _, item := range item.Images {
-				images = append(images, dto.ImageDTO{Filename: item.Filename, Filepath: item.Filepath})
+				images = append(images, dto.ImageDTO{Filename: item.Filename, Img: service.ConvertImgToBytes(item.Filepath)})
 			}
 
 			l, _ := service.Repo.GetLocationById(item.LocationId)
@@ -306,10 +311,10 @@ func (service *PostService) GetStoriesByUserId(userId int) ([]dto.PostDto,error)
 
 			var comments []dto.CommentDTO
 			for _, item1 := range item.Comments {
-				comments = append(comments, dto.CommentDTO{Content: item1.Content, AuthorIdLink: item1.AuthorIdLink})
+				comments = append(comments, dto.CommentDTO{Content: item1.Content, Username: item1.Username})
 			}
-			stringVar := strconv.Itoa(item.UserId)
-			postsDto = append(postsDto, dto.PostDto{Images: images, Comments: comments, UserId: stringVar, Description: item.Description,
+			stringVar := strconv.Itoa(int(item.UserId))
+			postsDto = append(postsDto, dto.PostDto{Id: item.ID,Images: images, Comments: comments, UserId: stringVar, Description: item.Description,
 				TagsLink: links, HashTags: hashtags, Location: location, CloseFriends: false, PostType: model.ConvertPostTypeToString(item.PostType)})
 		}
 	}
@@ -335,4 +340,99 @@ func (service *PostService) SearchHashtag(name string) ([] dto.HashtagDTO, error
 	}
 	fmt.Print("u repozitorijumu")
 	return hashtags,err
+}
+
+func (service *PostService) GetPostsByUserId(userId uint) ([]dto.PostDto,error) {
+
+	fmt.Println("Usao u service")
+	posts, _ := service.Repo.GetPostsByUserId(userId)
+	fmt.Println("Ispis lisla likes")
+	fmt.Println(len(posts))
+	fmt.Println(posts)
+	var postsDto []dto.PostDto
+	for _, it := range posts {
+
+		var images []dto.ImageDTO
+		for _, item := range it.Images {
+			images = append(images, dto.ImageDTO{Filename: item.Filename, Img: service.ConvertImgToBytes(item.Filepath)})
+			fmt.Println("Ispis slika")
+			fmt.Println(images[0].Img)
+		}
+
+		l, _ := service.Repo.GetLocationById(it.LocationId)
+		location := dto.LocationDTO{Place: l.Place, City: l.City, Country: l.Country}
+
+		var hashtags []dto.HashtagDTO
+		for _, item := range it.HashTagsIdList {
+			h,_ := service.Repo.GetHashtagById(item.HashtagId)
+			hashtags = append(hashtags, dto.HashtagDTO{Name: h.Name})
+		}
+
+		var likesDto []string
+		likes, _ := service.GetLikeByPostId(it.ID, model.LikeType(0))
+		for _,item := range likes{
+			likesDto = append(likesDto, item.Username)
+		}
+
+		var dislikesDto []string
+		dislikes, _ := service.GetLikeByPostId(it.ID, model.LikeType(1))
+		for _,item := range dislikes{
+			dislikesDto = append(dislikesDto, item.Username)
+		}
+
+		var links []dto.LinkDTO
+		for _, item := range it.TagsLink {
+			links = append(links, dto.LinkDTO{Name: item.Name, LinkType: model.ConvertLinkTypeToString(item.LinkType)})
+		}
+
+		var comments []dto.CommentDTO
+		for _, item := range it.Comments {
+			comments = append(comments, dto.CommentDTO{Content: item.Content, Username: item.Username})
+		}
+		stringVar := strconv.Itoa(int(it.UserId))
+		postsDto = append(postsDto, dto.PostDto{Id: it.ID,Images: images,Comments: comments,UserId: stringVar,Description: it.Description,
+			TagsLink: links,HashTags: hashtags,Location: location, CloseFriends: false, PostType: model.ConvertPostTypeToString(it.PostType),
+			Likes: likesDto, Dislikes: dislikesDto})
+	}
+
+	return postsDto,nil
+}
+
+//func (handler *PostService) ConvertAllPhotos(posts []*model.Post,photos []*model.Image) []*dto.PostDto {
+//	var res []*dto.PostDto
+//	for _,post := range posts{
+//		postDTO := dto.PostDto{PostID: post.PostID,Username: post.Username}
+//		for _, pp := range photos {
+//			if(pp.PostID == post.PostID) {
+//				println("*****")
+//				postDTO.PhotoDTO = append(postDTO.PhotoDTO, &dto.PhotoDTO{Img: handler.ConvertImgToBytes(pp.Path)})
+//			}
+//		}
+//		res = append(res, &postDTO)
+//	}
+//
+//	return res
+//}
+
+func (handler *PostService) ConvertImgToBytes(filePath string)  []byte{
+	fmt.Println("start")
+	f, err := os.Open(filePath)
+	if err != nil {
+		fmt.Println("Ispis greske err u convert")
+		fmt.Println(err)
+		return nil
+
+	}
+	fmt.Println("hshhshdh")
+	defer f.Close()
+	image, _, err := image.Decode(f)
+	image1, _, err1 :=
+	buf := new(bytes.Buffer)
+	err = png.Encode(buf, image)
+	if err != nil{
+		fmt.Println(err)
+
+	}
+	send_s3 := buf.Bytes()
+	return send_s3
 }

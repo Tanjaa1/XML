@@ -8,7 +8,7 @@ type Post struct {
 	gorm.Model
 	Images                   []Image			 `json:"images" gorm:"many2many:images_posts;"`
 	Comments                  []Comment          `json:"comments" gorm:"many2many:comments_posts;"`
-	UserId                    int                `json:"userId"`
+	UserId                    uint                `json:"userId"`
 	Description               string             `json:"description"`
 	//Likes                     []Link             `json:"likes" gorm:"many2many:likes_posts;"`
 	//Dislikes                  []Link             `json:"dislikes" gorm:"many2many:dislikes_posts;"`
@@ -27,8 +27,8 @@ type HashtagIdList struct {
 
 type Like struct {
 	gorm.Model
-	PostId            int                `json:"postId"`
-	UserId            int                `json:"userId"`
+	PostId            uint                `json:"postId"`
+	UserId            uint                `json:"userId"`
 	Username          string              `json:"username"`
 	LikeType          LikeType           `json:"likeType"`
 

@@ -75,6 +75,7 @@ export default {
 						.then(response => {
 							this.user = response.data
 							localStorage.setItem('userId', this.user.id)
+                            localStorage.setItem('username', this.user.username)
 							
 						})
 						.catch(error => {

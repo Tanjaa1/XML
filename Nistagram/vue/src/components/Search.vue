@@ -27,7 +27,7 @@
 
 <script>
 const axios=require('axios')
-import TabNav from '../components/TabNav.vue'
+import TabNav from './TabNav.vue'
 import Tab from '../components/Tab.vue'
 
 export default {

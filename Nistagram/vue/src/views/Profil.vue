@@ -9,7 +9,7 @@
                                     <div class="p-4 d-flex justify-content-end text-center">
                                         <ul class="list-inline mb-0">
                                             <li class="list-inline-item">
-                                                <h5 class="font-weight-bold mb-0 d-block">215</h5><small class="text-muted"><i class="fa fa-image mr-1"></i>Photos</small>
+                                                <h5 class="font-weight-bold mb-0 d-block">{{pict.length}}</h5><small class="text-muted"><i class="fa fa-image mr-1"></i>Photos</small>
                                             </li>
                                             <li class="list-inline-item">
                                                 <h5 class="font-weight-bold mb-0 d-block">745</h5><small class="text-muted"> <i class="fa fa-user mr-1"></i>Followers</small>
@@ -37,21 +37,38 @@
                                     <div class="container">
                                         <div class="row">
                                             <div class="col-sm-6" v-for="p in pict" :key="p">
-                                                <img src="https://api.time.com/wp-content/uploads/2016/05/gettyimages-502649088.jpg?w=824&quality=70" width="60%" height="60%">
-                                                <h4 id="cardId"><b>Vacation</b></h4>
+                                                <div  v-for="im in p.images" :key="im">
+                                                    <video v-if="im.img.includes('video')" controls>
+                                                    <source v-bind:src="im.img" type="video/mp4">
+                                                    Your browser does not support the video tag.
+                                                    </video>
+                                                    <img :src="im.img" v-if="im.img.includes('image')"/>
+                                                </div>
+                                                <h4 id="cardId"><b>{{p.description}}</b></h4>
                                                 <div class="d-flex text-center">
                                                     <ul class="list-inline mb-0">
                                                         <li class="list-inline-item">
-                                                            <h5 class="font-weight-bold mb-0 d-block">215</h5><small class="text-muted"><i class="fa fa-thumbs-up"></i>Likes</small>
+                                                            <h5 v-if="p.likes != null" class="font-weight-bold mb-0 d-block">{{p.likes.length}}</h5>
+                                                            <h5 v-if="p.likes == null" class="font-weight-bold mb-0 d-block">0</h5>
+                                                            <small class="text-muted"><i class="fa fa-thumbs-up"></i>Likes</small>
                                                         </li>
                                                         <li class="list-inline-item">
-                                                            <h5 class="font-weight-bold mb-0 d-block">745</h5><small class="text-muted"><i class="fa fa-thumbs-down"></i>Dislikes</small>
+                                                            <h5 v-if="p.dislikes != null" class="font-weight-bold mb-0 d-block">{{p.dislikes.length}}</h5>
+                                                            <h5 v-if="p.dislikes == null" class="font-weight-bold mb-0 d-block">0</h5>
+                                                            <small class="text-muted"><i class="fa fa-thumbs-down"></i>Dislikes</small>
                                                         </li>
                                                         <li class="list-inline-item">
-                                                            <h5 class="font-weight-bold mb-0 d-block">340</h5><small class="text-muted"><i class="fa fa-comments"></i>Comments</small>
+                                                            <h5 v-if="p.comments != null" class="font-weight-bold mb-0 d-block">{{p.comments.length}}</h5>
+                                                            <h5 v-if="p.comments == null" class="font-weight-bold mb-0 d-block">0</h5>
+                                                            <small class="text-muted"><i class="fa fa-comments"></i>Comments</small>
                                                         </li>
                                                     </ul>
-                                                </div><br><br>
+                                                </div><br>Comments:
+                                                <div v-for="c in p.comments" :key="c" style="word-wrap: break-word;width: 300px;">
+                                                    {{c.username}}: {{c.content}}<br>
+                                                </div><br>
+                                                 <input id="addComment" type="text" v-model="comment.content"/>
+                                                 <button  v-on:click="AddComment(p.id)">Add comment</button>
                                             </div>
                                         </div>
                                     </div>       
@@ -73,6 +90,8 @@
 import NewPhoto  from "../components/NewPhoto.vue"
 import NewStory  from "../components/NewStory.vue"
 
+const axios=require('axios')
+
 export default {
   name: 'Profil',
   components: {
@@ -86,14 +105,70 @@ export default {
 			token: null,
 			role:null,
 			jwtAuthenticationRequest:{},
-            pict:[1,2,3,4]
+            pict:[],
+            likes:null,
+            im:null,
+            comment:{
+                username:null,
+                content:null
+            }
 		}
 	},beforeMount() {
-
+        alert(localStorage.getItem('userId'))
+        axios
+                .get("http://localhost:8080/api/post/getPByUserId/" + localStorage.getItem('userId'),
+				{
+							headers: {
+								'Authorization': 'Bearer' + " " + localStorage.getItem('token')
+							}
+				})
+                .then(response => {
+                  if (response.status==200){
+					this.pict = response.data
+                    for(let j = 0; j < this.pict.length; j++){
+                        for (let i = 0; i < this.pict[j].images.length; i++) {
+                           // pom1 = this.pict[j].images[i].filepath.split('\\')
+                            //if (pom1.length == 4) {
+                                //this.pict[j].images[i].filepath = pom1[1] + '/' + pom1[2] + '/' + pom1[3]
+                                alert(this.pict[j].images[i].filename)
+                                if(this.pict[j].images[i].filename.includes('mp4')){
+                                    this.pict[j].images[i].img = 'data:video/mp4;base64,' + this.pict[j].images[i].img
+                                    alert(this.pict[j].images[i].img)
+                                }else{
+                                    this.pict[j].images[i].img = 'data:image/png;base64,' + this.pict[j].images[i].img
+                                    alert(this.pict[j].images[i].img)
+                                }
+                            //}
+                        }
+                    }
+                }
+              })
 	},
   methods: {
       Edit(){
 		this.$router.push('/');
+    },
+    AddComment(id){
+        this.comment.username = localStorage.getItem('username')
+        axios
+                .post("http://localhost:8080/api/post/addComment/" + id, this.comment,
+				{
+							headers: {
+								'Authorization': 'Bearer' + " " + localStorage.getItem('token'),
+							}
+				})
+                .then(response => {
+                  if (response.status==200){
+                    alert('Successful');
+                    location.reload()
+                  }
+              })
+               .catch(error => {
+                // print(error.status == 417)
+                if(error == "Error: Request failed with status code 400"){
+                   alert("Error")
+                  }
+                })
     },
   }
 }

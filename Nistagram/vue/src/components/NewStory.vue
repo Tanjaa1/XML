@@ -6,8 +6,12 @@
         <div class="container">
              <div class="row" v-for="item in itemss" :key="item">
                 <div class="col-sm-6">
-                    <img :src="item.image" v-if="item.image" style="width:25%"/>
-                    <input class="btn" type="button" value="X" v-if="item.image" @click="removeImage(itemss[item.iid])"/>
+                   <video v-if="item.image.includes('video')" style="width:45%" controls>
+					<source v-bind:src="item.image" type="video/mp4">
+					Your browser does not support the video tag.
+					</video>
+                    <img :src="item.image" v-if="item.image.includes('image')" style="width:25%"/>
+                    <input class="btn" type="button" value="X" v-if="item.image != ''" @click="removeImage(itemss[item.iid])"/>
                 </div>
             </div>
             <div  v-if="itemss[0].image">
@@ -19,14 +23,14 @@
                             </div>
                         </div>
                     </transition>
-                    <input v-if="location==null" id="locationSearch" type="text" @click="isOpenP=false,isOpen=!isOpen" v-on:input="search()"/>
+                    <input v-if="location==null" id="ll" type="text" @click="isOpenP=false,isOpen=!isOpen" v-on:input="search()"/>
                  
                 <small v-if="location!=null">{{this.location.place}} {{this.location.city}} {{this.location.country}}</small>
                 <input v-if="location!=null" class="btn" type="button" value="X"  @click="location=null,isOpen=false,isOpenP=false"/>
                    <br>
                    <br>
                 <small>Tag people </small>
-                <input type="text" @click="isOpen=false,isOpenP=!isOpenP" id="searchTagId" v-on:input="searchTags()"/>
+                <input type="text" @click="isOpen=false,isOpenP=!isOpenP" id="ss1" v-on:input="searchTags()"/>
                    <br>
                  <transition name="fade" appear>
                         <div class="sub-menu" v-if="isOpenP" >
@@ -56,7 +60,7 @@ export default {
         return{
             itemss:[
        {
-         image: false,
+         image: '',
          iid:0,
        }
             ],
@@ -83,7 +87,7 @@ export default {
     methods:{
          searchTags(){
             axios
-                .get("http://localhost:8080/api/user/searchProfile/" + document.getElementById("searchTagId").value,
+                .get("http://localhost:8080/api/user/searchProfile/" + document.getElementById("ss1").value,
 				{
 							headers: {
 								'Authorization': 'Bearer' + " " + localStorage.getItem('token')
@@ -95,7 +99,7 @@ export default {
         },
         search(){
             axios
-                .get("http://localhost:8080/api/post/searchLocation/" + document.getElementById("locationSearch").value,
+                .get("http://localhost:8080/api/post/searchLocation/" + document.getElementById("ll").value,
 				{
 							headers: {
 								'Authorization': 'Bearer' + " " + localStorage.getItem('token')
@@ -103,8 +107,6 @@ export default {
 				})
                 .then(response => {
 					this.locationtag = response.data
-                    alert("Ispis id")
-                    alert(this.locationtag[0].id)
               })
         },
         CreatePost(){
@@ -148,13 +150,12 @@ export default {
 							}
 				})
                 .then(response => {
-                  if (response.status==200){
-                    alert('Successful');
-					this.userr = this.userDto
+                  if (response.status==201){
+                    location.reload()
                   }
               })
                .catch(error => {
-                // print(error.status == 417)
+                // print(error.status == 400)
                 if(error == "Error: Request failed with status code 400"){
                    alert("Error")
                   }
@@ -210,7 +211,8 @@ export default {
       reader.readAsDataURL(file);
     },
     removeImage: function (item) {
-      item.image = false; 
+      item.image = ''; 
+      this.images = []
     },
     removeLocation(){
         this.location=null

@@ -144,10 +144,11 @@ func handleFunc(handler *handler.PostHandler) {
 	router.HandleFunc("/GetCollectionsByUserId/{id}",handler.GetCollectionsByUserId).Methods("GET")
 	router.HandleFunc("/addLike",IsAuthorized(handler.AddLike)).Methods("POST")
 	router.HandleFunc("/getLikesByPostId/{id}",handler.GetLikeByPostId).Methods("GET")
-	router.HandleFunc("/getPostsByUserId/{id}",handler.GetPostsByUserId).Methods("GET")
+	router.HandleFunc("/getPostsByUserId/{id}",handler.GetLikedPostsByUserId).Methods("GET")
 	router.HandleFunc("/getStoriesByUserId/{id}",handler.GetStoriesByUserId).Methods("GET")
 	router.HandleFunc("/searchLocation/{name}", IsAuthorized(handler.SearchLocation)).Methods("GET")
 	router.HandleFunc("/searchHashtag/{name}", IsAuthorized(handler.SearchHashtag)).Methods("GET")
+	router.HandleFunc("/getPByUserId/{id}",IsAuthorized(handler.GetPostsByUserId)).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), h(router)))
 	//log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", "8080"), h(router)))

@@ -53,12 +53,12 @@ func (repo *PostRepository) GetCollectionByName(name string) (*model.Collection,
 	return collection, nil
 }
 
-func (repo *PostRepository) GetPostById(id int) (*model.Post, error) {
+func (repo *PostRepository) GetPostById(id uint) (*model.Post, error) {
 	fmt.Println(id)
 	post := &model.Post{}
 	repo.Database.Model(&post)
 	//repo.Database.First(&collection,"name = ?" , name)
-	err := repo.Database.Preload("Images").Preload("Comments").Preload("TagsLink").Preload("HashTags").Preload("Location").First(&post, "ID = ?", id).Error
+	err := repo.Database.Preload("Images").Preload("Comments").Preload("TagsLink").Preload("HashTagsIdList").First(&post, "ID = ?", id).Error
 	if err != nil{
 		return nil,err
 	}
@@ -73,8 +73,8 @@ func (repo *PostRepository) AddComment(post *model.Post) error {
 	return nil
 }
 
-func (repo *PostRepository) GetCollectionsByUserId(id int) ([]model.Collection, error) {
-	collections := []model.Collection{}
+func (repo *PostRepository) GetCollectionsByUserId(id uint) ([]model.Collection, error) {
+	var collections []model.Collection
 	repo.Database.Model(&collections)
 	//repo.Database.First(&collection,"name = ?" , name)
 	err := repo.Database.Preload("Posts").Find(&collections, "user_id = ?", id).Error
@@ -96,7 +96,7 @@ func (repo *PostRepository) CreateLike(like *model.Like) error {
 	}
 }
 
-func (repo *PostRepository) GetLikeByUserIdAndPostId(userId int,postId int) (*model.Like, error) {
+func (repo *PostRepository) GetLikeByUserIdAndPostId(userId uint,postId uint) (*model.Like, error) {
 	like := &model.Like{}
 	repo.Database.Model(&like)
 	err := repo.Database.First(&like,"user_id = ? and post_id = ?" , userId,postId).Error
@@ -124,12 +124,12 @@ func (repo *PostRepository) UpdateLike(like *model.Like) error {
 	return nil
 }
 
-func (repo *PostRepository) GetLikeByPostId(postId int) ([]model.Like, error) {
+func (repo *PostRepository) GetLikeByPostId(postId uint, likeType model.LikeType) ([]model.Like, error) {
 	fmt.Println("Ispis id -----------------")
 	fmt.Println(postId)
 	var like []model.Like
 	repo.Database.Model(&like)
-	err := repo.Database.Find(&like,"post_id = ?" , postId).Error
+	err := repo.Database.Find(&like,"post_id = ? and like_type = ?" , postId,likeType).Error
 	fmt.Println("Ispis err")
 	fmt.Println(err)
 	fmt.Println("Ispis like")
@@ -140,7 +140,7 @@ func (repo *PostRepository) GetLikeByPostId(postId int) ([]model.Like, error) {
 	return like, nil
 }
 
-func (repo *PostRepository) GetLikeByUserId(userId int) ([]model.Like, error) {
+func (repo *PostRepository) GetLikeByUserId(userId uint) ([]model.Like, error) {
 	fmt.Println("Ispis id -----------------")
 	fmt.Println(userId)
 	var like []model.Like
@@ -156,14 +156,14 @@ func (repo *PostRepository) GetLikeByUserId(userId int) ([]model.Like, error) {
 	return like, nil
 }
 
-func (repo *PostRepository) GetStoriesByUserId(id int) ([]model.Post, error) {
+func (repo *PostRepository) GetStoriesByUserId(id uint) ([]model.Post, error) {
 	fmt.Println("Ispis model.PostType(1)")
 	fmt.Println(model.PostType(1))
 	//post := &model.Post{}
 	var stories []model.Post
 	repo.Database.Model(&stories)
 	//repo.Database.First(&collection,"name = ?" , name)
-	err := repo.Database.Preload("Images").Preload("Comments").Preload("TagsLink").Preload("HashTags").Preload("Location").Find(&stories, "user_id = ? and post_type = ?", id,model.PostType(1)).Error
+	err := repo.Database.Preload("Images").Preload("Comments").Preload("TagsLink").Preload("HashTagsIdList").Find(&stories, "user_id = ? and post_type = ?", id,model.PostType(1)).Error
 	if err != nil{
 		return nil,err
 	}
@@ -242,4 +242,16 @@ func (repo *PostRepository) HashtagSearch(name string)  ([] model.Hashtag, error
 	var listResult []model.Hashtag
 	result:=repo.Database.Table("hashtags").Find(&listResult,"name like ?",name)
 	return listResult,result.Error
+}
+
+func (repo *PostRepository) GetPostsByUserId(id uint) ([]model.Post, error) {
+	var posts []model.Post
+	repo.Database.Model(&posts)
+	//repo.Database.First(&collection,"name = ?" , name)
+	err := repo.Database.Preload("Images").Preload("Comments").Preload("TagsLink").Preload("HashTagsIdList").Find(&posts, "user_id = ? and post_type = ?", id,model.PostType(0)).Error
+	if err != nil{
+		return nil,err
+	}
+	fmt.Println(len(posts))
+	return posts, nil
 }

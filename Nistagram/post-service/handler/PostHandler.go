@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
+	"post-service/model"
 	"strconv"
 
 	//"encoding/json"
@@ -49,7 +50,7 @@ func (handler *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request){
 		//filename = path.Ext(files[i].Filename)
 		filename = files[i].Filename
 		fmt.Println("Ispis filename: " + filename)
-		filepat = "\\post-service\\files\\"+ filename
+		filepat = "files/"+ filename
 
 		image := dto.ImageDTO{Filename: filename,Filepath: filepat}
 		images = append(images, image)
@@ -134,7 +135,7 @@ func (handler *PostHandler) AddIntoCollection(w http.ResponseWriter, r *http.Req
 
 	collectionName :=  vars["name"]
 	fmt.Println("creating")
-	err = handler.Service.AddIntoCollection(id3,collectionName)
+	err = handler.Service.AddIntoCollection(uint(id3),collectionName)
 	if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusExpectationFailed)
@@ -165,7 +166,7 @@ func (handler *PostHandler) AddComment(w http.ResponseWriter, r *http.Request){
 	id3 := int(id2)
 
 	fmt.Println("creating")
-	err = handler.Service.AddComment(&dto,id3)
+	err = handler.Service.AddComment(&dto,uint(id3))
 	if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusExpectationFailed)
@@ -185,7 +186,7 @@ func (handler *PostHandler) GetCollectionsByUserId(w http.ResponseWriter, r *htt
 		fmt.Println(err)
 	}
 	id3 := int(id2)
-	result, err := handler.Service.GetCollectionsByUserId(id3)
+	result, err := handler.Service.GetCollectionsByUserId(uint(id3))
 	if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusBadRequest)
@@ -236,7 +237,7 @@ func (handler *PostHandler) GetLikeByPostId(w http.ResponseWriter, r *http.Reque
 		fmt.Println(err)
 	}
 	id3 := int(id2)
-	result, err := handler.Service.GetLikeByPostId(id3)
+	result, err := handler.Service.GetLikeByPostId(uint(id3),model.LikeType(0))
 
 	if err != nil {
 		fmt.Println(err)
@@ -248,7 +249,7 @@ func (handler *PostHandler) GetLikeByPostId(w http.ResponseWriter, r *http.Reque
 	json.NewEncoder(w).Encode(result)
 }
 
-func (handler *PostHandler) GetPostsByUserId(w http.ResponseWriter, r *http.Request) {
+func (handler *PostHandler) GetLikedPostsByUserId(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Usao u handler")
 	vars := mux.Vars(r)
 	id := vars["id"]
@@ -259,7 +260,7 @@ func (handler *PostHandler) GetPostsByUserId(w http.ResponseWriter, r *http.Requ
 		fmt.Println(err)
 	}
 	id3 := int(id2)
-	result, err := handler.Service.GetPostsByUserId(id3)
+	result, err := handler.Service.GetLikedPostsByUserId(uint(id3))
 
 	if err != nil {
 		fmt.Println(err)
@@ -282,7 +283,7 @@ func (handler *PostHandler) GetStoriesByUserId(w http.ResponseWriter, r *http.Re
 		fmt.Println(err)
 	}
 	id3 := int(id2)
-	result, err := handler.Service.GetStoriesByUserId(id3)
+	result, err := handler.Service.GetStoriesByUserId(uint(id3))
 
 	if err != nil {
 		fmt.Println(err)
@@ -326,4 +327,27 @@ func (handler *PostHandler) SearchHashtag(w http.ResponseWriter, r *http.Request
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&result)
+}
+
+func (handler *PostHandler) GetPostsByUserId(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Usao u handler")
+	vars := mux.Vars(r)
+	id := vars["id"]
+	fmt.Println("Ispisuje se id")
+	fmt.Println(id)
+	id2,err := strconv.ParseInt(id, 10, 64)
+	if err != nil{
+		fmt.Println(err)
+	}
+	id3 := int(id2)
+	result, err := handler.Service.GetPostsByUserId(uint(id3))
+
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(result)
 }
