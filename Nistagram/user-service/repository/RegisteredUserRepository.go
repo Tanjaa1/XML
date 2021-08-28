@@ -69,6 +69,14 @@ func (repo *RegisteredUserRepository) GetRegisteredUserByID(id uint) (*model.Reg
 	}
 	return registeredUser, nil
 }
+func (repo *RegisteredUserRepository) GetRegisteredUserByID1(id uint) (*model.RegisteredUser, error) {
+	registeredUser := &model.RegisteredUser{}
+	if err := repo.Database.Preload("Account").Preload("RelatedUsers").First(&registeredUser, "ID = ?", id).Error; err != nil {
+		return nil, err
+	}
+	return registeredUser, nil
+}
+
 
 
 func (repo *RegisteredUserRepository) GetRegisteredUserByUsername(username string) (*model.Account, error) {
@@ -80,8 +88,11 @@ func (repo *RegisteredUserRepository) GetRegisteredUserByUsername(username strin
 
 func (repo *RegisteredUserRepository) UpdateRegisterUser(registeredUser *model.RegisteredUser) error {
 	err := repo.Database.Save(registeredUser.Account).Error
+	fmt.Println("pokusaj dodavanja pratioca")
 	if err == nil {
 		err1 := repo.Database.Save(registeredUser).Error
+		fmt.Println("u funkciji ")
+
 		if err1 != nil {
 			return err
 		}
@@ -89,6 +100,26 @@ func (repo *RegisteredUserRepository) UpdateRegisterUser(registeredUser *model.R
 	}
 	return nil
 }
+/*
+func (repo *RegisteredUserRepository) AddFollower(idRegisteUser string,idRelatedUser string) (bool, error) {
+	registerUser := &model.RegisteredUser{}
+	relatedUser := &model.RegisteredUser{}
+
+	repo.Database.First(&registerUser, "id = ?", idRegisteUser)
+	RelatedUserRepository.Database.First(&relatedUser,"id = ?",idRelatedUser)
+
+	fmt.Println(registerUser.Account.Name + "/n+++++++")
+	fmt.Println(relatedUser.Account.Name+"/n-----------")
+
+//	registerUser.RelatedUsers = append(registerUser.RelatedUsers, *relatedUser)
+
+	err := repo.Database.Save(registerUser).Error
+	if err==nil{
+		return true,err
+	}
+	return false,nil
+}
+*/
 
 func (repo *RegisteredUserRepository) FindAccountByUsername(username string) (bool, error) {
 	account := &model.Account{}

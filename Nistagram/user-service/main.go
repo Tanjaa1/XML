@@ -3,8 +3,8 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/handlers"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -106,6 +106,17 @@ func initServices(repo *repository.RegisteredUserRepository) *service.Registered
 func initHandler(service *service.RegisteredUserService) *handler.RegisteredUserHandler {
 	return &handler.RegisteredUserHandler{Service: service}
 }
+func initRepo1(database *gorm.DB) *repository.RelatedUserRepository {
+	return &repository.RelatedUserRepository{Database: database}
+}
+
+func initServices1(repo *repository.RelatedUserRepository) *service.RelatedUserService {
+	return &service.RelatedUserService{Repo: repo}
+}
+
+func initHandler1(service *service.RelatedUserService) *handler.RelatedUserHendler {
+	return &handler.RelatedUserHendler{Service: service}
+}
 func handleFunc(handler *handler.RegisteredUserHandler) {
 	router := mux.NewRouter().StrictSlash(true)
 	headers := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization", "Access-Control-Allow-Headers", "text/plain"})
@@ -123,18 +134,18 @@ func handleFunc(handler *handler.RegisteredUserHandler) {
 	router.HandleFunc("/changeMyPersonalData/{id}", handler.ChangePersonalData).Methods("POST")
 	router.HandleFunc("/getAccountByUsername/{username}", handler.GetAccountByUsername).Methods("GET")
 	router.HandleFunc("/login/{username}/{password}", handler.Login).Methods("GET")
+	router.HandleFunc("/addFollower/{idRegisterUser}/{idRelatedUser}", handler.AddFollower).Methods("PUT")
+	router.HandleFunc("/followerExist/{username}/{registerUserId}", handler.FolowerExist).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), h(router)))
 }
-
-
-
 func main() {
 	database := initDB()
 	repo := initRepo(database)
 	service := initServices(repo)
 	handler := initHandler(service)
 	handleFunc(handler)
+
 }
 
 //func main() {

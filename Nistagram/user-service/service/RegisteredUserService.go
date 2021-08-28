@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	jwt "github.com/dgrijalva/jwt-go"
+	"strconv"
 	"time"
 	"user-service/dto"
 	"user-service/model"
@@ -11,7 +12,9 @@ import (
 
 type RegisteredUserService struct {
 	Repo *repository.RegisteredUserRepository
+	RepoR *repository.RelatedUserRepository
 }
+
 
 var myKey = []byte("mysupersecretkey")
 
@@ -119,6 +122,30 @@ func (service *RegisteredUserService) FindAccountByUsername(username string) (bo
 	return false, nil
 }
 
+
+func (service *RegisteredUserService) AddFollower(idRegisterUser string,idRelatedUser string ) (bool, error) {
+	registerUser := &model.RegisteredUser{}
+	relatedUserToSave := &model.RegisteredUser{}
+	var idd, _ =strconv.ParseUint(idRegisterUser, 10, 64)
+	var idd2, _ =strconv.ParseUint(idRelatedUser, 10, 64)
+	registerUser, _ = service.Repo.GetRegisteredUserByID(uint(idd))
+	fmt.Println(registerUser.Account.Name)
+
+				relatedUserToSave, _ = service.Repo.GetRegisteredUserByID1(uint(idd2))
+				relatedUser :=&model.RelatedUser{}
+				relatedUser.RegisteredUserId= int(registerUser.ID)
+				relatedUser.Username=relatedUserToSave.Account.Username
+				relatedUser.IsCloseFriend=false
+				relatedUser.IsBlocked=false
+				relatedUser.Follower=true
+				relatedUser.Following=false
+				//service.RepoR.CreateRelatedUser(relatedUser)
+				//dodati provjeru da se ne upisuje isti pratilac za registrovanog korisnika
+				registerUser.RelatedUsers = append(registerUser.RelatedUsers, *relatedUser)
+				service.Repo.UpdateRegisterUser(registerUser)
+
+	return true, nil
+}
 func (service *RegisteredUserService) FindAccountByEmail(email string) (bool, error) {
 	account, err := service.Repo.FindAccountByEmail(email)
 	if err != nil {

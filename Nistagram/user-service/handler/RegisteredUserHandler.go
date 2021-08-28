@@ -12,6 +12,8 @@ import (
 
 type RegisteredUserHandler struct {
 	Service *service.RegisteredUserService
+	Service1 *service.RelatedUserService
+
 }
 
 //func (handler *ConsumerHandler) Hello(w http.ResponseWriter, r *http.Request) {
@@ -141,6 +143,46 @@ func (handler *RegisteredUserHandler) GetAccountByUsername(w http.ResponseWriter
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&result)
+}
+
+func (handler *RegisteredUserHandler) AddFollower(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	result, err := handler.Service.AddFollower(vars["idRegisterUser"],vars["idRelatedUser"])
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if result == true {
+		w.WriteHeader(http.StatusOK)
+	}else{
+		w.WriteHeader(http.StatusAccepted)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&result)
+}
+
+
+func (handler *RegisteredUserHandler) FolowerExist(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("usla uu hendler")
+	vars := mux.Vars(r)
+	id := vars["registerUserId"]
+	username := vars["username"]
+
+	if id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	exists, err := handler.Service1.UserExists(username,id)
+	if err != nil {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+	if exists {
+		w.WriteHeader(http.StatusOK)
+	} else {
+		w.WriteHeader(http.StatusAccepted)
+	}
 }
 
 //func (ts *postServer) CreateRegisteredUser(w http.ResponseWriter, req *http.Request) {
