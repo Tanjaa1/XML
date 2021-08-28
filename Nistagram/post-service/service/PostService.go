@@ -127,16 +127,44 @@ func (service *PostService) CreateCollection(dtoo *dto.CollectionDTO) error {
 	return fmt.Errorf("collection with this name already exists")
 }
 
-func (service *PostService) AddIntoCollection(postId uint, collectionName string) error {
-
-	result,_ := service.Repo.GetCollectionByName(collectionName)
+func (service *PostService) AddIntoCollection(c *dto.CollectionD) error {
+	fmt.Println("Usao u service insert collection")
+	fmt.Println(c.Name)
+	fmt.Println(c.PostId)
+	result,_ := service.Repo.GetCollectionByName(c.Name)
 	//var posts []model.PostIdList
-
-	result.Posts = append(result.Posts, model.PostIdList{PostId: postId})
+	fmt.Println("duzina liste postova kod kolekcije")
+	fmt.Println(len(result.Posts))
+	for _,p := range result.Posts{
+		if p.PostId == c.PostId{
+			return fmt.Errorf("This post exists in collection!")
+		}
+	}
+	result.Posts = append(result.Posts, model.PostIdList{PostId: c.PostId})
+	fmt.Println(len(result.Posts))
 	//collection := model.Collection{Name: result.Name, UserId: result.UserId, Posts: result.}
 
-		service.Repo.AddIntoCollection(result)
-		return nil
+	r := service.Repo.AddIntoCollection(result)
+	return r
+}
+
+func (service *PostService) RemoveFromCollection(c *dto.CollectionD) error {
+	fmt.Println("Usao u service remove from collection")
+	result,_ := service.Repo.GetCollectionByName(c.Name)
+	//var posts []model.PostIdList
+	fmt.Println("duzina liste postova kod kolekcije")
+	fmt.Println(len(result.Posts))
+	var index int
+	for i,p := range result.Posts{
+		if p.PostId == c.PostId{
+			index = i
+		}
+	}
+	result.Posts = append(result.Posts[:index], result.Posts[index+1:]...)
+	fmt.Println(len(result.Posts))
+
+	r := service.Repo.AddIntoCollection(result)
+	return r
 }
 
 func (service *PostService) AddComment(dtoo *dto.CommentDTO, postId uint) error {
@@ -204,7 +232,12 @@ func (service *PostService) CreateLike(dtoo *dto.LikeDTO) error {
 
 	l, _ := service.Repo.GetLikeByUserIdAndPostId(dtoo.UserId,dtoo.PostId)
 	if l != nil {
+		fmt.Println("ispis convert")
+		fmt.Println(dtoo.LikeType)
+		fmt.Println(model.ConvertLikeType(dtoo.LikeType))
+		fmt.Println(l.LikeType)
 		if l.LikeType != model.ConvertLikeType(dtoo.LikeType){
+			fmt.Println("Uslo u like")
 			l.LikeType = model.ConvertLikeType(dtoo.LikeType)
 			err1 := service.Repo.UpdateLike(l)
 			return err1
@@ -355,8 +388,6 @@ func (service *PostService) GetPostsByUserId(userId uint) ([]dto.PostDto,error) 
 		var images []dto.ImageDTO
 		for _, item := range it.Images {
 			images = append(images, dto.ImageDTO{Filename: item.Filename, Img: service.ConvertImgToBytes(item.Filepath)})
-			fmt.Println("Ispis slika")
-			fmt.Println(images[0].Img)
 		}
 
 		l, _ := service.Repo.GetLocationById(it.LocationId)
@@ -426,7 +457,7 @@ func (handler *PostService) ConvertImgToBytes(filePath string)  []byte{
 	fmt.Println("hshhshdh")
 	defer f.Close()
 	image, _, err := image.Decode(f)
-	image1, _, err1 :=
+	//image1, _, err1 :=
 	buf := new(bytes.Buffer)
 	err = png.Encode(buf, image)
 	if err != nil{

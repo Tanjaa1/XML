@@ -132,9 +132,6 @@ export default {
             }
             this.post.location = this.location
             this.post.userId = localStorage.getItem('userId')
-            alert(localStorage.getItem('token'))
-            alert(localStorage.getItem('userId'))
-            //alert(this.post.userId)
             const params = new FormData()
             for(let i = 0; i < this.images.length; i++)
                 params.append('file', this.images[i])

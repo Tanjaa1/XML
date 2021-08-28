@@ -133,8 +133,6 @@ export default {
     },
     methods:{
         searchTags(){
-            alert("Ispis")
-            alert(document.getElementById("ss").value)
               axios
                 .get("http://localhost:8080/api/user/searchProfile/" + document.getElementById("ss").value,
 				{
@@ -156,14 +154,11 @@ export default {
 				})
                 .then(response => {
 					this.locationtag = response.data
-                    alert("Ispis id")
-                    alert(this.locationtag[0].id)
               })
         },
         CreatePost(){
 
             let b = this.post.description.split(" ")
-            alert(b)
             for(let i = 0; i < b.length; i++){
                 if(b[i].includes("#")){
                     let c = b[i].split("#")
@@ -175,7 +170,6 @@ export default {
                     }
                 }
             }
-            alert(this.post.hashTags)
             for(let i = 0; i < this.tagedPeoples.length; i++){
                 let ob = {
                     name : this.tagedPeoples[i].username,
@@ -185,16 +179,11 @@ export default {
             }
             this.post.location = this.location
             this.post.userId = localStorage.getItem('userId')
-            alert(localStorage.getItem('token'))
-            alert(localStorage.getItem('userId'))
-            //alert(this.post.userId)
             const params = new FormData()
-            alert(this.images)
             for(let i = 0; i < this.images.length; i++)
                 params.append('file', this.images[i])
             let json = JSON.stringify(this.post);
             params.append('data', json);
-            //alert(params)
         axios
                 .post("http://localhost:8080/api/post/upload", params,
 				{
@@ -204,9 +193,9 @@ export default {
 							}
 				})
                 .then(response => {
-                  if (response.status==200){
+                  if (response.status==201){
                     alert('Successful');
-					this.userr = this.userDto
+					location.reload()
                   }
               })
                .catch(error => {

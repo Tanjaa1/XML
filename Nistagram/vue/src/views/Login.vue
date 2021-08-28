@@ -10,7 +10,6 @@
               <a style="color:red" v-for="e in error" :key="e">
 									{{e}}
 							</a><br>
-                            
           <input type="submit" class="btnRegister"  value="Log in" v-on:click="LogIn()"/><br><br>
           <label><small>Don't have an account?<a href="">Registration</a></small></label>  
       </div>        

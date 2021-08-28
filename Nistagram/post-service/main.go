@@ -33,7 +33,7 @@ var mySigningKey = []byte("mysupersecretkey")
 func initDB() *gorm.DB {
 	fmt.Println("Usao u initDB")
 	time.Sleep(time.Duration(20) *time.Second)
-	dsn := "root:root@tcp(host.docker.internal:3306)/mydb3?parseTime=True&charset=utf8&autocommit=false"
+	dsn := "root:root@tcp(host.docker.internal:3306)/postdb?parseTime=True&charset=utf8&autocommit=false"
 	//dsn := "root:root@tcp(127.0.0.1:3306)/mydb?parseTime=True&charset=utf8&autocommit=false"
 	database, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
@@ -139,7 +139,8 @@ func handleFunc(handler *handler.PostHandler) {
 
 	router.HandleFunc("/upload",IsAuthorized(handler.CreatePost)).Methods("POST")
 	router.HandleFunc("/createCollection",IsAuthorized(handler.CreateCollection)).Methods("POST")
-	router.HandleFunc("/addIntoCollection/{id}/{name}",IsAuthorized(handler.AddIntoCollection)).Methods("POST")
+	router.HandleFunc("/addIntoCollection",IsAuthorized(handler.AddIntoCollection)).Methods("POST")
+	router.HandleFunc("/removeFromCollection",IsAuthorized(handler.RemoveFromCollection)).Methods("POST")
 	router.HandleFunc("/addComment/{id}",IsAuthorized(handler.AddComment)).Methods("POST")
 	router.HandleFunc("/GetCollectionsByUserId/{id}",handler.GetCollectionsByUserId).Methods("GET")
 	router.HandleFunc("/addLike",IsAuthorized(handler.AddLike)).Methods("POST")

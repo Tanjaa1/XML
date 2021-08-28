@@ -122,26 +122,44 @@ func (handler *PostHandler) CreateCollection(w http.ResponseWriter, r *http.Requ
 }
 
 func (handler *PostHandler) AddIntoCollection(w http.ResponseWriter, r *http.Request){
-
-	vars := mux.Vars(r)
-	id := vars["id"]
-	fmt.Println("Ispisuje se id")
-	fmt.Println(id)
-	id2,err := strconv.ParseInt(id, 10, 64)
-	if err != nil{
-		fmt.Println(err)
+	fmt.Println("Usao u kolekciju")
+	var collection dto.CollectionD
+	fmt.Println(r.Body)
+	err := json.NewDecoder(r.Body).Decode(&collection)
+	fmt.Println(err)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
 	}
-	id3 := int(id2)
-
-	collectionName :=  vars["name"]
-	fmt.Println("creating")
-	err = handler.Service.AddIntoCollection(uint(id3),collectionName)
+	fmt.Println("prosao decoder")
+	err = handler.Service.AddIntoCollection(&collection)
 	if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusExpectationFailed)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusCreated)
+	w.Header().Set("Content-Type", "application/json")
+}
+
+func (handler *PostHandler) RemoveFromCollection(w http.ResponseWriter, r *http.Request){
+	fmt.Println("Usao u remove from collection")
+	var collection dto.CollectionD
+	fmt.Println(r.Body)
+	err := json.NewDecoder(r.Body).Decode(&collection)
+	fmt.Println(err)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	fmt.Println("prosao decoder")
+	err = handler.Service.RemoveFromCollection(&collection)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusExpectationFailed)
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
 	w.Header().Set("Content-Type", "application/json")
 }
 

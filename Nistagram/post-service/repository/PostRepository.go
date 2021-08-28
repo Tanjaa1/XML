@@ -41,10 +41,18 @@ func (repo *PostRepository) AddIntoCollection(collection *model.Collection) erro
 		return nil
 }
 
+func (repo *PostRepository) RemoveFromCollection(collection *model.Collection) error {
+	err := repo.Database.Delete(collection).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (repo *PostRepository) GetCollectionByName(name string) (*model.Collection, error) {
 	collection := &model.Collection{}
 	repo.Database.Model(&collection)
-	err := repo.Database.First(&collection,"name = ?" , name).Error
+	err := repo.Database.Preload("Posts").First(&collection,"name = ?" , name).Error
 	fmt.Println("Ispis err")
 	fmt.Println(err)
 	if err != nil{
@@ -74,6 +82,8 @@ func (repo *PostRepository) AddComment(post *model.Post) error {
 }
 
 func (repo *PostRepository) GetCollectionsByUserId(id uint) ([]model.Collection, error) {
+	fmt.Println("Iispis id korisnika")
+	fmt.Println(id)
 	var collections []model.Collection
 	repo.Database.Model(&collections)
 	//repo.Database.First(&collection,"name = ?" , name)
@@ -81,6 +91,7 @@ func (repo *PostRepository) GetCollectionsByUserId(id uint) ([]model.Collection,
 	if err != nil{
 		return nil,err
 	}
+	fmt.Println("ispis broj kolekcija")
 	fmt.Println(len(collections))
 	return collections, nil
 }
