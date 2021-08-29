@@ -7,6 +7,7 @@ import Login from '../views/Login.vue'
 import VerificationRequest from '../views/VerificationRequest.vue'
 import Requests from '../views/Requests.vue'
 import LikesAndDislikes from '../views/LikesAndDislikes.vue'
+import Collections from '../views/Collections.vue'
 
 const routes = [
   {
@@ -48,6 +49,11 @@ const routes = [
     path: '/LD',
     name: 'LikesAndDislikes',
     component: LikesAndDislikes
+  },
+  {
+    path: '/Collections',
+    name: 'Collections',
+    component: Collections
   },
   {
     path: '/about',
