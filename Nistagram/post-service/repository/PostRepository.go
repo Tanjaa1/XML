@@ -138,6 +138,8 @@ func (repo *PostRepository) UpdateLike(like *model.Like) error {
 func (repo *PostRepository) GetLikeByPostId(postId uint, likeType model.LikeType) ([]model.Like, error) {
 	fmt.Println("Ispis id -----------------")
 	fmt.Println(postId)
+	fmt.Println("Ispis like type")
+	fmt.Println(likeType)
 	var like []model.Like
 	repo.Database.Model(&like)
 	err := repo.Database.Find(&like,"post_id = ? and like_type = ?" , postId,likeType).Error

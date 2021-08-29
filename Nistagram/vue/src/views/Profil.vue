@@ -4,7 +4,7 @@
             <div class="col-md-12">
                     <div class="bg-white shadow rounded overflow-hidden divs">
                         <div class="px-4 pt-0 pb-4 cover">
-                                <div class=""><img  src="https://i.pinimg.com/originals/11/5f/4f/115f4f233582670e085966ee8250e75f.png" alt="..." width="130"  class="rounded-circle">
+                                <div class=""><img v-on:click="ShowStory()" style="cursor: pointer;" src="https://i.pinimg.com/originals/11/5f/4f/115f4f233582670e085966ee8250e75f.png" alt="..." width="130"  class="rounded-circle">
                                 </div>
                                 <div class="media-body mb-5">     
                                     <div class="p-4 d-flex justify-content-end text-center">
@@ -74,7 +74,12 @@
                                                             <img src="../images/dislike2.png" v-else style="margin-right:110px;cursor: pointer;" v-on:click="Dislike(p.id)">
                                                         </li>
                                                     </ul>
-                                                </div><br>Comments:
+                                                </div><br>
+                                                Taged people:
+                                                <div v-for="t in p.tagsLink" :key="t">
+                                                    @{{t.name}}
+                                                </div>
+                                                <br>Comments:
                                                 <div v-for="c in p.comments" :key="c" style="word-wrap: break-word;width: 300px;">
                                                     {{c.username}}: {{c.content}}<br>
                                                 </div><br>
@@ -139,13 +144,16 @@
                 <slot name="body">
                   <div v-for="l in collections" :key="l">
                    <a v-on:click="AddInCollection(l.name)" style="cursor: pointer;">{{l.name}}</a><br>
-                  </div>
+                  </div><hr>
+                  <input type="text" v-model="newCollection"/>
+                  <button class="modal-default-button" v-on:click="CreateNewCollection()">
+                    New
+                  </button>
                 </slot>
               </div>
 
               <div class="modal-footer">
                 <slot name="footer">
-               
                   <button class="modal-default-button" @click="showModalCollections=false">
                     Close
                   </button>
@@ -154,6 +162,99 @@
             </div>
           </div>
         </div>
+
+        <!--Modal story-->
+
+           <div class="modal-mask" v-if="storyModal">
+          <div class="modal-wrapper">
+            <div class="modal-container">
+
+
+              <div class="modal-body">
+                <slot name="body">
+                  
+                   <!-- <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+                          <div class="carousel-inner">
+                          <div id="slideLandingPage" class="carousel-item active">
+                                <div style="font-size:34px"><i>What our patients think of us?</i></div>
+                              <div style="font-size:28px"></div>
+                          </div>
+                          <div id="slideLandingPage" class="carousel-item " v-for="s in stories" :key="s">
+                               <img :src="s.images[0].img"/>
+                          </div>
+                          </div>
+                          <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+                          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                          <span class="sr-only">Previous</span>
+                          </a>
+                          <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+                          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                          <span class="sr-only">Next</span>
+                          </a>
+                        </div>-->
+                        <div  type="text/x-template" id="img-slider-template">
+                  <div id="slider">
+                      <input checked="" type="radio" name="slider" id="slide1" selected="false">
+                      <input type="radio" name="slider" id="slide2" selected="false">
+                      <input type="radio" name="slider" id="slide3" selected="false">
+                      <input type="radio" name="slider" id="slide4" selected="false">
+                      <div id="slides">
+                        <div id="overflow">
+                          <div class="inner">
+                            <article>
+                              <content select="img:nth-of-type(1)"></content>
+                            </article>
+                            <article>
+                              <content select="img:nth-of-type(2)"></content>
+                            </article>
+                            <article>
+                              <content select="img:nth-of-type(3)"></content>
+                            </article>
+                            <article>
+                              <content select="img:nth-of-type(4)"></content>
+                            </article>
+                          </div> <!-- .inner -->
+                        </div> <!-- #overflow -->
+                      </div>
+                      <label for="slide1"></label>
+                      <label for="slide2"></label>
+                      <label for="slide3"></label>
+                      <label for="slide4"></label>
+                  </div>
+                  </div>
+
+  <div id="demo">
+  <img-slider>
+    <img src="../images/like.png">
+    <img src="../images/like2.png">
+    <img src="../images/dislike.png">
+    <img src="../images/dislike2.png">
+  </img-slider>
+</div>
+
+<!--<p>
+  Vue.js implements WebComponent-compliant &lt;content&gt; insertion point mechanism.
+</p>
+<p>
+  Markup and CSS borrowed from <a href="http://css-tricks.com/modular-future-web-components/" target="_blank">CSS Tricks</a>, which is in turn adapted from <a href="http://csscience.com/responsiveslidercss3/" target="_blank">CSScience</a>. Images courtesy of <a href="http://www.flickr.com/photos/eliya" target="_blank">Eliya Selhub</a>
+</p>-->
+
+                </slot>
+              </div>
+
+              <div class="modal-footer">
+                <slot name="footer">
+                  <button class="modal-default-button" @click="storyModal=false">
+                    Close
+                  </button>
+                </slot>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <!--Modal story end-->
 
     <!--<div id="app">
       <button id="show-modal" @click="showModal = true">Show Modal</button>
@@ -203,10 +304,14 @@ export default {
              dislikesModal:[],
              post:null,
              collections:[],
-             showModalCollections:false
+             showModalCollections:false,
+             newCollection:null,
+             stories:[],
+             storyModal:false,
+             replace: true
 		}
-	},beforeMount() {
-        axios
+	},async beforeMount() {
+        await axios
                 .get("http://localhost:8080/api/post/getPByUserId/" + localStorage.getItem('userId'),
 				{
 							headers: {
@@ -215,7 +320,7 @@ export default {
 				})
                 .then(response => {
                   if (response.status==200){
-					this.pict = response.data
+                    this.pict = response.data
                     for(let j = 0; j < this.pict.length; j++){
                         for (let i = 0; i < this.pict[j].images.length; i++) {
                            // pom1 = this.pict[j].images[i].filepath.split('\\')
@@ -233,8 +338,8 @@ export default {
                 }
               })
 
-              axios
-                .get("http://localhost:8080/api/post/GetCollectionsByUserId/" + parseInt(localStorage.getItem('userId')),
+            await  axios
+                .get("http://localhost:8080/api/post/GetCollectionsForProfileByUserId/" + parseInt(localStorage.getItem('userId')),
 				{
 							headers: {
 								'Authorization': 'Bearer' + " " + localStorage.getItem('token')
@@ -246,15 +351,71 @@ export default {
                   
                 }
               })
+               await axios
+                .get("http://localhost:8080/api/post/getStoriesByUserId/" + localStorage.getItem('userId'),
+				{
+							headers: {
+								'Authorization': 'Bearer' + " " + localStorage.getItem('token')
+							}
+				})
+                .then(response => {
+                  if (response.status==200){
+                    this.stories = response.data
+                    for(let j = 0; j < this.stories.length; j++){
+                        for (let i = 0; i < this.stories[j].images.length; i++) {
+                           // pom1 = this.pict[j].images[i].filepath.split('\\')
+                            //if (pom1.length == 4) {
+                                //this.pict[j].images[i].filepath = pom1[1] + '/' + pom1[2] + '/' + pom1[3]
+                                if(this.stories[j].images[i].filename.includes('mp4')){
+                                    this.stories[j].images[i].img = 'data:video/mp4;base64,' + this.stories[j].images[i].img
+                                    alert(this.stories[j].images[i].img)
+                                }else{
+                                    this.stories[j].images[i].img = 'data:image/png;base64,' + this.stories[j].images[i].img
+                                }
+                            //}
+                        }
+                    }
+                }
+              })
 	},
   methods: {
       Edit(){
 		this.$router.push('/');
     },
+    ShowStory(){
+      this.storyModal = true
+    },
+    CreateNewCollection(){
+      if(this.newCollection != null){
+          let c ={
+            name:this.newCollection,
+            userId: parseInt(localStorage.getItem('userId')),
+            posts:[parseInt(this.post.id)]
+          }
+           axios
+                .post("http://localhost:8080/api/post/createCollection",c,
+				{
+							headers: {
+								'Authorization': 'Bearer' + " " + localStorage.getItem('token'),
+							}
+				})
+                .then(response => {
+                  if (response.status==201){
+                    location.reload()
+                  }
+              })
+               .catch(error => {
+                // print(error.status == 417)
+                if(error == "Error: Request failed with status code 400"){
+                   alert("Error")
+                  }
+                })
+      } 
+      else
+        alert("Name of collection is empty")
+    },
     DeletePostFromCollection(id){
-      alert(this.collections)
       for(let i = 0; i < this.collections.length; i++){
-        alert(this.collections[i].posts)
         if(this.collections[i].posts != null){
           for(let j = 0; j < this.collections[i].posts.length; j++){
             if(this.collections[i].posts[j].id == id){
@@ -501,4 +662,81 @@ export default {
   transform: scale(1.1);
 }
 
+#slideLandingPage {
+    font-family: Impact;
+    font-size: 24px;
+    background-color: lightblue;
+    background-image: none;
+    opacity : 0.9;
+}
+
+
+
+
+
+
+#slides .inner {
+  width: 400%;
+}
+
+#slides .inner {
+  -webkit-transform: translateZ(0);
+  -moz-transform: translateZ(0);
+  -o-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
+
+  -webkit-transition: all 800ms cubic-bezier(0.770, 0.000, 0.175, 1.000);
+  -moz-transition: all 800ms cubic-bezier(0.770, 0.000, 0.175, 1.000);
+  -o-transition: all 800ms cubic-bezier(0.770, 0.000, 0.175, 1.000);
+  -ms-transition: all 800ms cubic-bezier(0.770, 0.000, 0.175, 1.000);
+  transition: all 800ms cubic-bezier(0.770, 0.000, 0.175, 1.000);
+
+  -webkit-transition-timing-function: cubic-bezier(0.770, 0.000, 0.175, 1.000);
+  -moz-transition-timing-function: cubic-bezier(0.770, 0.000, 0.175, 1.000);
+  -o-transition-timing-function: cubic-bezier(0.770, 0.000, 0.175, 1.000);
+  -ms-transition-timing-function: cubic-bezier(0.770, 0.000, 0.175, 1.000);
+  transition-timing-function: cubic-bezier(0.770, 0.000, 0.175, 1.000);
+}
+
+#slides article {
+  width: 25%;
+  float: left;
+}
+
+#slide1:checked ~ #slides .inner {
+  margin-left: 0;
+}
+
+#slide2:checked ~ #slides .inner {
+  margin-left: -100%;
+}
+
+#slide3:checked ~ #slides .inner {
+  margin-left: -200%;
+}
+
+#slide4:checked ~ #slides .inner {
+  margin-left: -300%;
+}
+
+input[type="radio"] {
+  display: none;
+}
+
+label {
+  background: #CCC;
+  display: inline-block;
+  cursor: pointer;
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+}
+
+#slide1:checked ~ label[for="slide1"],
+#slide2:checked ~ label[for="slide2"],
+#slide3:checked ~ label[for="slide3"],
+#slide4:checked ~ label[for="slide4"] {
+  background: #333;
+}
 </style>

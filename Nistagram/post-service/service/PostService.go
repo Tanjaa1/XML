@@ -143,6 +143,8 @@ func (service *PostService) AddComment(dtoo *dto.CommentDTO, postId uint) error 
 
 func (service *PostService) GetCollectionsByUserId(userId uint) ([]dto.CollectionDTOO, error) {
 	collections, err := service.Repo.GetCollectionsByUserId(userId)
+	fmt.Println("Ispis broj kolekcija")
+	fmt.Println(len(collections))
 	if err != nil {
 		return []dto.CollectionDTOO{}, err
 	}
@@ -150,9 +152,13 @@ func (service *PostService) GetCollectionsByUserId(userId uint) ([]dto.Collectio
 	var postList []dto.PostDto
 	for _,item := range collections{
 		//var post &model.Post{}
+		fmt.Println("ispis broj postova u kolekciji")
+		fmt.Println(len(item.Posts))
 		for _, item1 := range item.Posts {
 			post,_ := service.Repo.GetPostById(item1.PostId)
 
+			fmt.Println("Ispis broj slika u postu")
+			fmt.Println(len(post.Images))
 			var images []dto.ImageDTO
 			for _, item2 := range post.Images {
 				images = append(images, dto.ImageDTO{Filename: item2.Filename,Img: service.ConvertImgToBytes(item2.Filepath)})
@@ -166,6 +172,18 @@ func (service *PostService) GetCollectionsByUserId(userId uint) ([]dto.Collectio
 				hashtags = append(hashtags, dto.HashtagDTO{Name: h.Name})
 			}
 
+			var likesDto []string
+			likes, _ := service.GetLikeByPostId(post.ID, model.LikeType(0))
+			for _,item3 := range likes{
+				likesDto = append(likesDto, item3.Username)
+			}
+
+			var dislikesDto []string
+			dislikes, _ := service.GetLikeByPostId(post.ID, model.LikeType(1))
+			for _,item3 := range dislikes{
+				dislikesDto = append(dislikesDto, item3.Username)
+			}
+
 			var links []dto.LinkDTO
 			for _, item4 := range post.TagsLink {
 				links = append(links, dto.LinkDTO{Name: item4.Name, LinkType: model.ConvertLinkTypeToString(item4.LinkType)})
@@ -177,12 +195,35 @@ func (service *PostService) GetCollectionsByUserId(userId uint) ([]dto.Collectio
 			}
 			stringVar := strconv.Itoa(int(post.UserId))
 			postDTO := dto.PostDto{Id: post.ID,Images: images, Comments: comments, UserId: stringVar, Description: post.Description,
-				TagsLink: links, HashTags: hashtags, Location: location, CloseFriends: false, PostType: model.ConvertPostTypeToString(post.PostType)}
+				TagsLink: links, HashTags: hashtags, Location: location, CloseFriends: false, PostType: model.ConvertPostTypeToString(post.PostType),
+				Likes: likesDto, Dislikes: dislikesDto}
 
 			postList = append(postList, postDTO)
 
 			}
 
+
+		result =  append(result, dto.CollectionDTOO{Name: item.Name, UserId: item.UserId, Posts: postList})
+	}
+
+	return result, nil
+}
+
+func (service *PostService) GetCollectionsForProfileByUserId(userId uint) ([]dto.CollectionDTOO, error) {
+	collections, err := service.Repo.GetCollectionsByUserId(userId)
+	if err != nil {
+		return []dto.CollectionDTOO{}, err
+	}
+	var result []dto.CollectionDTOO
+	var postList []dto.PostDto
+	for _,item := range collections{
+		//var post &model.Post{}
+		for _, item1 := range item.Posts {
+			post,_ := service.Repo.GetPostById(item1.PostId)
+
+			postDTO := dto.PostDto{Id: post.ID}
+			postList = append(postList, postDTO)
+		}
 
 		result =  append(result, dto.CollectionDTOO{Name: item.Name, UserId: item.UserId, Posts: postList})
 	}
@@ -218,10 +259,13 @@ func (service *PostService) GetLikeByPostId(postId uint, liketype model.LikeType
 
 	fmt.Println("Usao u service")
 	likes, _ := service.Repo.GetLikeByPostId(postId, liketype)
+	fmt.Println("Ispis like type service")
 	var likesDto []dto.LikeDTO
 	for _, item := range likes {
 		likesDto = append(likesDto, dto.LikeDTO{PostId: item.PostId, UserId: item.UserId, Username: item.Username,
 			LikeType: model.ConvertLikeTypeToString(item.LikeType)})
+		fmt.Println("Ispis like tupe u for")
+		fmt.Println(item.LikeType)
 	}
 
 	return likesDto,nil
@@ -252,6 +296,18 @@ func (service *PostService) GetLikedPostsByUserId(userId uint) ([]dto.PostDto,er
 			hashtags = append(hashtags, dto.HashtagDTO{Name: h.Name})
 		}
 
+		var likesDto []string
+		likes, _ := service.GetLikeByPostId(post.ID, model.LikeType(0))
+		for _,item := range likes{
+			likesDto = append(likesDto, item.Username)
+		}
+
+		var dislikesDto []string
+		dislikes, _ := service.GetLikeByPostId(post.ID, model.LikeType(1))
+		for _,item := range dislikes{
+			dislikesDto = append(dislikesDto, item.Username)
+		}
+
 		var links []dto.LinkDTO
 		for _, item := range post.TagsLink {
 			links = append(links, dto.LinkDTO{Name: item.Name, LinkType: model.ConvertLinkTypeToString(item.LinkType)})
@@ -263,7 +319,8 @@ func (service *PostService) GetLikedPostsByUserId(userId uint) ([]dto.PostDto,er
 		}
 		stringVar := strconv.Itoa(int(post.UserId))
 		postsDto = append(postsDto, dto.PostDto{Id: post.ID,Images: images,Comments: comments,UserId: stringVar,Description: post.Description,
-			TagsLink: links,HashTags: hashtags,Location: location, CloseFriends: false, PostType: model.ConvertPostTypeToString(post.PostType)})
+			TagsLink: links,HashTags: hashtags,Location: location, CloseFriends: false, PostType: model.ConvertPostTypeToString(post.PostType),
+			Likes: likesDto, Dislikes: dislikesDto})
 	}
 
 	return postsDto,nil
@@ -282,8 +339,6 @@ func (service *PostService) GetStoriesByUserId(userId uint) ([]dto.PostDto,error
 		fmt.Println(timein)
 		t := timein.Sub(time.Now())
 		if t>0 {
-
-			//post,_ := service.Repo.GetStoriesById(item.PostId)
 
 			var images []dto.ImageDTO
 			for _, item := range item.Images {
@@ -304,12 +359,8 @@ func (service *PostService) GetStoriesByUserId(userId uint) ([]dto.PostDto,error
 				links = append(links, dto.LinkDTO{Name: item1.Name, LinkType: model.ConvertLinkTypeToString(item1.LinkType)})
 			}
 
-			var comments []dto.CommentDTO
-			for _, item1 := range item.Comments {
-				comments = append(comments, dto.CommentDTO{Content: item1.Content, Username: item1.Username})
-			}
 			stringVar := strconv.Itoa(int(item.UserId))
-			postsDto = append(postsDto, dto.PostDto{Id: item.ID,Images: images, Comments: comments, UserId: stringVar, Description: item.Description,
+			postsDto = append(postsDto, dto.PostDto{Id: item.ID,Images: images, UserId: stringVar, Description: item.Description,
 				TagsLink: links, HashTags: hashtags, Location: location, CloseFriends: false, PostType: model.ConvertPostTypeToString(item.PostType)})
 		}
 	}
@@ -365,12 +416,16 @@ func (service *PostService) GetPostsByUserId(userId uint) ([]dto.PostDto,error) 
 		likes, _ := service.GetLikeByPostId(it.ID, model.LikeType(0))
 		for _,item := range likes{
 			likesDto = append(likesDto, item.Username)
+			fmt.Println("Ispis ispis like")
+			fmt.Println(item.LikeType)
 		}
 
 		var dislikesDto []string
 		dislikes, _ := service.GetLikeByPostId(it.ID, model.LikeType(1))
 		for _,item := range dislikes{
 			dislikesDto = append(dislikesDto, item.Username)
+			fmt.Println("Ispis ispis dislike")
+			fmt.Println(item.LikeType)
 		}
 
 		var links []dto.LinkDTO

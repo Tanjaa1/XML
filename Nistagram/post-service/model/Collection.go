@@ -14,3 +14,10 @@ type PostIdList struct {
 	gorm.Model
 	PostId                    uint			    `json:"postId"`
 }
+
+type Highlights struct {
+	gorm.Model
+	Name                      string			 `json:"name" gorm:"not null"`
+	UserId                    uint                `json:"userId"`
+	Posts                     []PostIdList       `json:"posts" gorm:"many2many:collection_postIdList;"`
+}

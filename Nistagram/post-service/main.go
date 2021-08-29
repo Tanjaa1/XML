@@ -49,6 +49,7 @@ func initDB() *gorm.DB {
 	database.AutoMigrate(&model.Comment{})
 	database.AutoMigrate(&model.PostIdList{})
 	database.AutoMigrate(&model.Like{})
+	database.AutoMigrate(&model.Highlights{})
 
 	//database.Migrator().CreateConstraint(&model.Collection{}, "postList")
 	//database.Migrator().CreateConstraint(&model.Collection{}, "fk_collections_posts")
@@ -143,6 +144,7 @@ func handleFunc(handler *handler.PostHandler) {
 	router.HandleFunc("/removeFromCollection",IsAuthorized(handler.RemoveFromCollection)).Methods("POST")
 	router.HandleFunc("/addComment/{id}",IsAuthorized(handler.AddComment)).Methods("POST")
 	router.HandleFunc("/GetCollectionsByUserId/{id}",handler.GetCollectionsByUserId).Methods("GET")
+	router.HandleFunc("/GetCollectionsForProfileByUserId/{id}",handler.GetCollectionsForProfileByUserId).Methods("GET")
 	router.HandleFunc("/addLike",IsAuthorized(handler.AddLike)).Methods("POST")
 	router.HandleFunc("/getLikesByPostId/{id}",handler.GetLikeByPostId).Methods("GET")
 	router.HandleFunc("/getPostsByUserId/{id}",handler.GetLikedPostsByUserId).Methods("GET")

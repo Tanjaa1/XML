@@ -167,32 +167,7 @@ export default {
              collectionName:null
 		}
 	},beforeMount() {
-        axios
-                .get("http://localhost:8080/api/post/getPByUserId/" + localStorage.getItem('userId'),
-				{
-							headers: {
-								'Authorization': 'Bearer' + " " + localStorage.getItem('token')
-							}
-				})
-                .then(response => {
-                  if (response.status==200){
-					this.pict = response.data
-                    for(let j = 0; j < this.pict.length; j++){
-                        for (let i = 0; i < this.pict[j].images.length; i++) {
-                           // pom1 = this.pict[j].images[i].filepath.split('\\')
-                            //if (pom1.length == 4) {
-                                //this.pict[j].images[i].filepath = pom1[1] + '/' + pom1[2] + '/' + pom1[3]
-                                if(this.pict[j].images[i].filename.includes('mp4')){
-                                    this.pict[j].images[i].img = 'data:video/mp4;base64,' + this.pict[j].images[i].img
-                                    alert(this.pict[j].images[i].img)
-                                }else{
-                                    this.pict[j].images[i].img = 'data:image/png;base64,' + this.pict[j].images[i].img
-                                }
-                            //}
-                        }
-                    }
-                }
-              })
+    alert(parseInt(localStorage.getItem('userId')))
 
               axios
                 .get("http://localhost:8080/api/post/GetCollectionsByUserId/" + parseInt(localStorage.getItem('userId')),
@@ -204,21 +179,18 @@ export default {
                 .then(response => {
                   if (response.status==200){
                     this.collections = response.data
-                    //alert(this.collections[0].posts)
                     for(let c = 0; c < this.collections.length; c++){
-                        for(let j = 0; j < this.collections[c].posts.length; j++){
-                            for (let i = 0; i < this.collections[c].posts[j].images.length; i++) {
-                            // pom1 = this.pict[j].images[i].filepath.split('\\')
-                                //if (pom1.length == 4) {
-                                    //this.pict[j].images[i].filepath = pom1[1] + '/' + pom1[2] + '/' + pom1[3]
-                                    if(this.collections[c].posts[j].images[i].filename.includes('mp4')){
-                                        this.collections[c].posts[j].images[i].img = 'data:video/mp4;base64,' + this.collections[c].posts[j].images[i].img
-                                    }else{
-                                        this.collections[c].posts[j].images[i].img = 'data:image/png;base64,' + this.collections[c].posts[j].images[i].img
-                                    }
-                                //}
-                            }
-                        }
+                      if(this.collections[c].posts != null){
+                          for(let j = 0; j < this.collections[c].posts.length; j++){
+                              for (let i = 0; i < this.collections[c].posts[j].images.length; i++) {
+                                      if(this.collections[c].posts[j].images[i].filename.includes('mp4')){
+                                          this.collections[c].posts[j].images[i].img = 'data:video/mp4;base64,' + this.collections[c].posts[j].images[i].img
+                                      }else{
+                                          this.collections[c].posts[j].images[i].img = 'data:image/png;base64,' + this.collections[c].posts[j].images[i].img
+                                      }
+                              }
+                          }
+                      }
                     }
                   
                 }
