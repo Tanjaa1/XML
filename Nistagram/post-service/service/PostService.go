@@ -56,54 +56,6 @@ func (service *PostService) CreatePost(dtoo *dto.PostDto, imagess []dto.ImageDTO
 
 func (service *PostService) CreateCollection(dtoo *dto.CollectionDTO) error {
 
-	//var images []model.Image
-	//for _, item := range imagess {
-	//	images = append(images, model.Image{Filename: item.Filename, Filepath: item.Filepath})
-	//}
-	//
-	//location := model.Location{Place: dtoo.Location.Place, City: dtoo.Location.City, Country: dtoo.Location.Country}
-	//var hashtags []model.Hashtag
-	//for _, item := range dtoo.HashTags {
-	//	hashtags = append(hashtags, model.Hashtag{Name: item.Name})
-	//}
-	//
-	//var links []model.Link
-	//for _, item := range dtoo.TagsLink {
-	//	links = append(links, model.Link{Name: item.Name, LinkType: model.ConvertLinkType(item.LinkType)})
-	//}
-	//
-	//var comments []model.Comment
-	//for _, item := range dtoo.Comments {
-	//	comments = append(comments, model.Comment{Content: item.Content, AuthorIdLink: item.AuthorIdLink})
-	//}
-	//
-	//post := model.Post{Images: images,Comments: comments,UserId: dtoo.UserId,Description: dtoo.Description,
-	//	TagsLink: links,HashTags: hashtags,Location: location, CloseFriends: false}
-
-	//var posts []model.Post
-	//for _, item := range dtoo.Posts {
-	//	var images []model.Image
-	//	for _, item5 := range item.Images {
-	//		images = append(images, model.Image{Filename: item5.Filename, Filepath: item5.Filepath})
-	//	}
-	//	location := model.Location{Place: item.Location.Place, City: item.Location.City, Country: item.Location.Country}
-	//	var hashtags []model.Hashtag
-	//	for _, item1 := range item.HashTags {
-	//		hashtags = append(hashtags, model.Hashtag{Name: item1.Name})
-	//	}
-	//
-	//	var links []model.Link
-	//	for _, item2 := range item.TagsLink {
-	//		links = append(links, model.Link{Name: item2.Name, LinkType: model.ConvertLinkType(item2.LinkType)})
-	//	}
-	//
-	//	var comments []model.Comment
-	//	for _, item3 := range item.Comments {
-	//		comments = append(comments, model.Comment{Content: item3.Content, AuthorIdLink: item3.AuthorIdLink})
-	//	}
-	//	posts = append(posts, model.Post{Images: images,Comments: comments,UserId: dtoo.UserId,Description: item.Description,
-	//		TagsLink: links,HashTags: hashtags,Location: location, CloseFriends: false})
-	//}
 	result,_ := service.Repo.GetCollectionByName(dtoo.Name)
 	fmt.Println("ispis name")
 	fmt.Println(dtoo.Name)
@@ -136,7 +88,11 @@ func (service *PostService) AddIntoCollection(c *dto.CollectionD) error {
 	fmt.Println("duzina liste postova kod kolekcije")
 	fmt.Println(len(result.Posts))
 	for _,p := range result.Posts{
+		fmt.Println("Ispisuje p.PostId i c.PostId")
+		fmt.Println(p.PostId)
+		fmt.Println(c.PostId)
 		if p.PostId == c.PostId{
+			fmt.Println("Usao u if")
 			return fmt.Errorf("This post exists in collection!")
 		}
 	}
@@ -163,7 +119,13 @@ func (service *PostService) RemoveFromCollection(c *dto.CollectionD) error {
 	result.Posts = append(result.Posts[:index], result.Posts[index+1:]...)
 	fmt.Println(len(result.Posts))
 
-	r := service.Repo.AddIntoCollection(result)
+	r := service.Repo.RemoveFromCollection(result)
+	var posts []model.PostIdList
+	for _, s := range result.Posts {
+		posts = append(posts, model.PostIdList{PostId: s.PostId})
+	}
+	result2 := model.Collection{Name: result.Name, Posts: posts, UserId: result.UserId}
+	service.Repo.CreateCollection(&result2)
 	return r
 }
 

@@ -54,7 +54,7 @@ export default {
 				.then(response => {
 					this.token = response.data
 					//localStorage.setItem('userId', response.data.id)
-
+                    alert(this.token)
 					if(this.token==undefined){
 						alert("Username or password are wrong, please try again for token")
 					}

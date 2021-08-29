@@ -252,43 +252,49 @@ export default {
 		this.$router.push('/');
     },
     DeletePostFromCollection(id){
+      alert(this.collections)
       for(let i = 0; i < this.collections.length; i++){
-        for(let j = 0; j < this.collections[i].posts.length; j++){
-          if(this.collections[i].posts[j].id == id){
-            let c = {
-        name:this.collections[i].name,
-        postId:parseInt(id)
-      }
-      alert(c.name)
-      alert(id)
-       axios
-                .post("http://localhost:8080/api/post/removeFromCollection",c,
-				{
-							headers: {
-								'Authorization': 'Bearer' + " " + localStorage.getItem('token'),
-							}
-				})
-                .then(response => {
-                  if (response.status==200){
-                    location.reload()
-                  }
-              })
-               .catch(error => {
-                // print(error.status == 417)
-                if(error == "Error: Request failed with status code 400"){
-                   alert("Error")
-                   location.reload()
-                  }
+        alert(this.collections[i].posts)
+        if(this.collections[i].posts != null){
+          for(let j = 0; j < this.collections[i].posts.length; j++){
+            if(this.collections[i].posts[j].id == id){
+              let c = {
+                name:this.collections[i].name,
+                postId:parseInt(id)
+              }
+              axios
+                        .post("http://localhost:8080/api/post/removeFromCollection",c,
+                {
+                      headers: {
+                        'Authorization': 'Bearer' + " " + localStorage.getItem('token'),
+                      }
                 })
+                        .then(response => {
+                          if (response.status==201){
+                            location.reload()
+                          }
+                      })
+                      .catch(error => {
+                        // print(error.status == 417)
+                        if(error == "Error: Request failed with status code 400"){
+                          alert("Error")
+                          location.reload()
+                          }
+                        })
+            }
           }
         }
       }
     },
     IsInCollection(id){
-      for(let i = 0; i < this.collections.length; i++){
-        for(let j = 0; j < this.collections[i].posts.length; j++){
-          if(this.collections[i].posts[j].id == id)
-            return false
+      if(this.collections != null){
+        for(let i = 0; i < this.collections.length; i++){
+          if(this.collections[i].posts != null){
+            for(let j = 0; j < this.collections[i].posts.length; j++){
+              if(this.collections[i].posts[j].id == id)
+                return false
+            }
+          }
         }
       }
       return true
@@ -306,8 +312,8 @@ export default {
 							}
 				})
                 .then(response => {
-                  if (response.status==200){
-                    alert("Success")
+                  if (response.status==201){
+                    location.reload()
                   }
               })
                .catch(error => {

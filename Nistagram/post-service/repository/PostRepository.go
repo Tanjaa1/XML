@@ -42,7 +42,7 @@ func (repo *PostRepository) AddIntoCollection(collection *model.Collection) erro
 }
 
 func (repo *PostRepository) RemoveFromCollection(collection *model.Collection) error {
-	err := repo.Database.Delete(collection).Error
+	err := repo.Database.Where("ID = ?", collection.ID).Preload("Posts").Delete(&model.Collection{}).Error
 	if err != nil {
 		return err
 	}
