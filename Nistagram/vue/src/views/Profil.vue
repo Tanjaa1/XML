@@ -164,106 +164,24 @@
         </div>
 
         <!--Modal story-->
-
-           <div class="modal-mask" v-if="storyModal">
+     <div class="modal-mask" v-if="storyModal">
           <div class="modal-wrapper">
             <div class="modal-container">
 
 
               <div class="modal-body">
                 <slot name="body">
-                  
-                   <!-- <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
-                          <div class="carousel-inner">
-                          <div id="slideLandingPage" class="carousel-item active">
-                                <div style="font-size:34px"><i>What our patients think of us?</i></div>
-                              <div style="font-size:28px"></div>
-                          </div>
-                          <div id="slideLandingPage" class="carousel-item " v-for="s in stories" :key="s">
-                               <img :src="s.images[0].img"/>
-                          </div>
-                          </div>
-                          <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
-                          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                          <span class="sr-only">Previous</span>
-                          </a>
-                          <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
-                          <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                          <span class="sr-only">Next</span>
-                          </a>
-                        </div>-->
-                        <div  type="text/x-template" id="img-slider-template">
-                  <div id="slider">
-                      <input checked="" type="radio" name="slider" id="slide1" selected="false">
-                      <input type="radio" name="slider" id="slide2" selected="false">
-                      <input type="radio" name="slider" id="slide3" selected="false">
-                      <input type="radio" name="slider" id="slide4" selected="false">
-                      <div id="slides">
-                        <div id="overflow">
-                          <div class="inner">
-                            <article>
-                              <content select="img:nth-of-type(1)"></content>
-                            </article>
-                            <article>
-                              <content select="img:nth-of-type(2)"></content>
-                            </article>
-                            <article>
-                              <content select="img:nth-of-type(3)"></content>
-                            </article>
-                            <article>
-                              <content select="img:nth-of-type(4)"></content>
-                            </article>
-                          </div> <!-- .inner -->
-                        </div> <!-- #overflow -->
-                      </div>
-                      <label for="slide1"></label>
-                      <label for="slide2"></label>
-                      <label for="slide3"></label>
-                      <label for="slide4"></label>
-                  </div>
-                  </div>
-
-  <div id="demo">
-  <img-slider>
-    <img src="../images/like.png">
-    <img src="../images/like2.png">
-    <img src="../images/dislike.png">
-    <img src="../images/dislike2.png">
-  </img-slider>
-</div>
-
-<!--<p>
-  Vue.js implements WebComponent-compliant &lt;content&gt; insertion point mechanism.
-</p>
-<p>
-  Markup and CSS borrowed from <a href="http://css-tricks.com/modular-future-web-components/" target="_blank">CSS Tricks</a>, which is in turn adapted from <a href="http://csscience.com/responsiveslidercss3/" target="_blank">CSScience</a>. Images courtesy of <a href="http://www.flickr.com/photos/eliya" target="_blank">Eliya Selhub</a>
-</p>-->
-
+                    <input type="button" value="<" v-on:click="Previous()"/>
+                   {{i}}        
+                    <input type="button" value=">" v-on:click="Next()"/>
                 </slot>
               </div>
 
               <div class="modal-footer">
-                <slot name="footer">
-                  <button class="modal-default-button" @click="storyModal=false">
-                    Close
-                  </button>
-                </slot>
               </div>
             </div>
           </div>
         </div>
-
-
-        <!--Modal story end-->
-
-    <!--<div id="app">
-      <button id="show-modal" @click="showModal = true">Show Modal</button>
-
-      <modal v-if="showModal" @close="showModal = false">-->
-
-        <!--<h3 slot="header">custom header</h3>-->
-     <!-- </modal>
-    </div>-->
 </div>			
 </template>
 
@@ -308,7 +226,9 @@ export default {
              newCollection:null,
              stories:[],
              storyModal:false,
-             replace: true
+             replace: true,
+             highlightPICTURE:[1,2,3],
+             i:0
 		}
 	},async beforeMount() {
         await axios
@@ -384,6 +304,18 @@ export default {
     },
     ShowStory(){
       this.storyModal = true
+    },
+    Previous(){
+      if((this.i-1)<0)
+        this.i=this.highlightPICTURE.length-1
+      else
+        this.i=this.i-1
+    },
+    Next(){
+      if((this.i+1)<this.highlightPICTURE.length)
+          this.i=this.i+1
+      else
+        this.i=0
     },
     CreateNewCollection(){
       if(this.newCollection != null){
