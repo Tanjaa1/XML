@@ -104,6 +104,57 @@ func (service *PostService) AddIntoCollection(c *dto.CollectionD) error {
 	return r
 }
 
+//func (service *PostService) AddIntoHighlight(c *dto.HighlightD) error {
+//	fmt.Println("Usao u service insert highlight")
+//	fmt.Println(c.Name)
+//	fmt.Println(c.PostId)
+//	result,_ := service.Repo.GetHighlightByName(c.Name)
+//	//var posts []model.PostIdList
+//	fmt.Println("duzina liste postova kod hajlajta")
+//	fmt.Println(len(result.Posts))
+//	for _,p := range result.Posts{
+//		fmt.Println("Ispisuje p.PostId i c.PostId")
+//		fmt.Println(p.PostId)
+//		fmt.Println(c.PostId)
+//		if p.PostId == c.PostId{
+//			fmt.Println("Usao u if")
+//			return fmt.Errorf("This post exists in highlight!")
+//		}
+//	}
+//	result.Posts = append(result.Posts, model.PostIdList{PostId: c.PostId})
+//	fmt.Println(len(result.Posts))
+//	//collection := model.Collection{Name: result.Name, UserId: result.UserId, Posts: result.}
+//
+//	r := service.Repo.AddIntoHighlight(result)
+//	return r
+//}
+
+func (service *PostService) AddIntoHighlight(c *dto.HighlightD) error {
+	fmt.Println("Usao u service insert highlight")
+	fmt.Println(c.Name)
+	fmt.Println(c.PostId)
+	//result,_ := service.Repo.GetHighlightByName(c.Name)
+	////var posts []model.PostIdList
+	//fmt.Println("duzina liste postova kod hajlajta")
+	//fmt.Println(len(result.Posts))
+	//for _,p := range result.Posts{
+	//	fmt.Println("Ispisuje p.PostId i c.PostId")
+	//	fmt.Println(p.PostId)
+	//	fmt.Println(c.PostId)
+	//	if p.PostId == c.PostId{
+	//		fmt.Println("Usao u if")
+	//		return fmt.Errorf("This post exists in highlight!")
+	//	}
+	//}
+	//result.Posts = append(result.Posts, model.PostIdList{PostId: c.PostId})
+	//fmt.Println(len(result.Posts))
+	////collection := model.Collection{Name: result.Name, UserId: result.UserId, Posts: result.}
+	result := model.HighlightStory{PostId: c.PostId, CollectionName: c.Name}
+
+	r := service.Repo.AddIntoHighlightStory(&result)
+	return r
+}
+
 func (service *PostService) RemoveFromCollection(c *dto.CollectionD) error {
 	fmt.Println("Usao u service remove from collection")
 	result,_ := service.Repo.GetCollectionByName(c.Name)
@@ -127,6 +178,50 @@ func (service *PostService) RemoveFromCollection(c *dto.CollectionD) error {
 	result2 := model.Collection{Name: result.Name, Posts: posts, UserId: result.UserId}
 	service.Repo.CreateCollection(&result2)
 	return r
+}
+
+//func (service *PostService) RemoveFromHighlight(c *dto.HighlightD) error {
+//	fmt.Println("Usao u service remove from highlight")
+//	result,_ := service.Repo.GetHighlightByName(c.Name)
+//	//var posts []model.PostIdList
+//	fmt.Println("duzina liste postova kod hajlajta")
+//	fmt.Println(len(result.Posts))
+//	var index int
+//	for i,p := range result.Posts{
+//		if p.PostId == c.PostId{
+//			index = i
+//		}
+//	}
+//	result.Posts = append(result.Posts[:index], result.Posts[index+1:]...)
+//	fmt.Println(len(result.Posts))
+//
+//	r := service.Repo.RemoveFromHighlight(result)
+//	var posts []model.PostIdList
+//	for _, s := range result.Posts {
+//		posts = append(posts, model.PostIdList{PostId: s.PostId})
+//	}
+//	result2 := model.Highlight{Name: result.Name, Posts: posts, UserId: result.UserId}
+//	service.Repo.CreateHighlight(&result2)
+//	return r
+//}
+
+func (service *PostService) RemoveFromHighlight(c *dto.HighlightD) error {
+	fmt.Println("Usao u service remove from highlight")
+	fmt.Println(c.Name)
+	fmt.Println(c.PostId)
+	result,_ := service.Repo.GetHighlightStoriesByName(c.Name)
+	fmt.Println(len(result))
+	var err error
+	for _,item := range result{
+		if item.PostId == c.PostId {
+			err = service.Repo.RemoveHighlightStory(item.ID)
+			if err != nil {
+				return err
+			}
+			return err
+		}
+	}
+	return err
 }
 
 func (service *PostService) AddComment(dtoo *dto.CommentDTO, postId uint) error {
@@ -209,6 +304,75 @@ func (service *PostService) GetCollectionsByUserId(userId uint) ([]dto.Collectio
 	return result, nil
 }
 
+func (service *PostService) GetHighlightsByUserId(userId uint) ([]dto.HighlightDTOO, error) {
+	fmt.Println("Usao u GetHighlightsByUserId")
+	var result []dto.HighlightDTOO
+	highlights, err := service.Repo.GetHighlightsByUserId(userId)
+	fmt.Println("Ispis broj hajlajta")
+	fmt.Println(len(highlights))
+	if err != nil {
+		return []dto.HighlightDTOO{}, err
+	}
+	var highlightStorise []model.HighlightStory
+	for _,it := range highlights{
+		h,_ := service.Repo.GetHighlightStoriesByName(it.Name)
+		fmt.Println("Ispis duzina h")
+		fmt.Println(len(h))
+		if len(h) == 0{
+			result = append(result, dto.HighlightDTOO{Name: it.Name, UserId: userId})
+		}
+		for _, n := range h{
+			highlightStorise = append(highlightStorise, n)
+		}
+
+	}
+		for _, item1 := range highlightStorise {
+
+			post, _ := service.Repo.GetPostById(item1.PostId)
+
+			fmt.Println("Ispis broj slika u postu")
+			fmt.Println(len(post.Images))
+			var images []dto.ImageDTO
+			for _, item2 := range post.Images {
+				images = append(images, dto.ImageDTO{Filename: item2.Filename, Img: service.ConvertImgToBytes(item2.Filepath)})
+			}
+
+			l, _ := service.Repo.GetLocationById(post.LocationId)
+			location := dto.LocationDTO{Place: l.Place, City: l.City, Country: l.Country}
+			var hashtags []dto.HashtagDTO
+			for _, item3 := range post.HashTagsIdList {
+				h, _ := service.Repo.GetHashtagById(item3.HashtagId)
+				hashtags = append(hashtags, dto.HashtagDTO{Name: h.Name})
+			}
+
+			var links []dto.LinkDTO
+			for _, item4 := range post.TagsLink {
+				links = append(links, dto.LinkDTO{Name: item4.Name, LinkType: model.ConvertLinkTypeToString(item4.LinkType)})
+			}
+
+			stringVar := strconv.Itoa(int(post.UserId))
+			postDTO := dto.PostDto{Id: post.ID, Images: images, UserId: stringVar, Description: post.Description,
+				TagsLink: links, HashTags: hashtags, Location: location, CloseFriends: false,
+				PostType: model.ConvertPostTypeToString(post.PostType)}
+
+			exists := false
+			for _, h := range result {
+				if h.Name == item1.CollectionName {
+					h.Posts = append(h.Posts, postDTO)
+					exists = true
+					break
+				}
+			}
+			if !exists {
+				var postList []dto.PostDto
+				postList = append(postList, postDTO)
+				result = append(result, dto.HighlightDTOO{Name: item1.CollectionName, UserId: userId, Posts: postList})
+			}
+
+	}
+	return result, nil
+}
+
 func (service *PostService) GetCollectionsForProfileByUserId(userId uint) ([]dto.CollectionDTOO, error) {
 	collections, err := service.Repo.GetCollectionsByUserId(userId)
 	if err != nil {
@@ -228,6 +392,54 @@ func (service *PostService) GetCollectionsForProfileByUserId(userId uint) ([]dto
 		result =  append(result, dto.CollectionDTOO{Name: item.Name, UserId: item.UserId, Posts: postList})
 	}
 
+	return result, nil
+}
+
+func (service *PostService) GetHighlightsForProfileByUserId(userId uint) ([]dto.HighlightDTOO, error) {
+	fmt.Println("Usao u service GetHighlightsForProfileByUserId")
+	var result []dto.HighlightDTOO
+	highlights, err := service.Repo.GetHighlightsByUserId(userId)
+	fmt.Println("Ispis broj hajlajta")
+	fmt.Println(len(highlights))
+	if err != nil {
+		return []dto.HighlightDTOO{}, err
+	}
+
+	var highlightStorise []model.HighlightStory
+	for _,it := range highlights{
+		h,_ := service.Repo.GetHighlightStoriesByName(it.Name)
+		if len(h) == 0{
+			result = append(result, dto.HighlightDTOO{Name: it.Name, UserId: userId})
+		}
+		for _, n := range h{
+			highlightStorise = append(highlightStorise, n)
+		}
+
+	}
+	for _,item1 := range highlightStorise {
+
+		post, _ := service.Repo.GetPostById(item1.PostId)
+
+		fmt.Println("Ispis broj slika u postu")
+		fmt.Println(len(post.Images))
+
+		postDTO := dto.PostDto{Id: post.ID}
+
+		exists := false
+		for _, h := range result {
+			if h.Name == item1.CollectionName {
+				h.Posts = append(h.Posts, postDTO)
+				exists = true
+				break
+			}
+		}
+		if !exists {
+			var postList []dto.PostDto
+			postList = append(postList, postDTO)
+			result = append(result, dto.HighlightDTOO{Name: item1.CollectionName, UserId: userId, Posts: postList})
+		}
+
+	}
 	return result, nil
 }
 
@@ -338,15 +550,21 @@ func (service *PostService) GetStoriesByUserId(userId uint) ([]dto.PostDto,error
 		fmt.Println("Ispis timr in")
 		fmt.Println(timein)
 		t := timein.Sub(time.Now())
-		if t>0 {
-
+		fmt.Println("Ispis t")
+		fmt.Println(t.Hours())
+		if t.Hours()>0 {
+			fmt.Println("Usao u if")
 			var images []dto.ImageDTO
 			for _, item := range item.Images {
 				images = append(images, dto.ImageDTO{Filename: item.Filename, Img: service.ConvertImgToBytes(item.Filepath)})
 			}
 
+			fmt.Println("nakon slike")
+
 			l, _ := service.Repo.GetLocationById(item.LocationId)
 			location := dto.LocationDTO{Place: l.Place, City: l.City, Country: l.Country}
+
+			fmt.Println("Nakon lokacije")
 
 			var hashtags []dto.HashtagDTO
 			for _, item1 := range item.HashTagsIdList {
@@ -354,14 +572,20 @@ func (service *PostService) GetStoriesByUserId(userId uint) ([]dto.PostDto,error
 				hashtags = append(hashtags, dto.HashtagDTO{Name: h.Name})
 			}
 
+			fmt.Println("Nakon hashtag")
+
 			var links []dto.LinkDTO
 			for _, item1 := range item.TagsLink {
 				links = append(links, dto.LinkDTO{Name: item1.Name, LinkType: model.ConvertLinkTypeToString(item1.LinkType)})
 			}
 
+			fmt.Println("Nakon links")
+
 			stringVar := strconv.Itoa(int(item.UserId))
 			postsDto = append(postsDto, dto.PostDto{Id: item.ID,Images: images, UserId: stringVar, Description: item.Description,
 				TagsLink: links, HashTags: hashtags, Location: location, CloseFriends: false, PostType: model.ConvertPostTypeToString(item.PostType)})
+
+			fmt.Println("Kreirao story")
 		}
 	}
 
@@ -483,4 +707,28 @@ func (handler *PostService) ConvertImgToBytes(filePath string)  []byte{
 	}
 	send_s3 := buf.Bytes()
 	return send_s3
+}
+
+func (service *PostService) CreateHighlight(dtoo *dto.HighlightDTO) error {
+	fmt.Println("Ulazak u highlight service")
+	result,_ := service.Repo.GetHighlightByName(dtoo.Name)
+	fmt.Println("ispis name")
+	fmt.Println(dtoo.Name)
+	fmt.Println("ispis result")
+	fmt.Println(result)
+	if result == nil {
+
+		highlight := model.Highlight{Name: dtoo.Name, UserId: dtoo.UserId}
+		service.Repo.CreateHighlight(&highlight)
+
+		for _, s := range dtoo.Posts {
+			//posts = append(posts, model.PostIdList{PostId: uint(s)})
+			highlightStory := model.HighlightStory{PostId: uint(s), CollectionName: dtoo.Name}
+			service.Repo.CreateHighlightStory(&highlightStory)
+
+		}
+
+		return nil
+	}
+	return fmt.Errorf("Highlight with this name already exists")
 }

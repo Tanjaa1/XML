@@ -20,6 +20,8 @@ type Post struct {
 	PostType                  PostType			 `json:"postType"`
 }
 
+
+
 type HashtagIdList struct {
 	gorm.Model
 	HashtagId                    uint			    `json:"HashtagId"`

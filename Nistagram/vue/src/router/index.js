@@ -8,6 +8,7 @@ import VerificationRequest from '../views/VerificationRequest.vue'
 import Requests from '../views/Requests.vue'
 import LikesAndDislikes from '../views/LikesAndDislikes.vue'
 import Collections from '../views/Collections.vue'
+import AllStories from '../views/AllStories.vue'
 
 const routes = [
   {
@@ -54,6 +55,11 @@ const routes = [
     path: '/Collections',
     name: 'Collections',
     component: Collections
+  },
+  {
+    path: '/AllStories',
+    name: 'AllStories',
+    component: AllStories
   },
   {
     path: '/about',

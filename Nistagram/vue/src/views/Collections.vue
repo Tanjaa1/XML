@@ -1,6 +1,7 @@
 <template>
 
   <div id="Profile"><br><br>
+  <h3 style="text-align:center">Collections</h3><br>
     <div v-for="c in collections" :key="c">
        <button type="submit" class="btnRegister" style="width:150px; margin-left:40px" v-on:click="SaveCollectionPosts(c.posts,c.name)">{{c.name}}</button>
     </div><br><br>
@@ -45,7 +46,13 @@
                                                             <img src="../images/dislike2.png" v-else style="margin-right:110px;cursor: pointer;" v-on:click="Dislike(p.id)">
                                                         </li>
                                                     </ul>
-                                                </div><br>Comments:
+                                                </div><br>
+                                                <h5 id="cardId"><b>{{p.location.place}} {{p.location.city}} {{p.location.country}}</b></h5><br>
+                                                 Taged people:
+                                                <div v-for="t in p.tagsLink" :key="t">
+                                                    @{{t.name}}
+                                                </div>
+                                                <br>Comments:
                                                 <div v-for="c in p.comments" :key="c" style="word-wrap: break-word;width: 300px;">
                                                     {{c.username}}: {{c.content}}<br>
                                                 </div><br>

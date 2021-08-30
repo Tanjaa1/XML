@@ -23,6 +23,9 @@
                                 </div>
                                 <NewStory/>
                         </div><br>
+                        <a v-for="c in highlights" :key="c">
+                            <button type="submit" class="btnRegister" style="width:150px; margin-left:40px" v-on:click="highlightsModal=true,ShowHighlightStories(c.posts)">{{c.name}}</button>
+                        </a><br><br>
                         <h2 class="mt-0 mb-0">Homer Simpson</h2>
                         <p> Clumsy, fat and very lazy, also an alcoholic, and  not very intelligent, but i love donuts</p>
                         <NewPhoto/>           
@@ -75,6 +78,7 @@
                                                         </li>
                                                     </ul>
                                                 </div><br>
+                                                <h5 id="cardId"><b>{{p.location.place}} {{p.location.city}} {{p.location.country}}</b></h5><br>
                                                 Taged people:
                                                 <div v-for="t in p.tagsLink" :key="t">
                                                     @{{t.name}}
@@ -172,16 +176,60 @@
               <div class="modal-body">
                 <slot name="body">
                     <input type="button" value="<" v-on:click="Previous()"/>
-                   {{i}}        
-                    <input type="button" value=">" v-on:click="Next()"/>
+                    <img :src="stories[i].images[0].img" style="width:160px; height:150px"/>     
+                    <input type="button" value=">" v-on:click="Next()"/><br>
+                      <h4 id="cardId"><b>{{stories[i].description}}</b></h4><br>
+                      <h5 id="cardId"><b>{{stories[i].location.place}} {{stories[i].location.city}} {{stories[i].location.country}}</b></h5><br>
+                    Taged people:
+                   <div v-for="t in stories[i].tagsLink" :key="t">
+                   @{{t.name}}
+                   </div>
                 </slot>
               </div>
 
               <div class="modal-footer">
+                <slot name="footer">
+                  <button class="modal-default-button" @click="storyModal=false">
+                    Close
+                  </button>
+                  </slot>
               </div>
             </div>
           </div>
         </div>
+
+
+        <!--Modal Highlights-->
+        <div class="modal-mask" v-if="highlightsModal">
+          <div class="modal-wrapper">
+            <div class="modal-container">
+
+
+              <div class="modal-body">
+                <slot name="body">
+                    <input type="button" value="<" v-on:click="PreviousH()"/>
+                    <img :src="storiesHighlight[j].images[0].img" style="width:160px; height:150px"/>     
+                    <input type="button" value=">" v-on:click="NextH()"/><br>
+                         <h4 id="cardId"><b>{{storiesHighlight[j].description}}</b></h4><br>
+                         <h5 id="cardId"><b>{{storiesHighlight[j].location.place}} {{storiesHighlight[j].location.city}} {{storiesHighlight[j].location.country}}</b></h5><br>
+                    Taged people:
+                   <div v-for="t in storiesHighlight[j].tagsLink" :key="t">
+                   @{{t.name}}
+                   </div>
+                </slot>
+              </div>
+
+              <div class="modal-footer">
+                <slot name="footer">
+                  <button class="modal-default-button" @click="highlightsModal=false">
+                    Close
+                  </button>
+                  </slot>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--Modal Highlights end-->
 </div>			
 </template>
 
@@ -228,10 +276,14 @@ export default {
              storyModal:false,
              replace: true,
              highlightPICTURE:[1,2,3],
-             i:0
+             i:0,
+             highlights:[],
+             highlightsModal:false,
+             j:0,
+             storiesHighlight:[]
 		}
 	},async beforeMount() {
-        await axios
+       await  axios
                 .get("http://localhost:8080/api/post/getPByUserId/" + localStorage.getItem('userId'),
 				{
 							headers: {
@@ -281,8 +333,10 @@ export default {
                 .then(response => {
                   if (response.status==200){
                     this.stories = response.data
+                    alert(this.stories)
                     for(let j = 0; j < this.stories.length; j++){
                         for (let i = 0; i < this.stories[j].images.length; i++) {
+                          alert(this.stories[j].images)
                            // pom1 = this.pict[j].images[i].filepath.split('\\')
                             //if (pom1.length == 4) {
                                 //this.pict[j].images[i].filepath = pom1[1] + '/' + pom1[2] + '/' + pom1[3]
@@ -297,22 +351,66 @@ export default {
                     }
                 }
               })
-	},
+
+                  await  axios
+                .get("http://localhost:8080/api/post/GetHighlightsByUserId/" + parseInt(localStorage.getItem('userId')),
+				{
+							headers: {
+								'Authorization': 'Bearer' + " " + localStorage.getItem('token')
+							}
+				})
+                .then(response => {
+                  if (response.status==200){
+                    this.highlights = response.data
+                    for(let c = 0; c < this.highlights.length; c++){
+                      if(this.highlights[c].posts != null){
+                       // alert(this.highlights[c].posts)
+                          for(let j = 0; j < this.highlights[c].posts.length; j++){
+                           // alert(this.highlights[c].posts[j].images[j].filename)
+                              for (let i = 0; i < this.highlights[c].posts[j].images.length; i++) {
+                                      if(this.highlights[c].posts[j].images[i].filename.includes('mp4')){
+                                          this.highlights[c].posts[j].images[i].img = 'data:video/mp4;base64,' + this.highlights[c].posts[j].images[i].img
+                                      }else{
+                                          this.highlights[c].posts[j].images[i].img = 'data:image/png;base64,' + this.highlights[c].posts[j].images[i].img
+                                      }
+                              }
+                          }
+                      }
+                    }
+                  
+                }
+              })
+  },
   methods: {
       Edit(){
 		this.$router.push('/');
+    },
+    ShowHighlightStories(l){
+      this.storiesHighlight = l
     },
     ShowStory(){
       this.storyModal = true
     },
     Previous(){
       if((this.i-1)<0)
-        this.i=this.highlightPICTURE.length-1
+        this.i=this.stories.length-1
       else
         this.i=this.i-1
     },
     Next(){
-      if((this.i+1)<this.highlightPICTURE.length)
+      if((this.i+1)<this.stories.length)
+          this.i=this.i+1
+      else
+        this.i=0
+    },
+     PreviousH(){
+      if((this.j-1)<0)
+        this.j=this.storiesHighlight.length-1
+      else
+        this.j=this.j-1
+    },
+    NextH(){
+      if((this.i+1)<this.storiesHighlight.length)
           this.i=this.i+1
       else
         this.i=0

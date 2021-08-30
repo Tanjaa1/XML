@@ -33,6 +33,30 @@ func (repo *PostRepository) CreateCollection(collection *model.Collection) error
 	}
 }
 
+func (repo *PostRepository) CreateHighlight(highlight *model.Highlight) error {
+	fmt.Println("Usao u repo highlight create")
+	fmt.Println(highlight.Name)
+	result := repo.Database.Create(highlight)
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("Post not created")
+	}else{
+		fmt.Println("Post created")
+		return  nil
+	}
+}
+
+func (repo *PostRepository) CreateHighlightStory(highlight *model.HighlightStory) error {
+	fmt.Println("Usao u repo highlight create")
+	//fmt.Println(highlight.Name)
+	result := repo.Database.Create(highlight)
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("Post not created")
+	}else{
+		fmt.Println("Post created")
+		return  nil
+	}
+}
+
 func (repo *PostRepository) AddIntoCollection(collection *model.Collection) error {
 		err := repo.Database.Save(collection).Error
 		if err != nil {
@@ -41,8 +65,48 @@ func (repo *PostRepository) AddIntoCollection(collection *model.Collection) erro
 		return nil
 }
 
+func (repo *PostRepository) AddIntoHighlightStory(highlightStory *model.HighlightStory) error {
+	err := repo.Database.Save(highlightStory).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (repo *PostRepository) AddIntoHighlight(highlight *model.Highlight) error {
+	err := repo.Database.Save(highlight).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (repo *PostRepository) RemoveFromCollection(collection *model.Collection) error {
 	err := repo.Database.Where("ID = ?", collection.ID).Preload("Posts").Delete(&model.Collection{}).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (repo *PostRepository) RemoveFromHighlight(collection *model.Highlight) error {
+	err := repo.Database.Where("ID = ?", collection.ID).Preload("Posts").Delete(&model.Highlight{}).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (repo *PostRepository) RemovePostIdObject(ID uint) error {
+	err := repo.Database.Where("ID = ?", ID).Delete(&model.PostIdList{}).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (repo *PostRepository) RemoveHighlightStory(ID uint) error {
+	err := repo.Database.Where("ID = ?", ID).Delete(&model.HighlightStory{}).Error
 	if err != nil {
 		return err
 	}
@@ -61,7 +125,20 @@ func (repo *PostRepository) GetCollectionByName(name string) (*model.Collection,
 	return collection, nil
 }
 
+func (repo *PostRepository) GetHighlightByName(name string) (*model.Highlight, error) {
+	highlight := &model.Highlight{}
+	repo.Database.Model(&highlight)
+	err := repo.Database.First(&highlight,"name = ?" , name).Error
+	fmt.Println("Ispis err")
+	fmt.Println(err)
+	if err != nil{
+		return nil,err
+	}
+	return highlight, nil
+}
+
 func (repo *PostRepository) GetPostById(id uint) (*model.Post, error) {
+	fmt.Println("Ispis id post GetPostById")
 	fmt.Println(id)
 	post := &model.Post{}
 	repo.Database.Model(&post)
@@ -94,6 +171,36 @@ func (repo *PostRepository) GetCollectionsByUserId(id uint) ([]model.Collection,
 	fmt.Println("ispis broj kolekcija")
 	fmt.Println(len(collections))
 	return collections, nil
+}
+
+func (repo *PostRepository) GetPostIdObjecByPostId(postId uint) (*model.PostIdList, error) {
+	postIdObject := &model.PostIdList{}
+	repo.Database.Model(&postIdObject)
+	err := repo.Database.First(&postIdObject,"post_id = ?" , postId).Error
+	fmt.Println("Ispis err")
+	fmt.Println(err)
+	fmt.Println("Ispis like")
+	fmt.Println(postIdObject)
+	if err != nil{
+		return nil,err
+	}
+	return postIdObject, nil
+}
+
+
+func (repo *PostRepository) GetHighlightsByUserId(id uint) ([]model.Highlight, error) {
+	fmt.Println("Iispis id korisnika")
+	fmt.Println(id)
+	var highlights []model.Highlight
+	repo.Database.Model(&highlights)
+	//repo.Database.First(&collection,"name = ?" , name)
+	err := repo.Database.Find(&highlights, "user_id = ?", id).Error
+	if err != nil{
+		return nil,err
+	}
+	fmt.Println("ispis broj hajlajta")
+	fmt.Println(len(highlights))
+	return highlights, nil
 }
 
 
@@ -267,4 +374,16 @@ func (repo *PostRepository) GetPostsByUserId(id uint) ([]model.Post, error) {
 	}
 	fmt.Println(len(posts))
 	return posts, nil
+}
+
+func (repo *PostRepository) GetHighlightStoriesByName(name string) ([]model.HighlightStory, error) {
+	var highlightStory []model.HighlightStory
+	repo.Database.Model(&highlightStory)
+	//repo.Database.First(&collection,"name = ?" , name)
+	err := repo.Database.Find(&highlightStory, "collection_name = ?", name).Error
+	if err != nil{
+		return nil,err
+	}
+	fmt.Println(len(highlightStory))
+	return highlightStory, nil
 }

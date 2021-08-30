@@ -121,6 +121,27 @@ func (handler *PostHandler) CreateCollection(w http.ResponseWriter, r *http.Requ
 	w.Header().Set("Content-Type", "application/json")
 }
 
+func (handler *PostHandler) CreateHighlight(w http.ResponseWriter, r *http.Request){
+	fmt.Println("creating")
+	var highlight dto.HighlightDTO
+	fmt.Println(r.Body)
+	err := json.NewDecoder(r.Body).Decode(&highlight)
+	fmt.Println(err)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	fmt.Println("prosao decoder")
+	err = handler.Service.CreateHighlight(&highlight)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusExpectationFailed)
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
+	w.Header().Set("Content-Type", "application/json")
+}
+
 func (handler *PostHandler) AddIntoCollection(w http.ResponseWriter, r *http.Request){
 	fmt.Println("Usao u kolekciju")
 	var collection dto.CollectionD
@@ -142,6 +163,27 @@ func (handler *PostHandler) AddIntoCollection(w http.ResponseWriter, r *http.Req
 	w.Header().Set("Content-Type", "application/json")
 }
 
+func (handler *PostHandler) AddIntoHighlight(w http.ResponseWriter, r *http.Request){
+	fmt.Println("Usao u kolekciju")
+	var highlight dto.HighlightD
+	fmt.Println(r.Body)
+	err := json.NewDecoder(r.Body).Decode(&highlight)
+	fmt.Println(err)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	fmt.Println("prosao decoder")
+	err = handler.Service.AddIntoHighlight(&highlight)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusExpectationFailed)
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
+	w.Header().Set("Content-Type", "application/json")
+}
+
 func (handler *PostHandler) RemoveFromCollection(w http.ResponseWriter, r *http.Request){
 	fmt.Println("Usao u remove from collection")
 	var collection dto.CollectionD
@@ -154,6 +196,27 @@ func (handler *PostHandler) RemoveFromCollection(w http.ResponseWriter, r *http.
 	}
 	fmt.Println("prosao decoder")
 	err = handler.Service.RemoveFromCollection(&collection)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusExpectationFailed)
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
+	w.Header().Set("Content-Type", "application/json")
+}
+
+func (handler *PostHandler) RemoveFromHighlight(w http.ResponseWriter, r *http.Request){
+	fmt.Println("Usao u remove from highlight")
+	var highlight dto.HighlightD
+	fmt.Println(r.Body)
+	err := json.NewDecoder(r.Body).Decode(&highlight)
+	fmt.Println(err)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	fmt.Println("prosao decoder")
+	err = handler.Service.RemoveFromHighlight(&highlight)
 	if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusExpectationFailed)
@@ -222,6 +285,34 @@ func (handler *PostHandler) GetCollectionsByUserId(w http.ResponseWriter, r *htt
 	//json.NewEncoder(w).Encode(&result)
 }
 
+func (handler *PostHandler) GetHighlightsByUserId(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+	fmt.Println("Ispisuje se id")
+	fmt.Println(id)
+	id2,err := strconv.ParseInt(id, 10, 64)
+	if err != nil{
+		fmt.Println(err)
+	}
+	id3 := int(id2)
+	result, err := handler.Service.GetHighlightsByUserId(uint(id3))
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&result)
+	//if result == true {
+	//	w.WriteHeader(http.StatusOK)
+	//}else{
+	//	w.WriteHeader(http.StatusOK)
+	//}
+	//w.Header().Set("Content-Type", "application/json")
+	//json.NewEncoder(w).Encode(&result)
+}
+
 func (handler *PostHandler) GetCollectionsForProfileByUserId(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
@@ -233,6 +324,35 @@ func (handler *PostHandler) GetCollectionsForProfileByUserId(w http.ResponseWrit
 	}
 	id3 := int(id2)
 	result, err := handler.Service.GetCollectionsForProfileByUserId(uint(id3))
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&result)
+	//if result == true {
+	//	w.WriteHeader(http.StatusOK)
+	//}else{
+	//	w.WriteHeader(http.StatusOK)
+	//}
+	//w.Header().Set("Content-Type", "application/json")
+	//json.NewEncoder(w).Encode(&result)
+}
+
+func (handler *PostHandler) GetHighlightsForProfileByUserId(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Usao u handler GetHighlightsForProfileByUserId")
+	vars := mux.Vars(r)
+	id := vars["id"]
+	fmt.Println("Ispisuje se id")
+	fmt.Println(id)
+	id2,err := strconv.ParseInt(id, 10, 64)
+	if err != nil{
+		fmt.Println(err)
+	}
+	id3 := int(id2)
+	result, err := handler.Service.GetHighlightsForProfileByUserId(uint(id3))
 	if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusBadRequest)

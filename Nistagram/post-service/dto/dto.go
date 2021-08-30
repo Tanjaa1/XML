@@ -51,13 +51,30 @@ type CollectionDTO struct {
 	Posts                     []int              `json:"posts"`
 }
 
+type HighlightDTO struct {
+	Name                      string			 `json:"name"`
+	UserId                    uint                `json:"userId"`
+	Posts                     []int              `json:"posts"`
+}
+
 type CollectionDTOO struct {
 	Name                      string			 `json:"name"`
 	UserId                    uint                `json:"userId"`
 	Posts                     []PostDto          `json:"posts"`
 }
 
+type HighlightDTOO struct {
+	Name                      string			 `json:"name"`
+	UserId                    uint                `json:"userId"`
+	Posts                     []PostDto          `json:"posts"`
+}
+
 type CollectionD struct {
+	Name                      string			 `json:"name"`
+	PostId                    uint                `json:"postId"`
+}
+
+type HighlightD struct {
 	Name                      string			 `json:"name"`
 	PostId                    uint                `json:"postId"`
 }
