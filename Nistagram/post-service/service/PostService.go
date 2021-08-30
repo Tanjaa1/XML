@@ -313,61 +313,57 @@ func (service *PostService) GetHighlightsByUserId(userId uint) ([]dto.HighlightD
 	if err != nil {
 		return []dto.HighlightDTOO{}, err
 	}
-	var highlightStorise []model.HighlightStory
+	//var highlightStorise []model.HighlightStory
+	ha:= service.Repo.GetHighlightStories()
+	fmt.Println("Ispis duzina ha ++++++++++++++")
+	fmt.Println(ha)
 	for _,it := range highlights{
-		h,_ := service.Repo.GetHighlightStoriesByName(it.Name)
+		var h []model.HighlightStory
+		for _,it2 := range ha{
+			if it.Name == it2.CollectionName {
+				h = append(h, it2)
+			}
+		}
 		fmt.Println("Ispis duzina h")
 		fmt.Println(len(h))
 		if len(h) == 0{
 			result = append(result, dto.HighlightDTOO{Name: it.Name, UserId: userId})
-		}
-		for _, n := range h{
-			highlightStorise = append(highlightStorise, n)
-		}
+		}else {
+			var postList []dto.PostDto
+			for _, item1 := range h {
+				post, _ := service.Repo.GetPostById(item1.PostId)
 
-	}
-		for _, item1 := range highlightStorise {
-
-			post, _ := service.Repo.GetPostById(item1.PostId)
-
-			fmt.Println("Ispis broj slika u postu")
-			fmt.Println(len(post.Images))
-			var images []dto.ImageDTO
-			for _, item2 := range post.Images {
-				images = append(images, dto.ImageDTO{Filename: item2.Filename, Img: service.ConvertImgToBytes(item2.Filepath)})
-			}
-
-			l, _ := service.Repo.GetLocationById(post.LocationId)
-			location := dto.LocationDTO{Place: l.Place, City: l.City, Country: l.Country}
-			var hashtags []dto.HashtagDTO
-			for _, item3 := range post.HashTagsIdList {
-				h, _ := service.Repo.GetHashtagById(item3.HashtagId)
-				hashtags = append(hashtags, dto.HashtagDTO{Name: h.Name})
-			}
-
-			var links []dto.LinkDTO
-			for _, item4 := range post.TagsLink {
-				links = append(links, dto.LinkDTO{Name: item4.Name, LinkType: model.ConvertLinkTypeToString(item4.LinkType)})
-			}
-
-			stringVar := strconv.Itoa(int(post.UserId))
-			postDTO := dto.PostDto{Id: post.ID, Images: images, UserId: stringVar, Description: post.Description,
-				TagsLink: links, HashTags: hashtags, Location: location, CloseFriends: false,
-				PostType: model.ConvertPostTypeToString(post.PostType)}
-
-			exists := false
-			for _, h := range result {
-				if h.Name == item1.CollectionName {
-					h.Posts = append(h.Posts, postDTO)
-					exists = true
-					break
+				fmt.Println("Ispis broj slika u postu")
+				fmt.Println(len(post.Images))
+				var images []dto.ImageDTO
+				for _, item2 := range post.Images {
+					images = append(images, dto.ImageDTO{Filename: item2.Filename, Img: service.ConvertImgToBytes(item2.Filepath)})
 				}
+
+				l, _ := service.Repo.GetLocationById(post.LocationId)
+				location := dto.LocationDTO{Place: l.Place, City: l.City, Country: l.Country}
+				var hashtags []dto.HashtagDTO
+				for _, item3 := range post.HashTagsIdList {
+					h, _ := service.Repo.GetHashtagById(item3.HashtagId)
+					hashtags = append(hashtags, dto.HashtagDTO{Name: h.Name})
+				}
+
+				var links []dto.LinkDTO
+				for _, item4 := range post.TagsLink {
+					links = append(links, dto.LinkDTO{Name: item4.Name, LinkType: model.ConvertLinkTypeToString(item4.LinkType)})
+				}
+
+				stringVar := strconv.Itoa(int(post.UserId))
+				postDTO := dto.PostDto{Id: post.ID, Images: images, UserId: stringVar, Description: post.Description,
+					TagsLink: links, HashTags: hashtags, Location: location, CloseFriends: false,
+					PostType: model.ConvertPostTypeToString(post.PostType)}
+
+
+
+					postList = append(postList, postDTO)
 			}
-			if !exists {
-				var postList []dto.PostDto
-				postList = append(postList, postDTO)
-				result = append(result, dto.HighlightDTOO{Name: item1.CollectionName, UserId: userId, Posts: postList})
-			}
+			result = append(result, dto.HighlightDTOO{Name: it.Name, UserId: userId, Posts: postList})
+		}
 
 	}
 	return result, nil
@@ -404,41 +400,29 @@ func (service *PostService) GetHighlightsForProfileByUserId(userId uint) ([]dto.
 	if err != nil {
 		return []dto.HighlightDTOO{}, err
 	}
-
-	var highlightStorise []model.HighlightStory
+	//var highlightStorise []model.HighlightStory
+	ha:= service.Repo.GetHighlightStories()
+	fmt.Println("Ispis duzina ha ++++++++++++++")
+	fmt.Println(ha)
 	for _,it := range highlights{
-		h,_ := service.Repo.GetHighlightStoriesByName(it.Name)
-		if len(h) == 0{
-			result = append(result, dto.HighlightDTOO{Name: it.Name, UserId: userId})
-		}
-		for _, n := range h{
-			highlightStorise = append(highlightStorise, n)
-		}
-
-	}
-	for _,item1 := range highlightStorise {
-
-		post, _ := service.Repo.GetPostById(item1.PostId)
-
-		fmt.Println("Ispis broj slika u postu")
-		fmt.Println(len(post.Images))
-
-		postDTO := dto.PostDto{Id: post.ID}
-
-		exists := false
-		for _, h := range result {
-			if h.Name == item1.CollectionName {
-				h.Posts = append(h.Posts, postDTO)
-				exists = true
-				break
+		var h []model.HighlightStory
+		for _,it2 := range ha{
+			if it.Name == it2.CollectionName {
+				h = append(h, it2)
 			}
 		}
-		if !exists {
+		fmt.Println("Ispis duzina h")
+		fmt.Println(len(h))
+		if len(h) == 0{
+			result = append(result, dto.HighlightDTOO{Name: it.Name, UserId: userId})
+		}else {
 			var postList []dto.PostDto
-			postList = append(postList, postDTO)
-			result = append(result, dto.HighlightDTOO{Name: item1.CollectionName, UserId: userId, Posts: postList})
+			for _, item1 := range h {
+				postDTO := dto.PostDto{Id: item1.PostId}
+				postList = append(postList, postDTO)
+			}
+			result = append(result, dto.HighlightDTOO{Name: it.Name, UserId: userId, Posts: postList})
 		}
-
 	}
 	return result, nil
 }

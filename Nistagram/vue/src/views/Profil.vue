@@ -10,7 +10,9 @@
                                     <div class="p-4 d-flex justify-content-end text-center">
                                         <ul class="list-inline mb-0">
                                             <li class="list-inline-item">
-                                                <h5 class="font-weight-bold mb-0 d-block">{{pict.length}}</h5><small class="text-muted"><i class="fa fa-image mr-1"></i>Photos</small>
+                                                <h5 class="font-weight-bold mb-0 d-block" v-if="pict != null">{{pict.length}}</h5>
+                                                <h5 class="font-weight-bold mb-0 d-block" v-else >0</h5><small class="text-muted">
+                                                <i class="fa fa-image mr-1"></i>Photos</small>
                                             </li>
                                             <li class="list-inline-item">
                                                 <h5 class="font-weight-bold mb-0 d-block">745</h5><small class="text-muted"> <i class="fa fa-user mr-1"></i>Followers</small>
@@ -293,7 +295,9 @@ export default {
                 .then(response => {
                   if (response.status==200){
                     this.pict = response.data
+                    if(this.pict != null){
                     for(let j = 0; j < this.pict.length; j++){
+                      alert(this.pict[0].comments)
                         for (let i = 0; i < this.pict[j].images.length; i++) {
                            // pom1 = this.pict[j].images[i].filepath.split('\\')
                             //if (pom1.length == 4) {
@@ -305,9 +309,10 @@ export default {
                                     this.pict[j].images[i].img = 'data:image/png;base64,' + this.pict[j].images[i].img
                                 }
                             //}
-                        }
+                          }
+                      }
                     }
-                }
+                  }
               })
 
             await  axios
@@ -333,10 +338,9 @@ export default {
                 .then(response => {
                   if (response.status==200){
                     this.stories = response.data
-                    alert(this.stories)
+                    if(this.stories != null){
                     for(let j = 0; j < this.stories.length; j++){
                         for (let i = 0; i < this.stories[j].images.length; i++) {
-                          alert(this.stories[j].images)
                            // pom1 = this.pict[j].images[i].filepath.split('\\')
                             //if (pom1.length == 4) {
                                 //this.pict[j].images[i].filepath = pom1[1] + '/' + pom1[2] + '/' + pom1[3]
@@ -348,6 +352,7 @@ export default {
                                 }
                             //}
                         }
+                    }
                     }
                 }
               })
@@ -362,9 +367,12 @@ export default {
                 .then(response => {
                   if (response.status==200){
                     this.highlights = response.data
+                   if(this.highlights != null){
                     for(let c = 0; c < this.highlights.length; c++){
                       if(this.highlights[c].posts != null){
-                       // alert(this.highlights[c].posts)
+                        //alert(this.highlights[0].posts)
+                        //alert(this.highlights[1].posts[0].images)
+                        //alert(this.highlights[1].posts[1].images)
                           for(let j = 0; j < this.highlights[c].posts.length; j++){
                            // alert(this.highlights[c].posts[j].images[j].filename)
                               for (let i = 0; i < this.highlights[c].posts[j].images.length; i++) {
@@ -377,7 +385,7 @@ export default {
                           }
                       }
                     }
-                  
+                   }
                 }
               })
   },
@@ -410,10 +418,10 @@ export default {
         this.j=this.j-1
     },
     NextH(){
-      if((this.i+1)<this.storiesHighlight.length)
-          this.i=this.i+1
+      if((this.j+1)<this.storiesHighlight.length)
+          this.j=this.j+1
       else
-        this.i=0
+        this.j=0
     },
     CreateNewCollection(){
       if(this.newCollection != null){

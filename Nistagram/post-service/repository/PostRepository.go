@@ -376,12 +376,33 @@ func (repo *PostRepository) GetPostsByUserId(id uint) ([]model.Post, error) {
 	return posts, nil
 }
 
+func (repo *PostRepository) GetHighlightStories() []model.HighlightStory {
+	var highlightStory []model.HighlightStory
+	//repo.Database.Model(&highlightStory)
+	//repo.Database.First(&collection,"name = ?" , name)
+	//err := repo.Database.Find(&highlightStory, "collection_name = ?", name).Error
+	//err := repo.Database.Table("highlight_stories").Take(&highlightStory,"collection_name = ?",name).Error
+	repo.Database.Find(&highlightStory)
+	//if err != nil{
+	//	fmt.Println("ispis err ****************")
+	//	fmt.Println(err)
+		//return highlightStory
+	//}
+	fmt.Println("Broj hajlajta ///////////////////////////////////////////////////////////////////")
+	fmt.Println(len(highlightStory))
+	return highlightStory
+}
+
 func (repo *PostRepository) GetHighlightStoriesByName(name string) ([]model.HighlightStory, error) {
 	var highlightStory []model.HighlightStory
 	repo.Database.Model(&highlightStory)
 	//repo.Database.First(&collection,"name = ?" , name)
 	err := repo.Database.Find(&highlightStory, "collection_name = ?", name).Error
+	//err := repo.Database.Table("highlight_stories").Take(&highlightStory,"collection_name = ?",name).Error
+	//err := repo.Database.Table("highlight_stories").Find(&highlightStory).Error
 	if err != nil{
+		fmt.Println("ispis err ")
+		fmt.Println(err)
 		return nil,err
 	}
 	fmt.Println(len(highlightStory))

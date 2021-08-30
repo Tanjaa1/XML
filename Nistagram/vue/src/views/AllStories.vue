@@ -15,8 +15,8 @@
                                                     <img :src="im.img" style="width:250px;height:250px" v-if="im.img.includes('image')"/>
                                                 </div>
                                                 <h4 id="cardId"><b>{{p.description}}</b></h4>
-                                                <img src="../images/bookmark.png" style="margin-left:210px;cursor: pointer;" v-if="IsInCollection(p.id)"  v-on:click="ShowCollections(p)">
-                                                <img src="../images/bookmark2.png" style="margin-left:210px;cursor: pointer;" v-else v-on:click="DeletePostFromCollection(p.id)">
+                                                <div v-if="IsInCollection(p.id)"><img src="../images/bookmark.png" style="margin-left:210px;cursor: pointer;"  v-on:click="ShowCollections(p)"></div>
+                                                <div v-else><img src="../images/bookmark2.png" style="margin-left:210px;cursor: pointer;"  v-if="!IsInCollection(p.id)" v-on:click="DeletePostFromCollection(p.id)"></div>
                                                 <br>
                                                 <h5 id="cardId"><b>{{p.location.place}} {{p.location.city}} {{p.location.country}}</b></h5><br>
                                                  Taged people:
@@ -137,7 +137,7 @@ export default {
              likesModal:[],
              dislikesModal:[],
              post:null,
-             collections:[],
+             collections:null,
              showModalCollections:false,
              newCollection:null,
              stories:[],
@@ -301,17 +301,22 @@ export default {
       }
     },
     IsInCollection(id){
-      if(this.collections != null){
-        for(let i = 0; i < this.collections.length; i++){
-          if(this.collections[i].posts != null){
-            for(let j = 0; j < this.collections[i].posts.length; j++){
-              if(this.collections[i].posts[j].id == id)
-                return false
-            }
-          }
-        }
-      }
-      return true
+      
+                    if(this.collections != null){
+                        // alert(this.collections[0].name)
+                          for(let i = 0; i < this.collections.length; i++){
+                           // alert(this.collections[i].posts)
+                            if(this.collections[i].posts != null){
+                              for(let j = 0; j < this.collections[i].posts.length; j++){
+                                if(this.collections[i].posts[j].id == id)
+                                  return false
+
+                              }
+                            }
+                          }
+                        }
+                      // alert("aaaa")
+                        return true  
     },
     AddInCollection(n){
       let c = {
