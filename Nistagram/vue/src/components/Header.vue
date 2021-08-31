@@ -1,9 +1,7 @@
 <template>
     <nav>
         <Search/>
-       <div class="menu-item"></div>
-       <div class="menu-item"></div>
-       <div class="menu-item"></div>
+        <br><br>
        <Dropdown title="More" :items="services"/>
     </nav>
 </template>
@@ -33,6 +31,10 @@ export default {
                 {
                     title:'EditProfile',
                     link:'EditProfile'
+                },
+                {
+                    title:'Requests',
+                    link:'Requests'
                 },
                 {
                     title:'Log Out',

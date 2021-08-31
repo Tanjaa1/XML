@@ -15,6 +15,8 @@ import PostsByHashtag from '../views/PostsByHashtag.vue'
 import PostsByUserPublic from '../views/PostsByUserPublic.vue'
 import PostsByLocationPublic from '../views/PostsByLocationPublic.vue'
 import PostsByHashtagPublic from '../views/PostsByHashtagPublic.vue'
+import RequestList from '../views/RequestList.vue'
+import PostsLiked from '../views/PostsLiked.vue'
 
 const routes = [
   {
@@ -96,6 +98,16 @@ const routes = [
     path: '/PostsByHashtagPublic',
     name: 'PostsByHashtagPublic',
     component: PostsByHashtagPublic
+  },
+  {
+    path: '/RequestList',
+    name: 'RequestList',
+    component: RequestList
+  },
+  {
+    path: '/PostsLiked',
+    name: 'PostsLiked',
+    component: PostsLiked
   },
   {
     path: '/about',

@@ -331,3 +331,37 @@ func (handler *RegisteredUserHandler) CheckPrivate(w http.ResponseWriter, r *htt
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&data)
 }
+
+func (handler *RegisteredUserHandler) AddFollower(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	result, err := handler.Service.AddFollower(vars["idRegisterUser"],vars["idRelatedUser"])
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if result == true {
+		w.WriteHeader(http.StatusOK)
+	}else{
+		w.WriteHeader(http.StatusAccepted)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&result)
+}
+
+func (handler *RegisteredUserHandler) DeleteFollower(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	result, err := handler.Service.DeleteFollower(vars["idRegisterUser"],vars["idRelatedUser"])
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	if result == true {
+		w.WriteHeader(http.StatusOK)
+	}else{
+		w.WriteHeader(http.StatusAccepted)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&result)
+}

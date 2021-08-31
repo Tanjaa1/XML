@@ -7,8 +7,10 @@
                                 <div class=""><img v-on:click="ShowStory()" style="cursor: pointer;" src="https://i.pinimg.com/originals/11/5f/4f/115f4f233582670e085966ee8250e75f.png" alt="..." width="130"  class="rounded-circle">
                                 </div>
                                 <div class="media-body mb-5">   
-                                        <button type="submit" class="btnRegister" style="width:150px; margin-left:1200px" v-if="showUser" v-on:click="Unfolow()">Following</button>
-                                         <button type="submit" class="btnRegister" style="width:150px; margin-left:1200px" v-else v-on:click="Folow()">Follow</button><br>
+                                        <button type="submit" class="btnRegister" style="width:150px; margin-left:1200px" v-if="showUser && !requestExists" v-on:click="Unfolow()">Following</button>
+                                         <button type="submit" class="btnRegister" style="width:150px; margin-left:1200px" v-else-if="!requestExists" v-on:click="Folow()">Follow</button>
+                                         <button type="submit" class="btnRegister" style="width:150px; margin-left:1200px" v-else v-on:click="Delete()">Requested</button><br>
+                                         
                                     <div class="p-4 d-flex justify-content-end text-center">
                                         <ul class="list-inline mb-0">
                                             <li class="list-inline-item">
@@ -27,7 +29,7 @@
                                 </div>
                            
                         </div><br>
-                        <div v-if="showUser || !isPrivite">
+                        <div v-if="(showUser || !isPrivite) && !requestExists">
                         <a v-for="c in highlights" :key="c">
                             <button type="submit" class="btnRegister" style="width:150px; margin-left:40px" v-on:click="highlightsModal=true,ShowHighlightStories(c.posts)">{{c.name}}</button>
                         </a><br><br>
@@ -35,7 +37,7 @@
                         <h2 class="mt-0 mb-0">{{username}}</h2>
                         <h5> {{description}}</h5>
                          
-                        <div v-if="showUser || !isPrivate">
+                        <div v-if="(showUser || !isPrivite) && !requestExists">
                             <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
                             <ul class="nav nav-tabs">
                                 <li class="active"><a data-toggle="tab" href="#home">Pictures</a></li>
@@ -288,12 +290,35 @@ export default {
              description:'',
              username:'',
              showUser:false,
-             isPrivite:false
+             isPrivite:false,
+             requestExists:false
 		}
-	},async beforeMount() {
+	},async beforeMount() { 
+
         this.description=myVar.description
         this.username = myVar.username
         this.isPrivite = myVar.isPrivate
+
+        // await  axios
+        //         .get("http://localhost:8080/api/user-request/isRequestExists/" + localStorage.getItem('userId') + '/' + myVar.id,
+				// {
+				// 			headers: {
+				// 				'Authorization': 'Bearer' + " " + localStorage.getItem('token')
+				// 			}
+				// })
+        //         .then(response => {
+          
+        //           if (response.status==200){
+        //             this.requestExists = response.data
+        //             alert(this.requestExists)
+
+                  
+        //         }
+        //       })
+  
+        if(!this.requestExists){
+         
+
         await  axios
                 .get("http://localhost:8080/api/user/check/" + localStorage.getItem('userId') + '/' + myVar.id,
 				{
@@ -304,14 +329,13 @@ export default {
                 .then(response => {
                   if (response.status==200){
                     this.showUser = response.data
-                    alert("Usao u metodu")
-                    alert(this.showUser)
+
                   
                 }
               })
-alert("Pre if")
+   alert(this.showUser)
     if(this.showUser || !myVar.isPrivate){
-            alert("Usao u if")
+          
        await  axios
                 .get("http://localhost:8080/api/post/getPByUserId/" + myVar.id,
 				{
@@ -417,10 +441,95 @@ alert("Pre if")
               })
 
               }
+        }
   },
   methods: {
       Edit(){
 		this.$router.push('/');
+    },
+    Delete(){
+         axios
+                                  .get("http://localhost:8080/api/user-request/deleteRequest2/" + localStorage.getItem('userId') + '/' + myVar.id,
+                          {
+                                headers: {
+                                  'Authorization': 'Bearer' + " " + localStorage.getItem('token')
+                                }
+                          })
+                                  .then(response1 => {
+                                    if (response1.status==200){
+                                      location.reload()
+                                    }
+                                })
+    },
+    Unfolow(){
+      let c = {
+          fol1: parseInt(3),
+          fol2: parseInt(2),
+        }
+          axios
+                .put("http://localhost:8080/api/user/deleteFollower/" + myVar.id + '/' + localStorage.getItem('userId'),c,
+				{
+							headers: {
+								'Authorization': 'Bearer' + " " + localStorage.getItem('token'),
+							}
+				})
+                .then(response => {
+                  if (response.status==200){
+                    location.reload()
+                  }
+              })
+               .catch(error => {
+                // print(error.status == 417)
+                if(error == "Error: Request failed with status code 400"){
+                   alert("Error")
+                  }
+                })
+    },
+    Folow(){
+       let c = {
+          fol1: parseInt(myVar.id),
+          fol2: parseInt(localStorage.getItem('userId')),
+        }
+      if(this.isPrivite){
+  
+          axios
+                .post("http://localhost:8080/api/user-request/createRequest", c,
+				{
+							headers: {
+								'Authorization': 'Bearer' + " " + localStorage.getItem('token'),
+							}
+				})
+                .then(response => {
+                  if (response.status==200){
+                    location.reload()
+                  }
+              })
+               .catch(error => {
+                // print(error.status == 417)
+                if(error == "Error: Request failed with status code 400"){
+                   alert("Error")
+                  }
+                })
+      }else{
+          axios
+                .put("http://localhost:8080/api/user/addFollower/" + myVar.id + '/' + localStorage.getItem('userId'),c,
+				{
+							headers: {
+								'Authorization': 'Bearer' + " " + localStorage.getItem('token'),
+							}
+				})
+                .then(response => {
+                  if (response.status==200){
+                    location.reload()
+                  }
+              })
+               .catch(error => {
+                // print(error.status == 417)
+                if(error == "Error: Request failed with status code 400"){
+                   alert("Error")
+                  }
+                })
+      }
     },
     ShowHighlightStories(l){
       this.storiesHighlight = l

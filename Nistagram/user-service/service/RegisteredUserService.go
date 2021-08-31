@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	jwt "github.com/dgrijalva/jwt-go"
+	"strconv"
 	"time"
 	"user-service/dto"
 	"user-service/model"
@@ -162,7 +163,7 @@ func (service *RegisteredUserService) SearchProfile(name string) ([] dto.MyProfi
 func (service *RegisteredUserService) Check(myId uint, userId uint) bool {
 	user,_ := service.Repo.GetRegisteredUserByID(myId)
 	for _,r :=  range user.RelatedUsers{
-		if r.RegisteredUserId == int(userId) && r.Follower{
+		if r.RegisteredUserId == int(userId) && r.Following{
 			return true
 		}
 	}
@@ -195,3 +196,63 @@ func (service *RegisteredUserService) CheckPrivate(userId uint) bool {
 //	exists := service.Repo.ConsumerExists(id)
 //	return exists, nil
 //}
+
+func (service *RegisteredUserService) AddFollower(userId string,myId string ) (bool, error) {
+	registerUser := &model.RegisteredUser{}
+	relatedUserToSave := &model.RegisteredUser{}
+	var userId1, _ =strconv.ParseUint(userId, 10, 64)
+	var myId1, _ =strconv.ParseUint(myId, 10, 64)
+	registerUser, _ = service.Repo.GetRegisteredUserByID(uint(myId1))
+	relatedUserToSave, _ = service.Repo.GetRegisteredUserByID(uint(userId1))
+
+	relatedUser :=&model.RelatedUser{}
+	relatedUser.RegisteredUserId= int(relatedUserToSave.ID)
+	relatedUser.Username=relatedUserToSave.Account.Username
+	relatedUser.IsCloseFriend=false
+	relatedUser.IsBlocked=false
+	relatedUser.Follower=false
+	relatedUser.Following=true
+	//service.RepoR.CreateRelatedUser(relatedUser)
+	//dodati provjeru da se ne upisuje isti pratilac za registrovanog korisnika
+	registerUser.RelatedUsers = append(registerUser.RelatedUsers, *relatedUser)
+	service.Repo.UpdateRegisterUser(registerUser)
+
+	relatedUser1 :=&model.RelatedUser{}
+	relatedUser1.RegisteredUserId= int(registerUser.ID)
+	relatedUser1.Username=registerUser.Account.Username
+	relatedUser1.IsCloseFriend=false
+	relatedUser1.IsBlocked=false
+	relatedUser1.Follower=true
+	relatedUser1.Following=false
+	//service.RepoR.CreateRelatedUser(relatedUser)
+	//dodati provjeru da se ne upisuje isti pratilac za registrovanog korisnika
+	relatedUserToSave.RelatedUsers = append(relatedUserToSave.RelatedUsers, *relatedUser1)
+	service.Repo.UpdateRegisterUser(relatedUserToSave)
+
+	return true, nil
+}
+
+func (service *RegisteredUserService) DeleteFollower(userId string,myId string ) (bool, error) {
+	registerUser := &model.RegisteredUser{}
+	relatedUserToSave := &model.RegisteredUser{}
+	var userId1, _ =strconv.ParseUint(userId, 10, 64)
+	var myId1, _ =strconv.ParseUint(myId, 10, 64)
+	registerUser, _ = service.Repo.GetRegisteredUserByID(uint(myId1))
+	relatedUserToSave, _ = service.Repo.GetRegisteredUserByID(uint(userId1))
+
+	for _, r := range registerUser.RelatedUsers{
+		if r.RegisteredUserId == int(userId1) && r.Following{
+			r.Following = false
+			break
+		}
+	}
+
+	for _, r := range relatedUserToSave.RelatedUsers{
+		if r.RegisteredUserId == int(myId1) && r.Follower{
+			r.Follower = false
+			break
+		}
+	}
+	service.Repo.UpdateRegisterUser(relatedUserToSave)
+	return true, nil
+}

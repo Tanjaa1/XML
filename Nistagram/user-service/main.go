@@ -130,6 +130,9 @@ func handleFunc(handler *handler.RegisteredUserHandler) {
 	router.HandleFunc("/check/{myId}/{userId}", handler.Check).Methods("GET")
 	router.HandleFunc("/checkPublic/{myId}/{userId}", handler.CheckPublic).Methods("GET")
 	router.HandleFunc("/checkPrivate/{userId}", handler.CheckPrivate).Methods("GET")
+	router.HandleFunc("/addFollower/{idRegisterUser}/{idRelatedUser}", handler.AddFollower).Methods("PUT")
+	router.HandleFunc("/deleteFollower/{idRegisterUser}/{idRelatedUser}", handler.DeleteFollower).Methods("PUT")
+	//router.HandleFunc("/followerExist/{username}/{registerUserId}", handler.FolowerExist).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), h(router)))
 }
