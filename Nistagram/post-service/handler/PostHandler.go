@@ -517,3 +517,69 @@ func (handler *PostHandler) GetPostsByUserId(w http.ResponseWriter, r *http.Requ
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(result)
 }
+
+func (handler *PostHandler) GetPostsByLocation(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Usao u handler")
+	vars := mux.Vars(r)
+	id := vars["locationId"]
+	fmt.Println("Ispisuje se id")
+	fmt.Println(id)
+	id2,err := strconv.ParseInt(id, 10, 64)
+	if err != nil{
+		fmt.Println(err)
+	}
+	id3 := int(id2)
+
+	myId := vars["myId"]
+	fmt.Println("Ispisuje se id")
+	fmt.Println(id)
+	myId2,err := strconv.ParseInt(myId, 10, 64)
+	if err != nil{
+		fmt.Println(err)
+	}
+	myId3 := int(myId2)
+
+	result, err := handler.Service.GetPostsByLocation(uint(id3), uint(myId3))
+
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(result)
+}
+
+func (handler *PostHandler) GetStoriesByLocation(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Usao u handler")
+	vars := mux.Vars(r)
+	id := vars["locationId"]
+	fmt.Println("Ispisuje se id")
+	fmt.Println(id)
+	id2,err := strconv.ParseInt(id, 10, 64)
+	if err != nil{
+		fmt.Println(err)
+	}
+	id3 := int(id2)
+
+	myId := vars["myId"]
+	fmt.Println("Ispisuje se id")
+	fmt.Println(id)
+	myId2,err := strconv.ParseInt(myId, 10, 64)
+	if err != nil{
+		fmt.Println(err)
+	}
+	myId3 := int(myId2)
+
+	result, err := handler.Service.GetStoriesByLocation(uint(id3), uint(myId3))
+
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(result)
+}

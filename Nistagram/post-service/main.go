@@ -158,6 +158,8 @@ func handleFunc(handler *handler.PostHandler) {
 	router.HandleFunc("/searchLocation/{name}", IsAuthorized(handler.SearchLocation)).Methods("GET")
 	router.HandleFunc("/searchHashtag/{name}", IsAuthorized(handler.SearchHashtag)).Methods("GET")
 	router.HandleFunc("/getPByUserId/{id}",IsAuthorized(handler.GetPostsByUserId)).Methods("GET")
+	router.HandleFunc("/getPostsByLocation/{locationId}/{myId}",handler.GetPostsByLocation).Methods("GET")
+	router.HandleFunc("/getStoriesByLocation/{locationId}/{myId}",handler.GetStoriesByLocation).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), h(router)))
 	//log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", "8080"), h(router)))

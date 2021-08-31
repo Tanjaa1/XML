@@ -143,10 +143,41 @@ func(service *RegisteredUserService) GetUserByUsername(username string) (dto.Req
 	return accountDto,err
 }
 
-func (service *RegisteredUserService) SearchProfile(name string) ([] model.Account, error) {
+func (service *RegisteredUserService) SearchProfile(name string) ([] dto.MyProfileDTO, error) {
 	exists ,err:= service.Repo.ProfileSearch("%"+name+"%")
+	var accounts []dto.MyProfileDTO
+	for _,r:=range exists{
+		ru,_ := service.Repo.GetRegisteredUserByID(r.ID)
+		accounts = append(accounts, dto.MyProfileDTO{Id: r.ID, Name: r.Name, Surname: r.Surname,
+			DateOfBirth: r.DateOfBirth.String(), Email: r.Email, Password: r.Password, PhoneNumber: r.PhoneNumber,
+			Gender: model.ConvertGenderToString(r.Gender), Username: r.Username,
+			UserType: model.ConvertUserTypeToString(ru.UserType), Description: ru.Description, Website: ru.Website,
+			IsVerified: ru.IsVerified, IsPrivate: ru.IsPrivate, AcceptingMessage: ru.AcceptingMessage, AcceptingTag: ru.AcceptingTag})
+	}
 	fmt.Print("u repozitorijumu")
-	return exists,err
+	fmt.Println(accounts)
+	return accounts,err
+}
+
+func (service *RegisteredUserService) Check(myId uint, userId uint) bool {
+	user,_ := service.Repo.GetRegisteredUserByID(myId)
+	for _,r :=  range user.RelatedUsers{
+		if r.RegisteredUserId == int(userId) && r.Follower{
+			return true
+		}
+	}
+	return false
+}
+
+func (service *RegisteredUserService) CheckPublic(myId uint, userId uint) bool {
+	user,_ := service.Repo.GetRegisteredUserByID(userId)
+		if !user.IsPrivate {
+			fmt.Println("Ispis true *******************")
+			return true
+		}else{
+			fmt.Println("ispis false ???????????????????")
+			return service.Check(myId,userId)
+		}
 }
 
 //func (service *ConsumerService) UserExists(consumerId string) (bool, error) {

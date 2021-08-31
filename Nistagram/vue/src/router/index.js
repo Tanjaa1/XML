@@ -9,6 +9,8 @@ import Requests from '../views/Requests.vue'
 import LikesAndDislikes from '../views/LikesAndDislikes.vue'
 import Collections from '../views/Collections.vue'
 import AllStories from '../views/AllStories.vue'
+import ProfilUser from '../views/ProfilUser.vue'
+import PostsByLocation from '../views/PostsByLocation.vue'
 
 const routes = [
   {
@@ -60,6 +62,16 @@ const routes = [
     path: '/AllStories',
     name: 'AllStories',
     component: AllStories
+  },
+  {
+    path: '/ProfilUser',
+    name: 'ProfilUser',
+    component: ProfilUser
+  },
+  {
+    path: '/PostsByLocation',
+    name: 'PostsByLocation',
+    component: PostsByLocation
   },
   {
     path: '/about',

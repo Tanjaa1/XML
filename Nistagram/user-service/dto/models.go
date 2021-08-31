@@ -49,6 +49,7 @@ type RequestRelatedUser struct {
 }
 
 type MyProfileDTO struct {
+	Id                      uint                `json:"id"`
 	Name           			string    			`json:"name"`
 	Surname        			string    			`json:"surname"`
 	DateOfBirth    			string    			`json:"dateOfBirth"`

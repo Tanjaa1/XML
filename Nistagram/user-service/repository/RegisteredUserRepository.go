@@ -64,7 +64,7 @@ func (repo *RegisteredUserRepository) CreateRegisteredUser(registeredUser *model
 
 func (repo *RegisteredUserRepository) GetRegisteredUserByID(id uint) (*model.RegisteredUser, error) {
 	registeredUser := &model.RegisteredUser{}
-	if err := repo.Database.Preload("Account").First(&registeredUser, "ID = ?", id).Error; err != nil {
+	if err := repo.Database.Preload("Account").Preload("RelatedUsers").First(&registeredUser, "ID = ?", id).Error; err != nil {
 		return nil, err
 	}
 	return registeredUser, nil

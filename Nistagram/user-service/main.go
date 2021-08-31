@@ -127,6 +127,8 @@ func handleFunc(handler *handler.RegisteredUserHandler) {
 	router.HandleFunc("/login/{username}/{password}", handler.Login).Methods("GET")
 	router.HandleFunc("/getUserByUsername/{username}", handler.GetUserByUsername).Methods("GET")
 	router.HandleFunc("/searchProfile/{name}", handler.SearchProfile).Methods("GET")
+	router.HandleFunc("/check/{myId}/{userId}", handler.Check).Methods("GET")
+	router.HandleFunc("/checkPublic/{myId}/{userId}", handler.CheckPublic).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), h(router)))
 }

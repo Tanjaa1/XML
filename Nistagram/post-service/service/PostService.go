@@ -716,3 +716,196 @@ func (service *PostService) CreateHighlight(dtoo *dto.HighlightDTO) error {
 	}
 	return fmt.Errorf("Highlight with this name already exists")
 }
+
+func (service *PostService) GetPostsByLocation(locationId uint, myId uint) ([] dto.PostDto,error) {
+	fmt.Println("Usao u getPostsByLocation")
+	postsByLocation,_ := service.Repo.GetPostsByLocationId(locationId)
+	var postsDto []dto.PostDto
+	for _,it := range postsByLocation{
+		//resp, err := http.Get("http://"+profileHost+":"+profilePort+"/get-by-id/" + strconv.Itoa(int(profileId)))
+		fmt.Println("Get 1 88888888888888888888888888888")
+		//resp,err := http.Get("http://localhost:8080/api/user/checkPublic/" + strconv.Itoa(int(myId)) + "/" + strconv.Itoa(int(it.UserId)))
+		fmt.Println("Get 2 ffffffffffffffffffffff")
+		//client := &http.Client{  Timeout: time.Second * 10,
+		//	}
+		//	fmt.Println("Get 2 posle")
+		//resp1, err := client.Get("http://localhost:8080/api/user/checkPublic/" + strconv.Itoa(int(myId)) + "/" + strconv.Itoa(int(it.UserId)))
+		//fmt.Println("izasao")
+		//var rez bool
+		//rez = true
+		//body, err := ioutil.ReadAll(resp.Body)
+		//if err != nil{
+		//	fmt.Println("Greska -/-/-/-/----/-/----/-/-/-/--")
+		//	fmt.Println(err)
+		//	return nil,err
+		//}
+		//fmt.Println("Body: ", body)
+		//defer resp.Body.Close()
+		//err = json.Unmarshal(body, &rez)
+		//fmt.Println("Ispis rez  zzzzzzzzzzzzzzzzzzzzzzzzzzz")
+		//fmt.Println(rez)
+		//
+		//var rez1 bool
+		//rez1 = true
+		//body1, err := ioutil.ReadAll(resp1.Body)
+		//if err != nil{
+		//	fmt.Println("Greska1 -/-/-/-/----/-/----/-/-/-/--")
+		//	fmt.Println(err)
+		//	return nil,err
+		//}
+		//fmt.Println("Body1: ", body1)
+		//defer resp.Body.Close()
+		//err = json.Unmarshal(body1, &rez1)
+		//fmt.Println("Ispis rez1  zzzzzzzzzzzzzzzzzzzzzzzzzzz")
+		//fmt.Println(rez1)
+
+		//if rez{
+
+			var images []dto.ImageDTO
+			for _, item := range it.Images {
+				images = append(images, dto.ImageDTO{Filename: item.Filename, Img: service.ConvertImgToBytes(item.Filepath)})
+			}
+
+			l, _ := service.Repo.GetLocationById(it.LocationId)
+			location := dto.LocationDTO{Place: l.Place, City: l.City, Country: l.Country}
+
+			var hashtags []dto.HashtagDTO
+			for _, item := range it.HashTagsIdList {
+				h,_ := service.Repo.GetHashtagById(item.HashtagId)
+				hashtags = append(hashtags, dto.HashtagDTO{Name: h.Name})
+			}
+
+			var likesDto []string
+			likes, _ := service.GetLikeByPostId(it.ID, model.LikeType(0))
+			for _,item := range likes{
+				likesDto = append(likesDto, item.Username)
+				fmt.Println("Ispis ispis like")
+				fmt.Println(item.LikeType)
+			}
+
+			var dislikesDto []string
+			dislikes, _ := service.GetLikeByPostId(it.ID, model.LikeType(1))
+			for _,item := range dislikes{
+				dislikesDto = append(dislikesDto, item.Username)
+				fmt.Println("Ispis ispis dislike")
+				fmt.Println(item.LikeType)
+			}
+
+			var links []dto.LinkDTO
+			for _, item := range it.TagsLink {
+				links = append(links, dto.LinkDTO{Name: item.Name, LinkType: model.ConvertLinkTypeToString(item.LinkType)})
+			}
+
+			var comments []dto.CommentDTO
+			for _, item := range it.Comments {
+				comments = append(comments, dto.CommentDTO{Content: item.Content, Username: item.Username})
+			}
+			stringVar := strconv.Itoa(int(it.UserId))
+			postsDto = append(postsDto, dto.PostDto{Id: it.ID,Images: images,Comments: comments,UserId: stringVar,Description: it.Description,
+				TagsLink: links,HashTags: hashtags,Location: location, CloseFriends: false, PostType: model.ConvertPostTypeToString(it.PostType),
+				Likes: likesDto, Dislikes: dislikesDto})
+		}
+	//}
+	return postsDto,nil
+}
+
+
+func (service *PostService) GetStoriesByLocation(locationId uint, myId uint) ([] dto.PostDto,error) {
+	fmt.Println("Usao u getPostsByLocation")
+	postsByLocation,_ := service.Repo.GetStoryByLocationId(locationId)
+	var postsDto []dto.PostDto
+	for _,it := range postsByLocation{
+		timein := it.CreatedAt.Add(time.Hour * 24)
+		//timein := item.CreatedAt.AddDate(0, 0, 1)(time.Hour * 24 + time.Minute * 1 + time.Second * 1)
+		fmt.Println("Ispis timr in")
+		fmt.Println(timein)
+		t := timein.Sub(time.Now())
+		fmt.Println("Ispis t")
+		fmt.Println(t.Hours())
+		if t.Hours()>0 {
+			//resp, err := http.Get("http://"+profileHost+":"+profilePort+"/get-by-id/" + strconv.Itoa(int(profileId)))
+			fmt.Println("Get 1 88888888888888888888888888888")
+			//resp,err := http.Get("http://localhost:8080/api/user/checkPublic/" + strconv.Itoa(int(myId)) + "/" + strconv.Itoa(int(it.UserId)))
+			fmt.Println("Get 2 ffffffffffffffffffffff")
+			//client := &http.Client{  Timeout: time.Second * 10,
+			//	}
+			//	fmt.Println("Get 2 posle")
+			//resp1, err := client.Get("http://localhost:8080/api/user/checkPublic/" + strconv.Itoa(int(myId)) + "/" + strconv.Itoa(int(it.UserId)))
+			//fmt.Println("izasao")
+			//var rez bool
+			//rez = true
+			//body, err := ioutil.ReadAll(resp.Body)
+			//if err != nil{
+			//	fmt.Println("Greska -/-/-/-/----/-/----/-/-/-/--")
+			//	fmt.Println(err)
+			//	return nil,err
+			//}
+			//fmt.Println("Body: ", body)
+			//defer resp.Body.Close()
+			//err = json.Unmarshal(body, &rez)
+			//fmt.Println("Ispis rez  zzzzzzzzzzzzzzzzzzzzzzzzzzz")
+			//fmt.Println(rez)
+			//
+			//var rez1 bool
+			//rez1 = true
+			//body1, err := ioutil.ReadAll(resp1.Body)
+			//if err != nil{
+			//	fmt.Println("Greska1 -/-/-/-/----/-/----/-/-/-/--")
+			//	fmt.Println(err)
+			//	return nil,err
+			//}
+			//fmt.Println("Body1: ", body1)
+			//defer resp.Body.Close()
+			//err = json.Unmarshal(body1, &rez1)
+			//fmt.Println("Ispis rez1  zzzzzzzzzzzzzzzzzzzzzzzzzzz")
+			//fmt.Println(rez1)
+
+			//if rez{
+
+			var images []dto.ImageDTO
+			for _, item := range it.Images {
+				images = append(images, dto.ImageDTO{Filename: item.Filename, Img: service.ConvertImgToBytes(item.Filepath)})
+			}
+
+			l, _ := service.Repo.GetLocationById(it.LocationId)
+			location := dto.LocationDTO{Place: l.Place, City: l.City, Country: l.Country}
+
+			var hashtags []dto.HashtagDTO
+			for _, item := range it.HashTagsIdList {
+				h,_ := service.Repo.GetHashtagById(item.HashtagId)
+				hashtags = append(hashtags, dto.HashtagDTO{Name: h.Name})
+			}
+
+			var likesDto []string
+			likes, _ := service.GetLikeByPostId(it.ID, model.LikeType(0))
+			for _,item := range likes{
+				likesDto = append(likesDto, item.Username)
+				fmt.Println("Ispis ispis like")
+				fmt.Println(item.LikeType)
+			}
+
+			var dislikesDto []string
+			dislikes, _ := service.GetLikeByPostId(it.ID, model.LikeType(1))
+			for _,item := range dislikes{
+				dislikesDto = append(dislikesDto, item.Username)
+				fmt.Println("Ispis ispis dislike")
+				fmt.Println(item.LikeType)
+			}
+
+			var links []dto.LinkDTO
+			for _, item := range it.TagsLink {
+				links = append(links, dto.LinkDTO{Name: item.Name, LinkType: model.ConvertLinkTypeToString(item.LinkType)})
+			}
+
+			var comments []dto.CommentDTO
+			for _, item := range it.Comments {
+				comments = append(comments, dto.CommentDTO{Content: item.Content, Username: item.Username})
+			}
+			stringVar := strconv.Itoa(int(it.UserId))
+			postsDto = append(postsDto, dto.PostDto{Id: it.ID,Images: images,Comments: comments,UserId: stringVar,Description: it.Description,
+				TagsLink: links,HashTags: hashtags,Location: location, CloseFriends: false, PostType: model.ConvertPostTypeToString(it.PostType),
+				Likes: likesDto, Dislikes: dislikesDto})
+		}
+	}
+	return postsDto,nil
+}

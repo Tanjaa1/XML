@@ -6,17 +6,17 @@
         <TabNav :tabs="['Accounts','Tags','Locations']" :selected="selected" @selected="setSelected">
             <Tab :isSelected="selected==='Accounts'">
                 <p  v-for="p in profiles" :key="p">
-                        <button class="btn">{{p.username}} </button>
+                        <button class="btn" v-on:click="SaveIdUser(p)">{{p.username}} </button>
                     </p>
             </Tab>
             <Tab :isSelected="selected==='Tags'">
                  <p  v-for="p in tags" :key="p">
-                        <button class="btn">{{p.name}} </button>
+                        <button class="btn" >{{p.name}} </button>
                     </p>
             </Tab>
             <Tab :isSelected="selected==='Locations'">
                 <p  v-for="p in locations" :key="p">
-                        <button class="btn">{{p.place}},{{p.city}},{{p.country}} </button>
+                        <button class="btn" v-on:click="SaveLocation(p)">{{p.place}},{{p.city}},{{p.country}} </button>
                     </p>
             </Tab>
         </TabNav>
@@ -26,6 +26,9 @@
 </template>
 
 <script>
+export var myVar
+export var myLocation
+
 const axios=require('axios')
 import TabNav from './TabNav.vue'
 import Tab from '../components/Tab.vue'
@@ -44,6 +47,17 @@ export default {
         }
     },
     methods:{
+        SaveIdUser(p){
+            myVar = p
+            if(p.id == localStorage.getItem('userId'))
+                this.$router.push('/Profil')
+            else
+                this.$router.push('/ProfilUser');
+        },
+         SaveLocation(p){
+            myLocation = p
+            this.$router.push('/PostsByLocation');
+        },
         setSelected(tab){
             this.selected=tab;
         },

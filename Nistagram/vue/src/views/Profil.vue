@@ -285,6 +285,7 @@ export default {
              storiesHighlight:[]
 		}
 	},async beforeMount() {
+   
        await  axios
                 .get("http://localhost:8080/api/post/getPByUserId/" + localStorage.getItem('userId'),
 				{
@@ -297,7 +298,7 @@ export default {
                     this.pict = response.data
                     if(this.pict != null){
                     for(let j = 0; j < this.pict.length; j++){
-                      alert(this.pict[0].comments)
+                     // alert(this.pict[0].comments)
                         for (let i = 0; i < this.pict[j].images.length; i++) {
                            // pom1 = this.pict[j].images[i].filepath.split('\\')
                             //if (pom1.length == 4) {
