@@ -186,7 +186,7 @@ export default {
 		// 		this.userr = this.userDto
 		// 	)  
 			axios
-                .post("http://localhost:8080/api/user/changeMyPersonalData/20", this.userDto,
+                .post("http://localhost:8080/api/user/changeMyPersonalData/" + localStorage.getItem('userId'), this.userDto,
 				{
 							headers: {
 								'Authorization': 'Bearer' + " " + localStorage.getItem('token')

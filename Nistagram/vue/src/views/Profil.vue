@@ -28,8 +28,8 @@
                         <a v-for="c in highlights" :key="c">
                             <button type="submit" class="btnRegister" style="width:150px; margin-left:40px" v-on:click="highlightsModal=true,ShowHighlightStories(c.posts)">{{c.name}}</button>
                         </a><br><br>
-                        <h2 class="mt-0 mb-0">Homer Simpson</h2>
-                        <p> Clumsy, fat and very lazy, also an alcoholic, and  not very intelligent, but i love donuts</p>
+                        <h2 class="mt-0 mb-0">{{usernameLS}}</h2>
+                        
                         <NewPhoto/>           
                         <div>
                             <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
@@ -282,10 +282,11 @@ export default {
              highlights:[],
              highlightsModal:false,
              j:0,
-             storiesHighlight:[]
+             storiesHighlight:[],
+             usernameLS:''
 		}
 	},async beforeMount() {
-   
+      this.usernameLS = localStorage.getItem('username')
        await  axios
                 .get("http://localhost:8080/api/post/getPByUserId/" + localStorage.getItem('userId'),
 				{
