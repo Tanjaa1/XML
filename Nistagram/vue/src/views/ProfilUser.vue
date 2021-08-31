@@ -343,7 +343,7 @@ alert("Pre if")
               })
 
             await  axios
-                .get("http://localhost:8080/api/post/GetCollectionsForProfileByUserId/" + myVar.id,
+                .get("http://localhost:8080/api/post/GetCollectionsForProfileByUserId/" + localStorage.getItem('userId'),
 				{
 							headers: {
 								'Authorization': 'Bearer' + " " + localStorage.getItem('token')

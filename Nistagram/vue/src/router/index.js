@@ -11,6 +11,10 @@ import Collections from '../views/Collections.vue'
 import AllStories from '../views/AllStories.vue'
 import ProfilUser from '../views/ProfilUser.vue'
 import PostsByLocation from '../views/PostsByLocation.vue'
+import PostsByHashtag from '../views/PostsByHashtag.vue'
+import PostsByUserPublic from '../views/PostsByUserPublic.vue'
+import PostsByLocationPublic from '../views/PostsByLocationPublic.vue'
+import PostsByHashtagPublic from '../views/PostsByHashtagPublic.vue'
 
 const routes = [
   {
@@ -72,6 +76,26 @@ const routes = [
     path: '/PostsByLocation',
     name: 'PostsByLocation',
     component: PostsByLocation
+  },
+  {
+    path: '/PostsByHashtag',
+    name: 'PostsByHashtag',
+    component: PostsByHashtag
+  },
+  {
+    path: '/PostsByUserPublic',
+    name: 'PostsByUserPublic',
+    component: PostsByUserPublic
+  },
+  {
+    path: '/PostsByLocationPublic',
+    name: 'PostsByLocationPublic',
+    component: PostsByLocationPublic
+  },
+  {
+    path: '/PostsByHashtagPublic',
+    name: 'PostsByHashtagPublic',
+    component: PostsByHashtagPublic
   },
   {
     path: '/about',

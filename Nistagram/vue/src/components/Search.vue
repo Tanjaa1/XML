@@ -11,7 +11,7 @@
             </Tab>
             <Tab :isSelected="selected==='Tags'">
                  <p  v-for="p in tags" :key="p">
-                        <button class="btn" >{{p.name}} </button>
+                        <button class="btn" v-on:click="SaveHashtag(p)">{{p.name}}</button>
                     </p>
             </Tab>
             <Tab :isSelected="selected==='Locations'">
@@ -28,6 +28,7 @@
 <script>
 export var myVar
 export var myLocation
+export var myHashtag
 
 const axios=require('axios')
 import TabNav from './TabNav.vue'
@@ -49,14 +50,29 @@ export default {
     methods:{
         SaveIdUser(p){
             myVar = p
-            if(p.id == localStorage.getItem('userId'))
-                this.$router.push('/Profil')
-            else
-                this.$router.push('/ProfilUser');
+            if(localStorage.getItem('userId') != null){
+                if(p.id == localStorage.getItem('userId'))
+                    this.$router.push('/Profil')
+                else
+                    this.$router.push('/ProfilUser');
+            }else
+                this.$router.push('/PostsByUserPublic');
         },
          SaveLocation(p){
             myLocation = p
-            this.$router.push('/PostsByLocation');
+            if(localStorage.getItem('userId') != null){
+                this.$router.push('/PostsByLocation');
+            }else{
+                this.$router.push('/PostsByLocationPublic');
+            }
+        },
+         SaveHashtag(p){
+            myHashtag = p
+            if(localStorage.getItem('userId') != null){
+                this.$router.push('/PostsByHashtag');
+             }else{
+                this.$router.push('/PostsByHashtagPublic');
+            }
         },
         setSelected(tab){
             this.selected=tab;

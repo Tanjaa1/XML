@@ -303,3 +303,31 @@ func (handler *RegisteredUserHandler) CheckPublic(w http.ResponseWriter, r *http
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(&data)
 }
+
+func (handler *RegisteredUserHandler) CheckPrivate(w http.ResponseWriter, r *http.Request) {
+	//data, err := handler.Service.GetMyPersonalData(util.GetLoggedUserIDFromToken(r))
+	fmt.Println("Usao u checkPublic 5555555555555555555555555555555555555555555555555555")
+	setupCorsResponse(&w, r)
+	if (*r).Method == "OPTIONS" {
+		return
+	}
+	vars := mux.Vars(r)
+	userId := vars["userId"]
+	fmt.Println("Ispisuje se id")
+	fmt.Println(userId)
+	userId2,err := strconv.ParseUint(userId, 10, 64)
+	if err != nil{
+		fmt.Println(err)
+	}
+	userId3 := uint(userId2)
+
+	data := handler.Service.CheckPrivate(userId3)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&data)
+}

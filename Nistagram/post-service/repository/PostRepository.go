@@ -432,3 +432,27 @@ func (repo *PostRepository) GetStoryByLocationId(id uint) ([]model.Post, error) 
 	fmt.Println(len(posts))
 	return posts, nil
 }
+
+func (repo *PostRepository) GetPosts() ([]model.Post, error) {
+	var posts []model.Post
+	repo.Database.Model(&posts)
+	//repo.Database.First(&collection,"name = ?" , name)
+	err := repo.Database.Preload("Images").Preload("Comments").Preload("TagsLink").Preload("HashTagsIdList").Find(&posts, "post_type = ?", model.PostType(0)).Error
+	if err != nil{
+		return nil,err
+	}
+	fmt.Println(len(posts))
+	return posts, nil
+}
+
+func (repo *PostRepository) GetStories() ([]model.Post, error) {
+	var posts []model.Post
+	repo.Database.Model(&posts)
+	//repo.Database.First(&collection,"name = ?" , name)
+	err := repo.Database.Preload("Images").Preload("Comments").Preload("TagsLink").Preload("HashTagsIdList").Find(&posts, "post_type = ?", model.PostType(1)).Error
+	if err != nil{
+		return nil,err
+	}
+	fmt.Println(len(posts))
+	return posts, nil
+}

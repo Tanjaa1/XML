@@ -75,6 +75,7 @@ export default {
 							this.user = response.data
 							localStorage.setItem('userId', this.user.id)
                             localStorage.setItem('username', this.user.username)
+                            this.$router.push('/Profil');
 							
 						})
 						.catch(error => {

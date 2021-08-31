@@ -180,6 +180,12 @@ func (service *RegisteredUserService) CheckPublic(myId uint, userId uint) bool {
 		}
 }
 
+func (service *RegisteredUserService) CheckPrivate(userId uint) bool {
+	user,_ := service.Repo.GetRegisteredUserByID(userId)
+		fmt.Println("Ispis true ***************")
+		return user.IsPrivate
+}
+
 //func (service *ConsumerService) UserExists(consumerId string) (bool, error) {
 //	id, err := uuid.Parse(consumerId)
 //	if err != nil {
