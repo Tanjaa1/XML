@@ -33,6 +33,30 @@ func (repo *PostRepository) CreateCollection(collection *model.Collection) error
 	}
 }
 
+func (repo *PostRepository) CreateHighlight(highlight *model.Highlight) error {
+	fmt.Println("Usao u repo highlight create")
+	fmt.Println(highlight.Name)
+	result := repo.Database.Create(highlight)
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("Post not created")
+	}else{
+		fmt.Println("Post created")
+		return  nil
+	}
+}
+
+func (repo *PostRepository) CreateHighlightStory(highlight *model.HighlightStory) error {
+	fmt.Println("Usao u repo highlight create")
+	//fmt.Println(highlight.Name)
+	result := repo.Database.Create(highlight)
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("Post not created")
+	}else{
+		fmt.Println("Post created")
+		return  nil
+	}
+}
+
 func (repo *PostRepository) AddIntoCollection(collection *model.Collection) error {
 		err := repo.Database.Save(collection).Error
 		if err != nil {
@@ -41,10 +65,58 @@ func (repo *PostRepository) AddIntoCollection(collection *model.Collection) erro
 		return nil
 }
 
+func (repo *PostRepository) AddIntoHighlightStory(highlightStory *model.HighlightStory) error {
+	err := repo.Database.Save(highlightStory).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (repo *PostRepository) AddIntoHighlight(highlight *model.Highlight) error {
+	err := repo.Database.Save(highlight).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (repo *PostRepository) RemoveFromCollection(collection *model.Collection) error {
+	err := repo.Database.Where("ID = ?", collection.ID).Preload("Posts").Delete(&model.Collection{}).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (repo *PostRepository) RemoveFromHighlight(collection *model.Highlight) error {
+	err := repo.Database.Where("ID = ?", collection.ID).Preload("Posts").Delete(&model.Highlight{}).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (repo *PostRepository) RemovePostIdObject(ID uint) error {
+	err := repo.Database.Where("ID = ?", ID).Delete(&model.PostIdList{}).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (repo *PostRepository) RemoveHighlightStory(ID uint) error {
+	err := repo.Database.Where("ID = ?", ID).Delete(&model.HighlightStory{}).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (repo *PostRepository) GetCollectionByName(name string) (*model.Collection, error) {
 	collection := &model.Collection{}
 	repo.Database.Model(&collection)
-	err := repo.Database.First(&collection,"name = ?" , name).Error
+	err := repo.Database.Preload("Posts").First(&collection,"name = ?" , name).Error
 	fmt.Println("Ispis err")
 	fmt.Println(err)
 	if err != nil{
@@ -53,12 +125,25 @@ func (repo *PostRepository) GetCollectionByName(name string) (*model.Collection,
 	return collection, nil
 }
 
-func (repo *PostRepository) GetPostById(id int) (*model.Post, error) {
+func (repo *PostRepository) GetHighlightByName(name string) (*model.Highlight, error) {
+	highlight := &model.Highlight{}
+	repo.Database.Model(&highlight)
+	err := repo.Database.First(&highlight,"name = ?" , name).Error
+	fmt.Println("Ispis err")
+	fmt.Println(err)
+	if err != nil{
+		return nil,err
+	}
+	return highlight, nil
+}
+
+func (repo *PostRepository) GetPostById(id uint) (*model.Post, error) {
+	fmt.Println("Ispis id post GetPostById")
 	fmt.Println(id)
 	post := &model.Post{}
 	repo.Database.Model(&post)
 	//repo.Database.First(&collection,"name = ?" , name)
-	err := repo.Database.Preload("Images").Preload("Comments").Preload("TagsLink").Preload("HashTags").Preload("Location").First(&post, "ID = ?", id).Error
+	err := repo.Database.Preload("Images").Preload("Comments").Preload("TagsLink").Preload("HashTagsIdList").First(&post, "ID = ?", id).Error
 	if err != nil{
 		return nil,err
 	}
@@ -73,16 +158,49 @@ func (repo *PostRepository) AddComment(post *model.Post) error {
 	return nil
 }
 
-func (repo *PostRepository) GetCollectionsByUserId(id int) ([]model.Collection, error) {
-	collections := []model.Collection{}
+func (repo *PostRepository) GetCollectionsByUserId(id uint) ([]model.Collection, error) {
+	fmt.Println("Iispis id korisnika")
+	fmt.Println(id)
+	var collections []model.Collection
 	repo.Database.Model(&collections)
 	//repo.Database.First(&collection,"name = ?" , name)
 	err := repo.Database.Preload("Posts").Find(&collections, "user_id = ?", id).Error
 	if err != nil{
 		return nil,err
 	}
+	fmt.Println("ispis broj kolekcija")
 	fmt.Println(len(collections))
 	return collections, nil
+}
+
+func (repo *PostRepository) GetPostIdObjecByPostId(postId uint) (*model.PostIdList, error) {
+	postIdObject := &model.PostIdList{}
+	repo.Database.Model(&postIdObject)
+	err := repo.Database.First(&postIdObject,"post_id = ?" , postId).Error
+	fmt.Println("Ispis err")
+	fmt.Println(err)
+	fmt.Println("Ispis like")
+	fmt.Println(postIdObject)
+	if err != nil{
+		return nil,err
+	}
+	return postIdObject, nil
+}
+
+
+func (repo *PostRepository) GetHighlightsByUserId(id uint) ([]model.Highlight, error) {
+	fmt.Println("Iispis id korisnika")
+	fmt.Println(id)
+	var highlights []model.Highlight
+	repo.Database.Model(&highlights)
+	//repo.Database.First(&collection,"name = ?" , name)
+	err := repo.Database.Find(&highlights, "user_id = ?", id).Error
+	if err != nil{
+		return nil,err
+	}
+	fmt.Println("ispis broj hajlajta")
+	fmt.Println(len(highlights))
+	return highlights, nil
 }
 
 
@@ -96,7 +214,7 @@ func (repo *PostRepository) CreateLike(like *model.Like) error {
 	}
 }
 
-func (repo *PostRepository) GetLikeByUserIdAndPostId(userId int,postId int) (*model.Like, error) {
+func (repo *PostRepository) GetLikeByUserIdAndPostId(userId uint,postId uint) (*model.Like, error) {
 	like := &model.Like{}
 	repo.Database.Model(&like)
 	err := repo.Database.First(&like,"user_id = ? and post_id = ?" , userId,postId).Error
@@ -124,12 +242,14 @@ func (repo *PostRepository) UpdateLike(like *model.Like) error {
 	return nil
 }
 
-func (repo *PostRepository) GetLikeByPostId(postId int) ([]model.Like, error) {
+func (repo *PostRepository) GetLikeByPostId(postId uint, likeType model.LikeType) ([]model.Like, error) {
 	fmt.Println("Ispis id -----------------")
 	fmt.Println(postId)
+	fmt.Println("Ispis like type")
+	fmt.Println(likeType)
 	var like []model.Like
 	repo.Database.Model(&like)
-	err := repo.Database.Find(&like,"post_id = ?" , postId).Error
+	err := repo.Database.Find(&like,"post_id = ? and like_type = ?" , postId,likeType).Error
 	fmt.Println("Ispis err")
 	fmt.Println(err)
 	fmt.Println("Ispis like")
@@ -140,7 +260,7 @@ func (repo *PostRepository) GetLikeByPostId(postId int) ([]model.Like, error) {
 	return like, nil
 }
 
-func (repo *PostRepository) GetLikeByUserId(userId int) ([]model.Like, error) {
+func (repo *PostRepository) GetLikeByUserId(userId uint) ([]model.Like, error) {
 	fmt.Println("Ispis id -----------------")
 	fmt.Println(userId)
 	var like []model.Like
@@ -156,16 +276,183 @@ func (repo *PostRepository) GetLikeByUserId(userId int) ([]model.Like, error) {
 	return like, nil
 }
 
-func (repo *PostRepository) GetStoriesByUserId(id int) ([]model.Post, error) {
+func (repo *PostRepository) GetStoriesByUserId(id uint) ([]model.Post, error) {
 	fmt.Println("Ispis model.PostType(1)")
 	fmt.Println(model.PostType(1))
 	//post := &model.Post{}
 	var stories []model.Post
 	repo.Database.Model(&stories)
 	//repo.Database.First(&collection,"name = ?" , name)
-	err := repo.Database.Preload("Images").Preload("Comments").Preload("TagsLink").Preload("HashTags").Preload("Location").Find(&stories, "user_id = ? and post_type = ?", id,model.PostType(1)).Error
+	err := repo.Database.Preload("Images").Preload("Comments").Preload("TagsLink").Preload("HashTagsIdList").Find(&stories, "user_id = ? and post_type = ?", id,model.PostType(1)).Error
 	if err != nil{
 		return nil,err
 	}
 	return stories, nil
+}
+
+func (repo *PostRepository) GetLocationById(id uint) (*model.Location, error) {
+	location := &model.Location{}
+	repo.Database.Model(&location)
+	err := repo.Database.First(&location,"ID = ?" , id).Error
+	fmt.Println("Ispis err")
+	fmt.Println(err)
+	if err != nil{
+		return nil,err
+	}
+	return location, nil
+}
+
+func (repo *PostRepository) GetHashtagById(id uint) (*model.Hashtag, error) {
+	hashtag := &model.Hashtag{}
+	repo.Database.Model(&hashtag)
+	err := repo.Database.First(&hashtag,"ID = ?" , id).Error
+	fmt.Println("Ispis err")
+	fmt.Println(err)
+	if err != nil{
+		return nil,err
+	}
+	return hashtag, nil
+}
+
+func (repo *PostRepository) GetHashtagByName(name string) (*model.Hashtag, error) {
+	hashtag := &model.Hashtag{}
+	repo.Database.Model(&hashtag)
+	err := repo.Database.First(&hashtag,"name = ?" , name).Error
+	fmt.Println("Ispis err")
+	fmt.Println(err)
+	if err != nil{
+		return nil,err
+	}
+	return hashtag, nil
+}
+
+func (repo *PostRepository) GetLinkById(id uint) (*model.Link, error) {
+	link := &model.Link{}
+	repo.Database.Model(&link)
+	err := repo.Database.First(&link,"ID = ?" , id).Error
+	fmt.Println("Ispis err")
+	fmt.Println(err)
+	if err != nil{
+		return nil,err
+	}
+	return link, nil
+}
+
+func (repo *PostRepository) CreateHashtag(hashtag *model.Hashtag) error {
+	result := repo.Database.Create(hashtag)
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("Like not created")
+	}else{
+		fmt.Println("Like created")
+		return  nil
+	}
+}
+
+func (repo *PostRepository) CreateLink(link *model.Link) error {
+	result := repo.Database.Create(link)
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("Like not created")
+	}else{
+		fmt.Println("Like created")
+		return  nil
+	}
+}
+
+func (repo *PostRepository) HashtagSearch(name string)  ([] model.Hashtag, error) {
+	var listResult []model.Hashtag
+	result:=repo.Database.Table("hashtags").Find(&listResult,"name like ?",name)
+	return listResult,result.Error
+}
+
+func (repo *PostRepository) GetPostsByUserId(id uint) ([]model.Post, error) {
+	var posts []model.Post
+	repo.Database.Model(&posts)
+	//repo.Database.First(&collection,"name = ?" , name)
+	err := repo.Database.Preload("Images").Preload("Comments").Preload("TagsLink").Preload("HashTagsIdList").Find(&posts, "user_id = ? and post_type = ?", id,model.PostType(0)).Error
+	if err != nil{
+		return nil,err
+	}
+	fmt.Println(len(posts))
+	return posts, nil
+}
+
+func (repo *PostRepository) GetHighlightStories() []model.HighlightStory {
+	var highlightStory []model.HighlightStory
+	//repo.Database.Model(&highlightStory)
+	//repo.Database.First(&collection,"name = ?" , name)
+	//err := repo.Database.Find(&highlightStory, "collection_name = ?", name).Error
+	//err := repo.Database.Table("highlight_stories").Take(&highlightStory,"collection_name = ?",name).Error
+	repo.Database.Find(&highlightStory)
+	//if err != nil{
+	//	fmt.Println("ispis err ****************")
+	//	fmt.Println(err)
+		//return highlightStory
+	//}
+	fmt.Println("Broj hajlajta ///////////////////////////////////////////////////////////////////")
+	fmt.Println(len(highlightStory))
+	return highlightStory
+}
+
+func (repo *PostRepository) GetHighlightStoriesByName(name string) ([]model.HighlightStory, error) {
+	var highlightStory []model.HighlightStory
+	repo.Database.Model(&highlightStory)
+	//repo.Database.First(&collection,"name = ?" , name)
+	err := repo.Database.Find(&highlightStory, "collection_name = ?", name).Error
+	//err := repo.Database.Table("highlight_stories").Take(&highlightStory,"collection_name = ?",name).Error
+	//err := repo.Database.Table("highlight_stories").Find(&highlightStory).Error
+	if err != nil{
+		fmt.Println("ispis err ")
+		fmt.Println(err)
+		return nil,err
+	}
+	fmt.Println(len(highlightStory))
+	return highlightStory, nil
+}
+
+func (repo *PostRepository) GetPostsByLocationId(id uint) ([]model.Post, error) {
+	var posts []model.Post
+	repo.Database.Model(&posts)
+	//repo.Database.First(&collection,"name = ?" , name)
+	err := repo.Database.Preload("Images").Preload("Comments").Preload("TagsLink").Preload("HashTagsIdList").Find(&posts, "location_id = ? and post_type = ?", id,model.PostType(0)).Error
+	if err != nil{
+		return nil,err
+	}
+	fmt.Println(len(posts))
+	return posts, nil
+}
+
+func (repo *PostRepository) GetStoryByLocationId(id uint) ([]model.Post, error) {
+	var posts []model.Post
+	repo.Database.Model(&posts)
+	//repo.Database.First(&collection,"name = ?" , name)
+	err := repo.Database.Preload("Images").Preload("Comments").Preload("TagsLink").Preload("HashTagsIdList").Find(&posts, "location_id = ? and post_type = ?", id,model.PostType(1)).Error
+	if err != nil{
+		return nil,err
+	}
+	fmt.Println(len(posts))
+	return posts, nil
+}
+
+func (repo *PostRepository) GetPosts() ([]model.Post, error) {
+	var posts []model.Post
+	repo.Database.Model(&posts)
+	//repo.Database.First(&collection,"name = ?" , name)
+	err := repo.Database.Preload("Images").Preload("Comments").Preload("TagsLink").Preload("HashTagsIdList").Find(&posts, "post_type = ?", model.PostType(0)).Error
+	if err != nil{
+		return nil,err
+	}
+	fmt.Println(len(posts))
+	return posts, nil
+}
+
+func (repo *PostRepository) GetStories() ([]model.Post, error) {
+	var posts []model.Post
+	repo.Database.Model(&posts)
+	//repo.Database.First(&collection,"name = ?" , name)
+	err := repo.Database.Preload("Images").Preload("Comments").Preload("TagsLink").Preload("HashTagsIdList").Find(&posts, "post_type = ?", model.PostType(1)).Error
+	if err != nil{
+		return nil,err
+	}
+	fmt.Println(len(posts))
+	return posts, nil
 }

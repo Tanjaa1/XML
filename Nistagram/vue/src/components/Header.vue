@@ -1,9 +1,7 @@
 <template>
     <nav>
         <Search/>
-       <div class="menu-item"><a href="">Home</a></div>
-       <div class="menu-item"><a href="">Messages</a></div>
-       <div class="menu-item"><a href="">Notification</a></div>
+        <br><br>
        <Dropdown title="More" :items="services"/>
     </nav>
 </template>
@@ -23,20 +21,24 @@ export default {
                     link:'Profil'
                 },
                 {
-                    title:'Saved',
-                    link:'#'
+                    title:'AllStories',
+                    link:'AllStories'
                 },
                 {
-                    title:'Settings',
+                    title:'Collections',
+                    link:'Collections'
+                },
+                {
+                    title:'EditProfile',
                     link:'EditProfile'
                 },
                 {
-                    title:'Activity',
-                    link:'LD'
+                    title:'Requests',
+                    link:'Requests'
                 },
                 {
                     title:'Log Out',
-                    link:'#'
+                    link:'Login'
                 }
             ],
             searches:[

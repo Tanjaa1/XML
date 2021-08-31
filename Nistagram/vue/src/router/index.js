@@ -7,6 +7,16 @@ import Login from '../views/Login.vue'
 import VerificationRequest from '../views/VerificationRequest.vue'
 import Requests from '../views/Requests.vue'
 import LikesAndDislikes from '../views/LikesAndDislikes.vue'
+import Collections from '../views/Collections.vue'
+import AllStories from '../views/AllStories.vue'
+import ProfilUser from '../views/ProfilUser.vue'
+import PostsByLocation from '../views/PostsByLocation.vue'
+import PostsByHashtag from '../views/PostsByHashtag.vue'
+import PostsByUserPublic from '../views/PostsByUserPublic.vue'
+import PostsByLocationPublic from '../views/PostsByLocationPublic.vue'
+import PostsByHashtagPublic from '../views/PostsByHashtagPublic.vue'
+import RequestList from '../views/RequestList.vue'
+import PostsLiked from '../views/PostsLiked.vue'
 
 const routes = [
   {
@@ -48,6 +58,56 @@ const routes = [
     path: '/LD',
     name: 'LikesAndDislikes',
     component: LikesAndDislikes
+  },
+  {
+    path: '/Collections',
+    name: 'Collections',
+    component: Collections
+  },
+  {
+    path: '/AllStories',
+    name: 'AllStories',
+    component: AllStories
+  },
+  {
+    path: '/ProfilUser',
+    name: 'ProfilUser',
+    component: ProfilUser
+  },
+  {
+    path: '/PostsByLocation',
+    name: 'PostsByLocation',
+    component: PostsByLocation
+  },
+  {
+    path: '/PostsByHashtag',
+    name: 'PostsByHashtag',
+    component: PostsByHashtag
+  },
+  {
+    path: '/PostsByUserPublic',
+    name: 'PostsByUserPublic',
+    component: PostsByUserPublic
+  },
+  {
+    path: '/PostsByLocationPublic',
+    name: 'PostsByLocationPublic',
+    component: PostsByLocationPublic
+  },
+  {
+    path: '/PostsByHashtagPublic',
+    name: 'PostsByHashtagPublic',
+    component: PostsByHashtagPublic
+  },
+  {
+    path: '/RequestList',
+    name: 'RequestList',
+    component: RequestList
+  },
+  {
+    path: '/PostsLiked',
+    name: 'PostsLiked',
+    component: PostsLiked
   },
   {
     path: '/about',

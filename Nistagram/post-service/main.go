@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"os"
 	"post-service/model"
+	"strings"
 	"time"
 
 	//"text/template"
@@ -32,7 +33,7 @@ var mySigningKey = []byte("mysupersecretkey")
 func initDB() *gorm.DB {
 	fmt.Println("Usao u initDB")
 	time.Sleep(time.Duration(20) *time.Second)
-	dsn := "root:root@tcp(host.docker.internal:3306)/mydb3?parseTime=True&charset=utf8&autocommit=false"
+	dsn := "root:root@tcp(host.docker.internal:3306)/postdb?parseTime=True&charset=utf8&autocommit=false"
 	//dsn := "root:root@tcp(127.0.0.1:3306)/mydb?parseTime=True&charset=utf8&autocommit=false"
 	database, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
@@ -48,6 +49,8 @@ func initDB() *gorm.DB {
 	database.AutoMigrate(&model.Comment{})
 	database.AutoMigrate(&model.PostIdList{})
 	database.AutoMigrate(&model.Like{})
+	database.AutoMigrate(&model.Highlight{})
+	database.AutoMigrate(&model.HighlightStory{})
 
 	//database.Migrator().CreateConstraint(&model.Collection{}, "postList")
 	//database.Migrator().CreateConstraint(&model.Collection{}, "fk_collections_posts")
@@ -81,7 +84,7 @@ func IsAuthorized(handler http.HandlerFunc) http.HandlerFunc {
 		}
 
 
-		token, err := jwt.Parse(r.Header["Authorization"][0], func(token *jwt.Token) (interface{}, error) {
+		token, err := jwt.Parse(strings.Split(r.Header["Authorization"][0], "Bearer ")[1], func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("There was an error in parsing")
 			}
@@ -136,15 +139,29 @@ func handleFunc(handler *handler.PostHandler) {
 	//router.HandleFunc("/", handler.CreateConsumer).Methods("POST")
 	//router.HandleFunc("/verify/{consumerId}", handler.Verify).Methods("GET")
 
-	router.HandleFunc("/upload",handler.CreatePost).Methods("POST")
-	router.HandleFunc("/createCollection",handler.CreateCollection).Methods("POST")
-	router.HandleFunc("/addIntoCollection/{id}/{name}",handler.AddIntoCollection).Methods("POST")
-	router.HandleFunc("/addComment/{id}",handler.AddComment).Methods("POST")
-	router.HandleFunc("/GetCollectionsByUserId/{id}",handler.GetCollectionsByUserId).Methods("GET")
-	router.HandleFunc("/addLike",handler.AddLike).Methods("POST")
+	router.HandleFunc("/upload",IsAuthorized(handler.CreatePost)).Methods("POST")
+	router.HandleFunc("/createCollection",IsAuthorized(handler.CreateCollection)).Methods("POST")
+	router.HandleFunc("/createHighlight",IsAuthorized(handler.CreateHighlight)).Methods("POST")
+	router.HandleFunc("/addIntoCollection",IsAuthorized(handler.AddIntoCollection)).Methods("POST")
+	router.HandleFunc("/addIntoHighlight",IsAuthorized(handler.AddIntoHighlight)).Methods("POST")
+	router.HandleFunc("/removeFromCollection",IsAuthorized(handler.RemoveFromCollection)).Methods("POST")
+	router.HandleFunc("/removeFromHighlight",IsAuthorized(handler.RemoveFromHighlight)).Methods("POST")
+	router.HandleFunc("/addComment/{id}",IsAuthorized(handler.AddComment)).Methods("POST")
+	router.HandleFunc("/GetCollectionsByUserId/{id}",IsAuthorized(handler.GetCollectionsByUserId)).Methods("GET")
+	router.HandleFunc("/GetHighlightsByUserId/{id}",handler.GetHighlightsByUserId).Methods("GET")
+	router.HandleFunc("/GetCollectionsForProfileByUserId/{id}",IsAuthorized(handler.GetCollectionsForProfileByUserId)).Methods("GET")
+	router.HandleFunc("/GetHighlightsForProfileByUserId/{id}",IsAuthorized(handler.GetHighlightsForProfileByUserId)).Methods("GET")
+	router.HandleFunc("/addLike",IsAuthorized(handler.AddLike)).Methods("POST")
 	router.HandleFunc("/getLikesByPostId/{id}",handler.GetLikeByPostId).Methods("GET")
-	router.HandleFunc("/getPostsByUserId/{id}",handler.GetPostsByUserId).Methods("GET")
+	router.HandleFunc("/getPostsByUserId/{id}",handler.GetLikedPostsByUserId).Methods("GET")
 	router.HandleFunc("/getStoriesByUserId/{id}",handler.GetStoriesByUserId).Methods("GET")
+	router.HandleFunc("/searchLocation/{name}", handler.SearchLocation).Methods("GET")
+	router.HandleFunc("/searchHashtag/{name}", handler.SearchHashtag).Methods("GET")
+	router.HandleFunc("/getPByUserId/{id}",handler.GetPostsByUserId).Methods("GET")
+	router.HandleFunc("/getPostsByLocation/{locationId}/{myId}",handler.GetPostsByLocation).Methods("GET")
+	router.HandleFunc("/getStoriesByLocation/{locationId}/{myId}",handler.GetStoriesByLocation).Methods("GET")
+	router.HandleFunc("/getPostsByHashtag/{locationId}/{myId}",handler.GetPostsByHashtag).Methods("GET")
+	router.HandleFunc("/getStoriesByHashtag/{locationId}/{myId}",handler.GetStoriesByHashtag).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), h(router)))
 	//log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", "8080"), h(router)))

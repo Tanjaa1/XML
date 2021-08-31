@@ -1,5 +1,7 @@
 package dto
 
+
+
 type RequestRegisteredUser struct {
 	Account                  RequestAccount        `json:"account"`
 	Description              string                `json:"description"`
@@ -23,6 +25,7 @@ type ResponseId struct {
 }
 
 type RequestAccount struct {
+	Id             uint       `json:"id" gorm:"not null"`
 	Name           string    `json:"name" gorm:"not null"`
 	Surname        string    `json:"surname" gorm:"not null"`
 	DateOfBirth    string    `json:"dateOfBirth" gorm:"not null"`
@@ -46,6 +49,7 @@ type RequestRelatedUser struct {
 }
 
 type MyProfileDTO struct {
+	Id                      uint                `json:"id"`
 	Name           			string    			`json:"name"`
 	Surname        			string    			`json:"surname"`
 	DateOfBirth    			string    			`json:"dateOfBirth"`

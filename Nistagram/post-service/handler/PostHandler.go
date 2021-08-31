@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
+	"post-service/model"
 	"strconv"
 
 	//"encoding/json"
@@ -31,6 +32,8 @@ func (handler *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request){
 	}
 
 	files := r.MultipartForm.File["file"]
+	fmt.Println("Ispis files")
+	fmt.Println(files)
 
 	var filename string
 	var filepat string
@@ -47,7 +50,7 @@ func (handler *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request){
 		//filename = path.Ext(files[i].Filename)
 		filename = files[i].Filename
 		fmt.Println("Ispis filename: " + filename)
-		filepat = "\\post-service\\files\\"+ filename
+		filepat = "files/"+ filename
 
 		image := dto.ImageDTO{Filename: filename,Filepath: filepat}
 		images = append(images, image)
@@ -77,6 +80,8 @@ func (handler *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request){
 // Ostali podaci
 	var post dto.PostDto
 	data := r.MultipartForm.Value["data"]
+	fmt.Println("ispis data")
+	fmt.Println(data)
 
 	err = json.Unmarshal([]byte(data[0]), &post)
 	if err != nil{
@@ -84,6 +89,8 @@ func (handler *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request){
 		w.Write([]byte("{\"success\":\"error\"}"))
 		return
 	}
+	fmt.Println("ispis date param location")
+	fmt.Println(post.Location)
 	err = handler.Service.CreatePost(&post, images)
 	if err != nil {
 		fmt.Println(err)
@@ -114,27 +121,108 @@ func (handler *PostHandler) CreateCollection(w http.ResponseWriter, r *http.Requ
 	w.Header().Set("Content-Type", "application/json")
 }
 
-func (handler *PostHandler) AddIntoCollection(w http.ResponseWriter, r *http.Request){
-
-	vars := mux.Vars(r)
-	id := vars["id"]
-	fmt.Println("Ispisuje se id")
-	fmt.Println(id)
-	id2,err := strconv.ParseInt(id, 10, 64)
-	if err != nil{
-		fmt.Println(err)
-	}
-	id3 := int(id2)
-
-	collectionName :=  vars["name"]
+func (handler *PostHandler) CreateHighlight(w http.ResponseWriter, r *http.Request){
 	fmt.Println("creating")
-	err = handler.Service.AddIntoCollection(id3,collectionName)
+	var highlight dto.HighlightDTO
+	fmt.Println(r.Body)
+	err := json.NewDecoder(r.Body).Decode(&highlight)
+	fmt.Println(err)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	fmt.Println("prosao decoder")
+	err = handler.Service.CreateHighlight(&highlight)
 	if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusExpectationFailed)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusCreated)
+	w.Header().Set("Content-Type", "application/json")
+}
+
+func (handler *PostHandler) AddIntoCollection(w http.ResponseWriter, r *http.Request){
+	fmt.Println("Usao u kolekciju")
+	var collection dto.CollectionD
+	fmt.Println(r.Body)
+	err := json.NewDecoder(r.Body).Decode(&collection)
+	fmt.Println(err)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	fmt.Println("prosao decoder")
+	err = handler.Service.AddIntoCollection(&collection)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusExpectationFailed)
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
+	w.Header().Set("Content-Type", "application/json")
+}
+
+func (handler *PostHandler) AddIntoHighlight(w http.ResponseWriter, r *http.Request){
+	fmt.Println("Usao u kolekciju")
+	var highlight dto.HighlightD
+	fmt.Println(r.Body)
+	err := json.NewDecoder(r.Body).Decode(&highlight)
+	fmt.Println(err)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	fmt.Println("prosao decoder")
+	err = handler.Service.AddIntoHighlight(&highlight)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusExpectationFailed)
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
+	w.Header().Set("Content-Type", "application/json")
+}
+
+func (handler *PostHandler) RemoveFromCollection(w http.ResponseWriter, r *http.Request){
+	fmt.Println("Usao u remove from collection")
+	var collection dto.CollectionD
+	fmt.Println(r.Body)
+	err := json.NewDecoder(r.Body).Decode(&collection)
+	fmt.Println(err)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	fmt.Println("prosao decoder")
+	err = handler.Service.RemoveFromCollection(&collection)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusExpectationFailed)
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
+	w.Header().Set("Content-Type", "application/json")
+}
+
+func (handler *PostHandler) RemoveFromHighlight(w http.ResponseWriter, r *http.Request){
+	fmt.Println("Usao u remove from highlight")
+	var highlight dto.HighlightD
+	fmt.Println(r.Body)
+	err := json.NewDecoder(r.Body).Decode(&highlight)
+	fmt.Println(err)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	fmt.Println("prosao decoder")
+	err = handler.Service.RemoveFromHighlight(&highlight)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusExpectationFailed)
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
 	w.Header().Set("Content-Type", "application/json")
 }
 
@@ -159,7 +247,7 @@ func (handler *PostHandler) AddComment(w http.ResponseWriter, r *http.Request){
 	id3 := int(id2)
 
 	fmt.Println("creating")
-	err = handler.Service.AddComment(&dto,id3)
+	err = handler.Service.AddComment(&dto,uint(id3))
 	if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusExpectationFailed)
@@ -179,7 +267,92 @@ func (handler *PostHandler) GetCollectionsByUserId(w http.ResponseWriter, r *htt
 		fmt.Println(err)
 	}
 	id3 := int(id2)
-	result, err := handler.Service.GetCollectionsByUserId(id3)
+	result, err := handler.Service.GetCollectionsByUserId(uint(id3))
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&result)
+	//if result == true {
+	//	w.WriteHeader(http.StatusOK)
+	//}else{
+	//	w.WriteHeader(http.StatusOK)
+	//}
+	//w.Header().Set("Content-Type", "application/json")
+	//json.NewEncoder(w).Encode(&result)
+}
+
+func (handler *PostHandler) GetHighlightsByUserId(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+	fmt.Println("Ispisuje se id")
+	fmt.Println(id)
+	id2,err := strconv.ParseInt(id, 10, 64)
+	if err != nil{
+		fmt.Println(err)
+	}
+	id3 := int(id2)
+	result, err := handler.Service.GetHighlightsByUserId(uint(id3))
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&result)
+	//if result == true {
+	//	w.WriteHeader(http.StatusOK)
+	//}else{
+	//	w.WriteHeader(http.StatusOK)
+	//}
+	//w.Header().Set("Content-Type", "application/json")
+	//json.NewEncoder(w).Encode(&result)
+}
+
+func (handler *PostHandler) GetCollectionsForProfileByUserId(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+	fmt.Println("Ispisuje se id")
+	fmt.Println(id)
+	id2,err := strconv.ParseInt(id, 10, 64)
+	if err != nil{
+		fmt.Println(err)
+	}
+	id3 := int(id2)
+	result, err := handler.Service.GetCollectionsForProfileByUserId(uint(id3))
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&result)
+	//if result == true {
+	//	w.WriteHeader(http.StatusOK)
+	//}else{
+	//	w.WriteHeader(http.StatusOK)
+	//}
+	//w.Header().Set("Content-Type", "application/json")
+	//json.NewEncoder(w).Encode(&result)
+}
+
+func (handler *PostHandler) GetHighlightsForProfileByUserId(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Usao u handler GetHighlightsForProfileByUserId")
+	vars := mux.Vars(r)
+	id := vars["id"]
+	fmt.Println("Ispisuje se id")
+	fmt.Println(id)
+	id2,err := strconv.ParseInt(id, 10, 64)
+	if err != nil{
+		fmt.Println(err)
+	}
+	id3 := int(id2)
+	result, err := handler.Service.GetHighlightsForProfileByUserId(uint(id3))
 	if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusBadRequest)
@@ -230,7 +403,7 @@ func (handler *PostHandler) GetLikeByPostId(w http.ResponseWriter, r *http.Reque
 		fmt.Println(err)
 	}
 	id3 := int(id2)
-	result, err := handler.Service.GetLikeByPostId(id3)
+	result, err := handler.Service.GetLikeByPostId(uint(id3),model.LikeType(0))
 
 	if err != nil {
 		fmt.Println(err)
@@ -242,7 +415,7 @@ func (handler *PostHandler) GetLikeByPostId(w http.ResponseWriter, r *http.Reque
 	json.NewEncoder(w).Encode(result)
 }
 
-func (handler *PostHandler) GetPostsByUserId(w http.ResponseWriter, r *http.Request) {
+func (handler *PostHandler) GetLikedPostsByUserId(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Usao u handler")
 	vars := mux.Vars(r)
 	id := vars["id"]
@@ -253,7 +426,7 @@ func (handler *PostHandler) GetPostsByUserId(w http.ResponseWriter, r *http.Requ
 		fmt.Println(err)
 	}
 	id3 := int(id2)
-	result, err := handler.Service.GetPostsByUserId(id3)
+	result, err := handler.Service.GetLikedPostsByUserId(uint(id3))
 
 	if err != nil {
 		fmt.Println(err)
@@ -276,7 +449,196 @@ func (handler *PostHandler) GetStoriesByUserId(w http.ResponseWriter, r *http.Re
 		fmt.Println(err)
 	}
 	id3 := int(id2)
-	result, err := handler.Service.GetStoriesByUserId(id3)
+	result, err := handler.Service.GetStoriesByUserId(uint(id3))
+
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(result)
+}
+
+func (handler *PostHandler) SearchLocation(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	result, err := handler.Service.SearchLocation(vars["name"])
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+	if result !=nil {
+		w.WriteHeader(http.StatusOK)
+	}else{
+		w.WriteHeader(http.StatusOK)
+
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&result)
+}
+
+func (handler *PostHandler) SearchHashtag(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	result, err := handler.Service.SearchHashtag(vars["name"])
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+	if result !=nil {
+		w.WriteHeader(http.StatusOK)
+	}else{
+		w.WriteHeader(http.StatusOK)
+
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(&result)
+}
+
+func (handler *PostHandler) GetPostsByUserId(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Usao u handler")
+	vars := mux.Vars(r)
+	id := vars["id"]
+	fmt.Println("Ispisuje se id")
+	fmt.Println(id)
+	id2,err := strconv.ParseInt(id, 10, 64)
+	if err != nil{
+		fmt.Println(err)
+	}
+	id3 := int(id2)
+	result, err := handler.Service.GetPostsByUserId(uint(id3))
+
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(result)
+}
+
+func (handler *PostHandler) GetPostsByLocation(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Usao u handler")
+	vars := mux.Vars(r)
+	id := vars["locationId"]
+	fmt.Println("Ispisuje se id")
+	fmt.Println(id)
+	id2,err := strconv.ParseInt(id, 10, 64)
+	if err != nil{
+		fmt.Println(err)
+	}
+	id3 := int(id2)
+
+	myId := vars["myId"]
+	fmt.Println("Ispisuje se id")
+	fmt.Println(id)
+	myId2,err := strconv.ParseInt(myId, 10, 64)
+	if err != nil{
+		fmt.Println(err)
+	}
+	myId3 := int(myId2)
+
+	result, err := handler.Service.GetPostsByLocation(uint(id3), uint(myId3))
+
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(result)
+}
+
+func (handler *PostHandler) GetStoriesByLocation(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Usao u handler")
+	vars := mux.Vars(r)
+	id := vars["locationId"]
+	fmt.Println("Ispisuje se id")
+	fmt.Println(id)
+	id2,err := strconv.ParseInt(id, 10, 64)
+	if err != nil{
+		fmt.Println(err)
+	}
+	id3 := int(id2)
+
+	myId := vars["myId"]
+	fmt.Println("Ispisuje se id")
+	fmt.Println(id)
+	myId2,err := strconv.ParseInt(myId, 10, 64)
+	if err != nil{
+		fmt.Println(err)
+	}
+	myId3 := int(myId2)
+
+	result, err := handler.Service.GetStoriesByLocation(uint(id3), uint(myId3))
+
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(result)
+}
+
+func (handler *PostHandler) GetPostsByHashtag(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Usao u handler")
+	vars := mux.Vars(r)
+	id := vars["locationId"]
+	fmt.Println("Ispisuje se id")
+	fmt.Println(id)
+	id2,err := strconv.ParseInt(id, 10, 64)
+	if err != nil{
+		fmt.Println(err)
+	}
+	id3 := int(id2)
+
+	myId := vars["myId"]
+	fmt.Println("Ispisuje se id")
+	fmt.Println(id)
+	myId2,err := strconv.ParseInt(myId, 10, 64)
+	if err != nil{
+		fmt.Println(err)
+	}
+	myId3 := int(myId2)
+
+	result, err := handler.Service.GetPostsByHashtag(uint(id3), uint(myId3))
+
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(result)
+}
+
+func (handler *PostHandler) GetStoriesByHashtag(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Usao u handler")
+	vars := mux.Vars(r)
+	id := vars["locationId"]
+	fmt.Println("Ispisuje se id")
+	fmt.Println(id)
+	id2,err := strconv.ParseInt(id, 10, 64)
+	if err != nil{
+		fmt.Println(err)
+	}
+	id3 := int(id2)
+
+	myId := vars["myId"]
+	fmt.Println("Ispisuje se id")
+	fmt.Println(id)
+	myId2,err := strconv.ParseInt(myId, 10, 64)
+	if err != nil{
+		fmt.Println(err)
+	}
+	myId3 := int(myId2)
+
+	result, err := handler.Service.GetStoriesByHashtag(uint(id3), uint(myId3))
 
 	if err != nil {
 		fmt.Println(err)

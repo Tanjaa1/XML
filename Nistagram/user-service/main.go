@@ -3,14 +3,15 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/handlers"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 	"user-service/handler"
 	"user-service/model"
@@ -44,7 +45,8 @@ func initDB() *gorm.DB {
 
 func IsAuthorized(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
+		fmt.Println("Ispis token")
+		fmt.Println(r.Header["Authorization"])
 		if r.Header["Authorization"] == nil {
 			fmt.Println("TOKEN JE NIL")
 			err := ((http.StatusUnauthorized))
@@ -53,7 +55,7 @@ func IsAuthorized(handler http.HandlerFunc) http.HandlerFunc {
 		}
 
 
-		token, err := jwt.Parse(r.Header["Authorization"][0], func(token *jwt.Token) (interface{}, error) {
+		token, err := jwt.Parse(strings.Split(r.Header["Authorization"][0], "Bearer ")[1], func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("There was an error in parsing")
 			}
@@ -119,10 +121,18 @@ func handleFunc(handler *handler.RegisteredUserHandler) {
 	//router.HandleFunc("/", handler.CreateConsumer).Methods("POST")
 	//router.HandleFunc("/verify/{consumerId}", handler.Verify).Methods("GET")
 	router.HandleFunc("/userRegistration", handler.CreateRegisteredUser).Methods("POST")
-	router.HandleFunc("/getMyPersonalData/{id}", handler.GetMyPersonalData).Methods("GET")
-	router.HandleFunc("/changeMyPersonalData/{id}", handler.ChangePersonalData).Methods("POST")
+	router.HandleFunc("/getMyPersonalData/{id}", IsAuthorized(handler.GetMyPersonalData)).Methods("GET")
+	router.HandleFunc("/changeMyPersonalData/{id}", IsAuthorized(handler.ChangePersonalData)).Methods("POST")
 	router.HandleFunc("/getAccountByUsername/{username}", handler.GetAccountByUsername).Methods("GET")
 	router.HandleFunc("/login/{username}/{password}", handler.Login).Methods("GET")
+	router.HandleFunc("/getUserByUsername/{username}", handler.GetUserByUsername).Methods("GET")
+	router.HandleFunc("/searchProfile/{name}", handler.SearchProfile).Methods("GET")
+	router.HandleFunc("/check/{myId}/{userId}", handler.Check).Methods("GET")
+	router.HandleFunc("/checkPublic/{myId}/{userId}", handler.CheckPublic).Methods("GET")
+	router.HandleFunc("/checkPrivate/{userId}", handler.CheckPrivate).Methods("GET")
+	router.HandleFunc("/addFollower/{idRegisterUser}/{idRelatedUser}", handler.AddFollower).Methods("PUT")
+	router.HandleFunc("/deleteFollower/{idRegisterUser}/{idRelatedUser}", handler.DeleteFollower).Methods("PUT")
+	//router.HandleFunc("/followerExist/{username}/{registerUserId}", handler.FolowerExist).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), h(router)))
 }

@@ -64,7 +64,7 @@ func (repo *RegisteredUserRepository) CreateRegisteredUser(registeredUser *model
 
 func (repo *RegisteredUserRepository) GetRegisteredUserByID(id uint) (*model.RegisteredUser, error) {
 	registeredUser := &model.RegisteredUser{}
-	if err := repo.Database.Preload("Account").First(&registeredUser, "ID = ?", id).Error; err != nil {
+	if err := repo.Database.Preload("Account").Preload("RelatedUsers").First(&registeredUser, "ID = ?", id).Error; err != nil {
 		return nil, err
 	}
 	return registeredUser, nil
@@ -127,4 +127,10 @@ func (repo *RegisteredUserRepository) Close() error {
 
 	db.Close()
 	return nil
+}
+
+func (repo *RegisteredUserRepository) ProfileSearch(name string)  ([] model.Account, error) {
+	var listResult []model.Account
+	result:=repo.Database.Table("accounts").Find(&listResult,"username like ?",name)
+	return listResult,result.Error
 }

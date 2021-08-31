@@ -10,8 +10,7 @@
               <a style="color:red" v-for="e in error" :key="e">
 									{{e}}
 							</a><br>
-                            
-          <input type="submit" class="btnRegister"  value="Log in" v-on:click="Login()"/><br><br>
+          <input type="submit" class="btnRegister"  value="Log in" v-on:click="LogIn()"/><br><br>
           <label><small>Don't have an account?<a href="">Registration</a></small></label>  
       </div>        
       </div>
@@ -20,6 +19,8 @@
 
 <script>
 
+const axios=require('axios')
+
 export default {
   name: 'Login',
   components: {
@@ -27,16 +28,72 @@ export default {
   data: function () {
 		return {
 			error:[],
-			log:false
+			log:false,
+            usernameText: null,
+			passwordText: null,
+			loginResponse: null,
+			token: null,
+			role:null,
+			jwtAuthenticationRequest:{},
+			firstlog:null,
+            user:null,
+        
 		}
 	},
+    beforeMount(){
+    },
   methods: {
 		LogIn(){
 			if(document.getElementById("logusername").value!="" && document.getElementById("logpassword").value!=""){
 				//poziv
+                this.username = document.getElementById("logusername").value
+                this.password = document.getElementById("logpassword").value
+
+                axios
+				.get('http://localhost:8080/api/user/login/' + this.username + '/' + this.password)
+				.then(response => {
+					this.token = response.data
+					//localStorage.setItem('userId', response.data.id)
+                    alert(this.token)
+					if(this.token==undefined){
+						alert("Username or password are wrong, please try again for token")
+					}
+					localStorage.setItem('token', this.token);
+					localStorage.setItem('isLogged', true);
+					localStorage.setItem('username',this.username)
+					//localStorage.setItem('role',response.data.role)
+					localStorage.setItem('firstlog',response.data.firstTimeLogin)
+
+                    axios
+						.get('http://localhost:8080/api/user/getUserByUsername/'+this.username,
+							{
+							headers: {
+								'Authorization': 'Bearer' + " " + localStorage.getItem('token')
+							}
+						})
+						.then(response => {
+							this.user = response.data
+							localStorage.setItem('userId', this.user.id)
+                            localStorage.setItem('username', this.user.username)
+                            this.$router.push('/Profil');
+							
+						})
+						.catch(error => {
+                            if(error == "Error: Request failed with status code 400")
+                                alert("Username or password are wrong, please try again after this.user!")
+                        })
+                })
+                .catch(error => {
+                // print(error.status == 417)
+                if(error == "Error: Request failed with status code 417"){
+                   alert("Usename and email mast be unique")
+                  }
+                })
+
 			}else{
 				this.error.push('Username/password is incorrect!');
 			}
+            //alert(localStorage.getItem('userId'))
 		}
 	}
 }

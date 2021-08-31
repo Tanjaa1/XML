@@ -1,22 +1,22 @@
 <template>
     <div class="menu-item">
-        <input style="width:200px" href="#" id="searchfield" @click="isOpen=!isOpen"  v-on:input="search()"/>
+        <input style="width:200px" href="#" id="searchTagId" @click="isOpen=!isOpen"  v-on:input="search()"/>
     <transition name="fade" appear>
     <div class="sub-menu" v-if="isOpen">
         <TabNav :tabs="['Accounts','Tags','Locations']" :selected="selected" @selected="setSelected">
             <Tab :isSelected="selected==='Accounts'">
                 <p  v-for="p in profiles" :key="p">
-                        <button class="btn">{{p.username}} </button>
+                        <button class="btn" v-on:click="SaveIdUser(p)">{{p.username}} </button>
                     </p>
             </Tab>
             <Tab :isSelected="selected==='Tags'">
                  <p  v-for="p in tags" :key="p">
-                        <button class="btn">{{p.name}} </button>
+                        <button class="btn" v-on:click="SaveHashtag(p)">{{p.name}}</button>
                     </p>
             </Tab>
             <Tab :isSelected="selected==='Locations'">
                 <p  v-for="p in locations" :key="p">
-                        <button class="btn">{{p.place}},{{p.city}},{{p.country}} </button>
+                        <button class="btn" v-on:click="SaveLocation(p)">{{p.place}},{{p.city}},{{p.country}} </button>
                     </p>
             </Tab>
         </TabNav>
@@ -26,8 +26,12 @@
 </template>
 
 <script>
+export var myVar
+export var myLocation
+export var myHashtag
+
 const axios=require('axios')
-import TabNav from '../components/TabNav.vue'
+import TabNav from './TabNav.vue'
 import Tab from '../components/Tab.vue'
 
 export default {
@@ -38,37 +42,74 @@ export default {
         return{
             isOpen: false,
             selected: 'Accounts',
-            tags:[{name:"dddddddd"}],
-            profiles:[{username:"AAAAAAA"}],
-            locations:[{city:"da",place:"da",country:"ne"}]
+            tags:[],
+            profiles:[],
+            locations:[]
         }
     },
     methods:{
+        SaveIdUser(p){
+            myVar = p
+            if(localStorage.getItem('userId') != null){
+                if(p.id == localStorage.getItem('userId'))
+                    this.$router.push('/Profil')
+                else
+                    this.$router.push('/ProfilUser');
+            }else
+                this.$router.push('/PostsByUserPublic');
+        },
+         SaveLocation(p){
+            myLocation = p
+            if(localStorage.getItem('userId') != null){
+                this.$router.push('/PostsByLocation');
+            }else{
+                this.$router.push('/PostsByLocationPublic');
+            }
+        },
+         SaveHashtag(p){
+            myHashtag = p
+            if(localStorage.getItem('userId') != null){
+                this.$router.push('/PostsByHashtag');
+             }else{
+                this.$router.push('/PostsByHashtagPublic');
+            }
+        },
         setSelected(tab){
             this.selected=tab;
         },
         search(){
-            axios({
-                method: "get",
-                url:  'http://localhost:8080/api/post/searchLocation/'+document.getElementById("searchfield")
-            }).then(response => {
-                this.locations=response.data
-                })
+             axios
+                .get("http://localhost:8080/api/user/searchProfile/" + document.getElementById("searchTagId").value,
+				{
+							headers: {
+								'Authorization': 'Bearer' + " " + localStorage.getItem('token')
+							}
+				})
+                .then(response => {
+					this.profiles = response.data
+              })
+            axios
+                .get("http://localhost:8080/api/post/searchLocation/" + document.getElementById("searchTagId").value,
+				{
+							headers: {
+								'Authorization': 'Bearer' + " " + localStorage.getItem('token')
+							}
+				})
+                .then(response => {
+					this.locations = response.data
+              })
 
-            axios({
-                method: "get",
-                url:  'http://localhost:8080/api/post/searchHashtag/'+document.getElementById("searchfield")
-            }).then(response => {
-                this.tags=response.data
-                })
-
-            axios({
-                method: "get",
-                url:  'http://localhost:8080/api/user/searchLocation/'+document.getElementById("searchfield")
-            }).then(response => {
-                this.profiles=response.data
-                })
-        }
+              axios
+                .get("http://localhost:8080/api/post/searchHashtag/" + document.getElementById("searchTagId").value,
+				{
+							headers: {
+								'Authorization': 'Bearer' + " " + localStorage.getItem('token')
+							}
+				})
+                .then(response => {
+					this.tags = response.data
+              })
+        },
     }
 }
 </script>

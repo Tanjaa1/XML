@@ -8,22 +8,29 @@ type Post struct {
 	gorm.Model
 	Images                   []Image			 `json:"images" gorm:"many2many:images_posts;"`
 	Comments                  []Comment          `json:"comments" gorm:"many2many:comments_posts;"`
-	UserId                    int                `json:"userId"`
+	UserId                    uint                `json:"userId"`
 	Description               string             `json:"description"`
 	//Likes                     []Link             `json:"likes" gorm:"many2many:likes_posts;"`
 	//Dislikes                  []Link             `json:"dislikes" gorm:"many2many:dislikes_posts;"`
 	TagsLink                  []Link             `json:"tagsLink" gorm:"many2many:tagsLink_posts;"`
-	HashTags                  []Hashtag          `json:"hashTags" gorm:"many2many:hashTags_posts;"`
-	Location                  Location           `json:"location" gorm:"foreignKey:ID"`
+	HashTagsIdList            []HashtagIdList    `json:"hashTagsIdList" gorm:"many2many:hashTags_posts;"`
+	LocationId                uint               `json:"locationId"`
 	//SeenBy                    []int			     `json:"seenBy" gorm:"not null"`
 	CloseFriends              bool               `json:"closeFriends"`
 	PostType                  PostType			 `json:"postType"`
 }
 
+
+
+type HashtagIdList struct {
+	gorm.Model
+	HashtagId                    uint			    `json:"HashtagId"`
+}
+
 type Like struct {
 	gorm.Model
-	PostId            int                `json:"postId"`
-	UserId            int                `json:"userId"`
+	PostId            uint                `json:"postId"`
+	UserId            uint                `json:"userId"`
 	Username          string              `json:"username"`
 	LikeType          LikeType           `json:"likeType"`
 
@@ -48,9 +55,9 @@ type Image struct {
 }
 
 
-func (post *Post) AddHashtag(item Hashtag){
-	post.HashTags = append(post.HashTags, item)
-}
+//func (post *Post) AddHashtag(item Hashtag){
+//	post.HashTags = append(post.HashTags, item)
+//}
 
 
 func ConvertPostType(postTypeString string)(postType PostType) {
